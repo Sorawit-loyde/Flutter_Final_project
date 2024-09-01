@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:mobile_app_decubitus/constant.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -6,35 +8,43 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 200,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(80),
-                    bottomRight: Radius.circular(80),
-                  ),
+      appBar: AppBar(
+        automaticallyImplyLeading: false, // Prevent default back button
+        backgroundColor: primaryColor,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+        ),
+        toolbarHeight: 170, // Adjust height of the AppBar
+        flexibleSpace: Container(
+          padding: const EdgeInsets.only(
+              left: 5, top: 40), // Padding for positioning
+          child: Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back,
+                    color: backGroundColor2), // Back arrow icon
+                onPressed: () {
+                  Navigator.pop(context); // Navigate back
+                },
+              ),
+              const SizedBox(width: 10), // Space between arrow and text
+              const Text(
+                'Home',
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.w600,
+                  color: backGroundColor2,
                 ),
               ),
-            ),
-            pinned: true,
-            floating: false,
+            ],
           ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                return ListTile(
-                  title: Text('Item #$index'),
-                );
-              },
-              childCount: 30,
-            ),
-          ),
-        ],
+        ),
+      ),
+      body: Center(
+        child: Text('Content goes here'), // Main content of the page
       ),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app_decubitus/constant.dart'; // Updated import path
+import 'package:mobile_app_decubitus/constant.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -9,11 +9,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
-  String? _email;
-  String? _password;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   String? _errorMessage;
-  bool _isPasswordVisible = false;
+  String _email = '';
+  String _password = '';
+  bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -26,19 +29,15 @@ class _LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Center(
               child: Column(
-                mainAxisAlignment:
-                    MainAxisAlignment.start, // Align items to the top
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 30), // Space at the top
+                  const SizedBox(height: 30),
                   _buildTitle(),
-                  const SizedBox(
-                      height: 10), // Space between title and welcome message
+                  const SizedBox(height: 10),
                   _buildWelcomeMessage(),
-                  const SizedBox(
-                      height: 30), // Space between welcome message and image
-                  _buildImage(), // Added image here
-                  const SizedBox(
-                      height: 30), // Space between image and email field
+                  const SizedBox(height: 30),
+                  _buildImage(),
+                  const SizedBox(height: 30),
                   _buildEmailField(),
                   const SizedBox(height: 20),
                   _buildPasswordField(),
@@ -48,6 +47,14 @@ class _LoginPageState extends State<LoginPage> {
                   _buildSignInButton(),
                   const SizedBox(height: 20),
                   _buildCreateAccountButton(context),
+                  if (_errorMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Text(
+                        _errorMessage!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -91,84 +98,64 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildEmailField() {
-    return Container(
-      height: 60,
-      width: 350,
-      decoration: BoxDecoration(
-        color: secondaryColor, // Set the background color to secondaryColor
-        borderRadius: BorderRadius.circular(10), // Rounded corners
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 8,
-            offset: Offset(0, 4), // Shadow position
-          ),
-        ],
-      ),
-      child: TextFormField(
-        decoration: InputDecoration(
-          labelText: 'Email',
-          border: InputBorder.none, // No border
-          contentPadding: const EdgeInsets.all(15),
-          errorText: _errorMessage != null && _errorMessage!.contains('email')
-              ? _errorMessage
-              : null, // Show error message if applicable
+    return TextField(
+      decoration: InputDecoration(
+        labelText: 'Email',
+        filled: true,
+        fillColor: secondaryColor,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(color: secondaryColor),
         ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please enter your email';
-          }
-          if (!value.contains('@')) {
-            return 'Please enter a valid email';
-          }
-          return null;
-        },
-        onSaved: (value) => _email = value,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: const BorderSide(color: primaryColor)),
+        contentPadding: const EdgeInsets.all(15),
       ),
+      controller: _emailController,
+      onChanged: (value) {
+        _email = value;
+      },
     );
   }
 
   Widget _buildPasswordField() {
-    return Container(
-      height: 60,
-      width: 350,
-      decoration: BoxDecoration(
-        color: secondaryColor,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: TextFormField(
-        decoration: InputDecoration(
-          labelText: 'Password',
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(15),
-          suffixIcon: IconButton(
-            icon: Icon(
-              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-              color: Colors.grey,
-            ),
-            onPressed: () {
-              setState(() {
-                _isPasswordVisible = !_isPasswordVisible; // Toggle visibility
-              });
-            },
+    return TextField(
+      obscureText: _obscureText,
+      decoration: InputDecoration(
+        labelText: 'Password',
+        filled: true,
+        fillColor: secondaryColor,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(color: secondaryColor),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: const BorderSide(color: primaryColor)),
+        suffixIcon: IconButton(
+          onPressed: () {
+            setState(() {
+              _obscureText = !_obscureText;
+            });
+          },
+          icon: Icon(
+            _obscureText ? Icons.visibility : Icons.visibility_off,
+            color: primaryColor,
           ),
         ),
-        obscureText: !_isPasswordVisible, // Toggle the obscureText property
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please enter your password';
-          }
-          return null;
-        },
-        onSaved: (value) => _password = value,
+        contentPadding: const EdgeInsets.all(15),
       ),
+      controller: _passwordController,
+      onChanged: (value) {
+        _password = value;
+      },
     );
   }
 
@@ -189,33 +176,35 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildSignInButton() {
     return ElevatedButton(
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            _formKey.currentState!.save();
-            // Perform login logic here
-            if (_email == '@admin' && _password == 'admin') {
-              Navigator.pushNamed(context, '/home');
-            } else {
-              setState(() {
-                _errorMessage =
-                    'Invalid email or password'; // Set error message
-              });
-            }
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          _formKey.currentState!.save();
+          // Perform login logic here
+          if (_email == '@admin' && _password == 'admin') {
+            Navigator.pushNamed(context, '/home');
+          } else {
+            setState(() {
+              _errorMessage = 'Invalid email or password'; // Set error message
+            });
           }
-        },
-        style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
-            padding: const EdgeInsets.symmetric(horizontal: 137, vertical: 15),
-            textStyle: const TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-            ),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0))),
-        child: const Text(
-          'Sign in',
-          style: TextStyle(color: backGroundColor),
-        ));
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primaryColor,
+        padding: const EdgeInsets.symmetric(horizontal: 137, vertical: 15),
+        textStyle: const TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      ),
+      child: const Text(
+        'Sign in',
+        style: TextStyle(color: backGroundColor),
+      ),
+    );
   }
 
   Widget _buildCreateAccountButton(BuildContext context) {
