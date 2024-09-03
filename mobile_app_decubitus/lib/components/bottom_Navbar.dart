@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:mobile_app_decubitus/constant.dart';
 
 class BottomNavBar extends StatefulWidget {
-  final Function(int) onTabSelected; // Callback to handle tab selection
+  final List<Widget> pages; // List of pages to display
 
-  const BottomNavBar({Key? key, required this.onTabSelected}) : super(key: key);
+  const BottomNavBar({super.key, required this.pages});
 
   @override
   _BottomNavBarState createState() => _BottomNavBarState();
@@ -16,29 +18,58 @@ class _BottomNavBarState extends State<BottomNavBar> {
     setState(() {
       _selectedIndex = index; // Update the selected index
     });
-    widget.onTabSelected(index); // Call the callback to notify the parent
   }
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
+    return Column(
+      children: [
+        Expanded(
+          child: widget.pages[
+              _selectedIndex], // Display the content based on the selected index
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: 'Search',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
+        GNav(
+          backgroundColor: backGroundColor2,
+          color: Colors.black,
+          activeColor: primaryColor,
+          onTabChange: (index) {
+            _onItemTapped(index); // Update the selected index
+            // Handle navigation based on the selected index
+            switch (index) {
+              case 0:
+                // Navigate to Home
+                break;
+              case 1:
+                // Navigate to Chat
+                break;
+              case 2:
+                // Navigate to Follow Up
+                break;
+              case 3:
+                // Navigate to Profile
+                break;
+            }
+          },
+          tabs: const [
+            GButton(
+              icon: Icons.home,
+              text: "Home",
+            ),
+            GButton(
+              icon: Icons.chat,
+              text: "Chat",
+            ),
+            GButton(
+              icon: Icons.history,
+              text: "Follow Up",
+            ),
+            GButton(
+              icon: Icons.person,
+              text: "Profile",
+            ),
+          ],
         ),
       ],
-      currentIndex: _selectedIndex,
-      selectedItemColor: Colors.blue,
-      onTap: _onItemTapped, // Handle tab selection
     );
   }
 }

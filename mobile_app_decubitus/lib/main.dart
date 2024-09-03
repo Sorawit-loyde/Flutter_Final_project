@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screen/login_page.dart';
 import 'screen/startUp_page.dart';
-import 'screen/home_page.dart';
+import 'components/manage_bottom_navbar.dart';
 import 'screen/createAccount_page.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
