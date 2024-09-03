@@ -1,71 +1,40 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:mobile_app_decubitus/constant.dart';
+import 'package:mobile_app_decubitus/components/custom_Appbar.dart';
+import 'package:mobile_app_decubitus/components/bottom_Navbar.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex =
+      0; // Track the selected index for the bottom navigation bar
+
+  // List of widgets for each tab
+  final List<Widget> _pages = [
+    Center(child: Text('Home Page Content')), // Content for Home tab
+    Center(child: Text('Search Page Content')), // Content for Search tab
+    Center(child: Text('Profile Page Content')), // Content for Profile tab
+  ];
+
+  // Function to handle tab selection
+  void _onTabSelected(int index) {
+    setState(() {
+      _selectedIndex = index; // Update the selected index
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: primaryColor,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          ),
-        ),
-        toolbarHeight: 160,
-        flexibleSpace: Padding(
-          padding: const EdgeInsets.only(left: 5, top: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, color: backGroundColor2),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Text(
-                    'Home',
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.w600,
-                      color: backGroundColor2,
-                    ),
-                  ),
-                ],
-              ),
-              const Padding(
-                padding: EdgeInsets.only(left: 25),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 44,
-                      backgroundImage:
-                          NetworkImage('https://example.com/profile.jpg'),
-                    ),
-                    SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Sorawit"),
-                        Text("1100600467462"),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: const Center(
-        child: Text('Content goes here'),
+      appBar: const CustomAppBar(),
+      body: _pages[
+          _selectedIndex], // Display the content based on the selected index
+      bottomNavigationBar: BottomNavBar(
+        onTabSelected: _onTabSelected, // Pass the callback to the BottomNavBar
       ),
     );
   }
