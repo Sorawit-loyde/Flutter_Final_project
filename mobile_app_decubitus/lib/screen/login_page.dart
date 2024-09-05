@@ -21,41 +21,47 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backGroundColor,
+      resizeToAvoidBottomInset: false,
+      backgroundColor: backGroundColor1,
       body: SafeArea(
         child: Form(
           key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 30),
-                  _buildTitle(),
-                  const SizedBox(height: 10),
-                  _buildWelcomeMessage(),
-                  const SizedBox(height: 30),
-                  _buildImage(),
-                  const SizedBox(height: 30),
-                  _buildEmailField(),
-                  const SizedBox(height: 20),
-                  _buildPasswordField(),
-                  const SizedBox(height: 10),
-                  _buildForgotPasswordButton(),
-                  const SizedBox(height: 10),
-                  _buildSignInButton(),
-                  const SizedBox(height: 20),
-                  _buildCreateAccountButton(context),
-                  if (_errorMessage != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Text(
-                        _errorMessage!,
-                        style: const TextStyle(color: Colors.red),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 30),
+                    _buildTitle(),
+                    const SizedBox(height: 10),
+                    _buildWelcomeMessage(),
+                    const SizedBox(height: 30),
+                    _buildImage(),
+                    const SizedBox(height: 30),
+                    _buildEmailField(),
+                    const SizedBox(height: 20),
+                    _buildPasswordField(),
+                    const SizedBox(height: 10),
+                    _buildForgotPasswordButton(),
+                    const SizedBox(height: 10),
+                    _buildSignInButton(),
+                    const SizedBox(height: 20),
+                    _buildCreateAccountButton(context),
+                    if (_errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Text(
+                          _errorMessage!,
+                          style: const TextStyle(color: Colors.red),
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -202,7 +208,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: const Text(
         'Sign in',
-        style: TextStyle(color: backGroundColor),
+        style: TextStyle(color: backGroundColor1),
       ),
     );
   }
@@ -223,7 +229,7 @@ class _LoginPageState extends State<LoginPage> {
                 borderRadius: BorderRadius.circular(10.0))),
         child: const Text(
           'Create new account',
-          style: TextStyle(color: backGroundColor),
+          style: TextStyle(color: backGroundColor1),
         ));
   }
 }

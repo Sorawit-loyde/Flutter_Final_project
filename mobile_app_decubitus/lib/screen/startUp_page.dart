@@ -7,7 +7,7 @@ class FirstScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backGroundColor,
+      backgroundColor: backGroundColor1,
       body: Padding(
         padding: const EdgeInsets.only(top: 80),
         child: Column(
@@ -77,7 +77,7 @@ class FirstScreen extends StatelessWidget {
       ),
       child: const Text(
         'Get Started',
-        style: TextStyle(color: backGroundColor),
+        style: TextStyle(color: backGroundColor1),
       ),
     );
   }

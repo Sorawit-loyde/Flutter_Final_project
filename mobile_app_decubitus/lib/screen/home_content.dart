@@ -7,7 +7,7 @@ class HomeContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backGroundColor,
+      backgroundColor: backGroundColor1,
       body: Column(
         children: [
           // Search Bar
@@ -17,23 +17,39 @@ class HomeContent extends StatelessWidget {
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide(color: Colors.grey),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(
+                      color: greyColor1), // Color when not focused
+                  borderRadius: BorderRadius.circular(20.0),
                 ),
-                suffixIcon: Icon(Icons.search),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(
+                      color: Colors.black), // Color when focused
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                fillColor: greyColor1,
+                filled: true,
+                suffixIcon: const Icon(Icons.search),
               ),
             ),
           ),
 
           // Main Content Area (List)
           Expanded(
-            child: ListView.builder(
-              itemCount: 20, // Placeholder for your list items
+            child: ListView.separated(
+              itemCount: 20,
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text('Item ${index + 1}'),
                   // Add more properties as needed
+                );
+              },
+              separatorBuilder: (context, index) {
+                return const Divider(
+                  color: greyColor2,
+                  thickness: 1.0,
+                  indent: 16.0,
+                  endIndent: 16.0,
                 );
               },
             ),
@@ -42,10 +58,17 @@ class HomeContent extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Action for the plus button
+          // Add your button press logic here
         },
-        child: Icon(Icons.add),
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 0.0, // No shadow
+        shape: CircleBorder(),
         tooltip: 'Add Item',
+        child: const Icon(
+          Icons.add,
+          size: 25.0,
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
