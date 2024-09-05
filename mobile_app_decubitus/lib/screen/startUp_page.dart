@@ -14,7 +14,7 @@ class FirstScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _buildLogo(),
-            _buildContent(context), // Pass context here
+            _buildContent(context),
           ],
         ),
       ),
@@ -30,7 +30,6 @@ class FirstScreen extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
-    // Accept context as a parameter
     return Padding(
       padding: const EdgeInsets.only(bottom: 80),
       child: Column(
@@ -38,7 +37,7 @@ class FirstScreen extends StatelessWidget {
           _buildTitle(),
           _buildDescription(),
           const SizedBox(height: 100),
-          _buildGetStartedButton(context), // Pass context here
+          _buildGetStartedButton(context),
         ],
       ),
     );
@@ -67,7 +66,6 @@ class FirstScreen extends StatelessWidget {
   }
 
   Widget _buildGetStartedButton(BuildContext context) {
-    // Accept context as a parameter
     return ElevatedButton(
       onPressed: () {
         Navigator.pushNamed(context, '/login');

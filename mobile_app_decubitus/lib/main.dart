@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screen/login_page.dart';
 import 'screen/startUp_page.dart';
-import 'components/manage_bottom_navbar.dart';
+import 'components/manage_screen_properties.dart';
 import 'screen/createAccount_page.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
@@ -16,9 +16,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Decubitus App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       initialRoute: '/',
       routes: {
         '/': (context) => const FirstScreen(),
