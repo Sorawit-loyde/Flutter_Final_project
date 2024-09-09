@@ -11,6 +11,70 @@ class CreateAccountPage extends StatelessWidget {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: backGroundColor1,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start, // Align to the top
+              children: [
+                _buildTitle(),
+                const SizedBox(height: 8), // Space between title and subtitle
+                _buildSubtitle(), // Add subtitle here
+                const SizedBox(height: 60),
+                _buildTextField(label: 'Name', controller: _nameController),
+                const SizedBox(height: 16),
+                _buildTextField(label: 'Email', controller: _emailController),
+                const SizedBox(height: 16),
+                _buildTextField(
+                    label: 'Password',
+                    controller: _passwordController,
+                    obscureText: true),
+                const SizedBox(height: 16),
+                _buildTextField(
+                    label: 'Confirm Password',
+                    controller: _confirmPasswordController,
+                    obscureText: true),
+                const SizedBox(height: 20),
+                _buildCreateAccountButton(context),
+                const SizedBox(height: 100),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Method to build the title
+  Widget _buildTitle() {
+    return const Text(
+      'Create Account',
+      style: TextStyle(
+        fontSize: 36, // Increased font size
+        fontWeight: FontWeight.w900, // Bolder text
+        color: primaryColor, // Changed color to primaryColor
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  // Method to build the subtitle
+  Widget _buildSubtitle() {
+    return const Text(
+      'Please fill in the details below to create your account.',
+      style: TextStyle(
+        fontSize: 16, // Smaller font size for subtitle
+        color: Colors.black, // Black color for subtitle
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
   // Method to build styled text fields
   Widget _buildTextField({
     required String label,
@@ -37,9 +101,6 @@ class CreateAccountPage extends StatelessWidget {
       ),
       controller: controller,
       obscureText: obscureText,
-      onChanged: (value) {
-        // You can handle the value change if needed
-      },
     );
   }
 
@@ -80,20 +141,15 @@ class CreateAccountPage extends StatelessWidget {
   Widget _buildCreateAccountButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        // Validate inputs before proceeding
         if (_validateInputs(context)) {
-          // Handle successful account creation logic here
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Account Created!')),
-          );
-
+          _showSnackBar(context, 'Account Created!');
           // Optionally navigate to another page
           // Navigator.pushNamed(context, '/next-page');
         }
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
-        padding: const EdgeInsets.symmetric(horizontal: 65, vertical: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 140, vertical: 15),
         textStyle: const TextStyle(
           fontSize: 25,
           fontWeight: FontWeight.bold,
@@ -103,57 +159,8 @@ class CreateAccountPage extends StatelessWidget {
         ),
       ),
       child: const Text(
-        'Create new account',
+        'Sign up',
         style: TextStyle(color: backGroundColor1),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: backGroundColor1,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text(
-                  'Create your account',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                _buildTextField(
-                  label: 'Name',
-                  controller: _nameController,
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  label: 'Email',
-                  controller: _emailController,
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  label: 'Password',
-                  controller: _passwordController,
-                  obscureText: true,
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  label: 'Confirm Password',
-                  controller: _confirmPasswordController,
-                  obscureText: true,
-                ),
-                const SizedBox(height: 20),
-                _buildCreateAccountButton(context), // Use the custom button
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
