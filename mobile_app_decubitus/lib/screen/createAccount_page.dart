@@ -23,8 +23,8 @@ class CreateAccountPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start, // Align to the top
               children: [
                 _buildTitle(),
-                const SizedBox(height: 8), // Space between title and subtitle
-                _buildSubtitle(), // Add subtitle here
+                const SizedBox(height: 8),
+                _buildSubtitle(),
                 const SizedBox(height: 60),
                 _buildTextField(label: 'Name', controller: _nameController),
                 const SizedBox(height: 16),
@@ -55,9 +55,9 @@ class CreateAccountPage extends StatelessWidget {
     return const Text(
       'Create Account',
       style: TextStyle(
-        fontSize: 36, // Increased font size
-        fontWeight: FontWeight.w900, // Bolder text
-        color: primaryColor, // Changed color to primaryColor
+        fontSize: 36,
+        fontWeight: FontWeight.w900,
+        color: primaryColor,
       ),
       textAlign: TextAlign.center,
     );
@@ -68,8 +68,8 @@ class CreateAccountPage extends StatelessWidget {
     return const Text(
       'Please fill in the details below to create your account.',
       style: TextStyle(
-        fontSize: 16, // Smaller font size for subtitle
-        color: Colors.black, // Black color for subtitle
+        fontSize: 16,
+        color: Colors.black,
       ),
       textAlign: TextAlign.center,
     );
@@ -144,7 +144,7 @@ class CreateAccountPage extends StatelessWidget {
         if (_validateInputs(context)) {
           _showSnackBar(context, 'Account Created!');
           // Optionally navigate to another page
-          // Navigator.pushNamed(context, '/next-page');
+          Navigator.pushNamed(context, '/login');
         }
       },
       style: ElevatedButton.styleFrom(

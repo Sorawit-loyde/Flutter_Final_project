@@ -11,16 +11,21 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CustomAppBar(),
-      body: BottomNavBar(
-        pages: [
-          HomeContent(), // Home tab content
-          ChatContent(), //Chat tab content
-          FollowupContent(), // FollowUp tab content
-          ProfileContent(), // Profile tab content
-        ],
-      ),
-    );
+    return WillPopScope(
+        onWillPop: () async {
+          // Prevent back navigation to the login page
+          return false; // Returning false prevents the back action
+        },
+        child: Scaffold(
+          appBar: const CustomAppBar(),
+          body: BottomNavBar(
+            pages: [
+              HomeContent(), // Home tab content
+              ChatContent(), //Chat tab content
+              FollowupContent(), // FollowUp tab content
+              ProfileContent(), // Profile tab content
+            ],
+          ),
+        ));
   }
 }
