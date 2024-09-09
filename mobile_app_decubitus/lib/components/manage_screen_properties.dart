@@ -16,8 +16,8 @@ class HomePage extends StatelessWidget {
           // Prevent back navigation to the login page
           return false; // Returning false prevents the back action
         },
-        child: Scaffold(
-          appBar: const CustomAppBar(),
+        child: const Scaffold(
+          appBar: CustomAppBar(),
           body: BottomNavBar(
             pages: [
               HomeContent(), // Home tab content

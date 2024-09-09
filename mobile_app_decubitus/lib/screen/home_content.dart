@@ -63,7 +63,7 @@ class HomeContent extends StatelessWidget {
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         elevation: 0.0, // No shadow
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
         tooltip: 'Add Item',
         child: const Icon(
           Icons.add,

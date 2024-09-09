@@ -88,14 +88,14 @@ class CreateAccountPage extends StatelessWidget {
         fillColor: secondaryColor,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: secondaryColor),
+          borderSide: const BorderSide(color: secondaryColor),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: primaryColor),
+          borderSide: const BorderSide(color: primaryColor),
         ),
         contentPadding: const EdgeInsets.all(15),
       ),
