@@ -13,9 +13,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          // Prevent back navigation to the login page
           return false; // Returning false prevents the back action
         },
+
+        //manage main content between nav bar and bottom nav bar
         child: const Scaffold(
           appBar: CustomAppBar(),
           body: BottomNavBar(

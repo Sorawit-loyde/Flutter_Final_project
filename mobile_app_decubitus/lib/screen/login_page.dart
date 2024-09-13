@@ -8,6 +8,7 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
+//Controller and Key for auth
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
@@ -18,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   String _password = '';
   bool _obscureText = true;
 
+  //Manage Content
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,39 +72,43 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  //Title
   Widget _buildTitle() {
     return const Text(
       'Login here',
       style: TextStyle(
-        fontSize: 35, // Increased size
-        fontWeight: FontWeight.w900, // Made title bolder
-        color: primaryColor, // Set to primary color
+        fontSize: 35,
+        fontWeight: FontWeight.w900,
+        color: primaryColor,
       ),
-      textAlign: TextAlign.center, // Center the title
+      textAlign: TextAlign.center,
     );
   }
 
+  //Sub Title
   Widget _buildWelcomeMessage() {
     return const Text(
       'Welcome back! Please sign in to continue.',
       style: TextStyle(
-        fontSize: 22, // Size for the welcome message
-        fontWeight: FontWeight.bold, // Make it bold
-        color: Colors.black, // Changed color back to black
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
       ),
-      textAlign: TextAlign.center, // Center the welcome message
+      textAlign: TextAlign.center,
     );
   }
 
+  //Logo img
   Widget _buildImage() {
     return Image.asset(
-      logoImage, // Replace with your image path
+      logoImage, //img path
       width: 200,
       height: 200,
-      fit: BoxFit.cover, // Adjust the image to cover the area
+      fit: BoxFit.cover,
     );
   }
 
+  //Email Field
   Widget _buildEmailField() {
     return TextField(
       decoration: InputDecoration(
@@ -121,6 +127,7 @@ class _LoginPageState extends State<LoginPage> {
             borderSide: const BorderSide(color: primaryColor)),
         contentPadding: const EdgeInsets.all(15),
       ),
+      //controller for email
       controller: _emailController,
       onChanged: (value) {
         _email = value;
@@ -128,9 +135,10 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  //Password Field
   Widget _buildPasswordField() {
     return TextField(
-      obscureText: _obscureText,
+      obscureText: _obscureText, //Hide Password
       decoration: InputDecoration(
         labelText: 'Password',
         filled: true,
@@ -145,6 +153,7 @@ class _LoginPageState extends State<LoginPage> {
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
             borderSide: const BorderSide(color: primaryColor)),
+        //On off hide Password
         suffixIcon: IconButton(
           onPressed: () {
             setState(() {
@@ -158,6 +167,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         contentPadding: const EdgeInsets.all(15),
       ),
+      //controller for password
       controller: _passwordController,
       onChanged: (value) {
         _password = value;
@@ -165,12 +175,13 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  //forget password
   Widget _buildForgotPasswordButton() {
     return Align(
       alignment: Alignment.centerRight,
       child: TextButton(
         onPressed: () {
-          // Handle forgot password logic
+          //Navigate to page
         },
         child: const Text(
           'Forgot your password?',
@@ -180,17 +191,20 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  //Sign in Button checking Email and Password Field
   Widget _buildSignInButton() {
     return ElevatedButton(
       onPressed: () {
         if (_formKey.currentState!.validate()) {
+          //checking key
           _formKey.currentState!.save();
-          // Perform login logic here
           if (_email == '@admin' && _password == 'admin') {
+            //basic auth
             Navigator.pushNamed(context, '/home');
           } else {
             setState(() {
-              _errorMessage = 'Invalid email or password'; // Set error message
+              _errorMessage =
+                  'Invalid email or password'; //Pass error to Mange Content
             });
           }
         }
@@ -213,10 +227,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  //Create Account Button
   Widget _buildCreateAccountButton(BuildContext context) {
     return ElevatedButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/create-account');
+          Navigator.pushNamed(context, '/create-account'); //navigate to page
         },
         style: ElevatedButton.styleFrom(
             backgroundColor: primaryColor,

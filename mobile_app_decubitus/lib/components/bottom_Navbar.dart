@@ -16,7 +16,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index; // Update the selected index
+      _selectedIndex = index; //selected index
     });
   }
 
@@ -25,15 +25,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return Column(
       children: [
         Expanded(
-          child: widget.pages[
-              _selectedIndex], // Display the content based on the selected index
+          child: widget.pages[_selectedIndex], //Show content followed index
         ),
         GNav(
           backgroundColor: backGroundColor2,
           color: Colors.black,
           activeColor: primaryColor,
           onTabChange: (index) {
-            _onItemTapped(index); // Update the selected index
+            _onItemTapped(index);
             // Handle navigation based on the selected index
             switch (index) {
               case 0:

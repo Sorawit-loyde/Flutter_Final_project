@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class FirstScreen extends StatelessWidget {
   const FirstScreen({super.key});
 
+  //Manage content
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,6 +22,7 @@ class FirstScreen extends StatelessWidget {
     );
   }
 
+  //Logo
   Widget _buildLogo() {
     return Image.asset(
       logoWithLabel,
@@ -29,6 +31,7 @@ class FirstScreen extends StatelessWidget {
     );
   }
 
+  //Manage Title , Description for app and Button
   Widget _buildContent(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 80),
@@ -43,6 +46,7 @@ class FirstScreen extends StatelessWidget {
     );
   }
 
+  //Title
   Widget _buildTitle() {
     return const Center(
       child: Text(
@@ -55,6 +59,7 @@ class FirstScreen extends StatelessWidget {
     );
   }
 
+  //Description
   Widget _buildDescription() {
     return const SizedBox(
       width: 300,
@@ -65,10 +70,11 @@ class FirstScreen extends StatelessWidget {
     );
   }
 
+  //Button
   Widget _buildGetStartedButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        Navigator.pushNamed(context, '/login');
+        Navigator.pushNamed(context, '/login'); //Navigate to Login page
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
