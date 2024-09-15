@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/components/custom_Appbar.dart';
 import 'package:mobile_app_decubitus/components/bottom_Navbar.dart';
+import 'package:mobile_app_decubitus/screen/chat_page.dart';
 import 'package:mobile_app_decubitus/screen/home_content.dart';
 import 'package:mobile_app_decubitus/screen/followUp_content.dart';
 import 'package:mobile_app_decubitus/screen/profile_content.dart';
-import 'package:mobile_app_decubitus/screen/chat_content.dart';
+import 'package:mobile_app_decubitus/screen/chat_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -22,7 +23,7 @@ class HomePage extends StatelessWidget {
           body: BottomNavBar(
             pages: [
               HomeContent(), // Home tab content
-              ChatContent(), //Chat tab content
+              Chatroom(), //Chat tab content
               FollowupContent(), // FollowUp tab content
               ProfileContent(), // Profile tab content
             ],

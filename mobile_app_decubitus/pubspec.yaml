@@ -39,6 +39,8 @@ dependencies:
   google_nav_bar: ^5.0.6
   animations: ^2.0.11
   lottie: ^3.1.2
+  firebase_core: ^3.4.1
+  chatview: ^2.2.0
 
 dev_dependencies:
   flutter_test:
