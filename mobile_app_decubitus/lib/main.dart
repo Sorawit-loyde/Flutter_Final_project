@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
-import 'screen/login_page.dart';
-import 'screen/startUp_page.dart';
-import 'components/manage_screen_properties.dart';
-import 'screen/createAccount_page.dart';
 // import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+
+import 'components/manage_screen_properties.dart';
 import 'firebase_options.dart';
+import 'screen/createAccount_page.dart';
+import 'screen/login_page.dart';
+import 'screen/startUp_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Decubitus App',
       initialRoute: '/',
       routes: {

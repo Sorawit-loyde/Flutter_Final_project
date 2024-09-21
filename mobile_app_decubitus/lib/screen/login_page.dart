@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 
+import '../services/auth_service.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -10,6 +12,7 @@ class LoginPage extends StatefulWidget {
 
 //Controller and Key for auth
 class _LoginPageState extends State<LoginPage> {
+  final AuthService _authService = AuthService();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -194,17 +197,20 @@ class _LoginPageState extends State<LoginPage> {
   //Sign in Button checking Email and Password Field
   Widget _buildSignInButton() {
     return ElevatedButton(
-      onPressed: () {
+      onPressed: () async {
         if (_formKey.currentState!.validate()) {
           //checking key
           _formKey.currentState!.save();
-          if (_email == '@admin' && _password == 'admin') {
-            //basic auth
-            Navigator.pushNamed(context, '/home');
-          } else {
+
+          //check email and password
+          try {
+            final user = await _authService.signIn(
+                _emailController.text, _passwordController.text);
+            print('Logged in: ${user.name}');
+            Navigator.pushReplacementNamed(context, '/home');
+          } catch (e) {
             setState(() {
-              _errorMessage =
-                  'Invalid email or password'; //Pass error to Mange Content
+              _errorMessage = e.toString();
             });
           }
         }
