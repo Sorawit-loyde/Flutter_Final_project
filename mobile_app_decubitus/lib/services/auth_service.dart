@@ -1,29 +1,45 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/config.dart';
-import '../models/user_model.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class AuthService {
-  Future<void> _saveToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(Config.TOKEN_KEY, token);
-  }
-
-  Future<User> signIn(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('${Config.BASE_URL}/signin'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({'email': email, 'password': password}),
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      await _saveToken(data['token']);
-      return User.fromJson(data['user']);
-    } else {
+  Future<void> signIn(String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${Config.BASE_URL}/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'user_name': email, 'password': password}),
+      );
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      if (response.statusCode == 201) {
+        final data = json.decode(response.body);
+        await _saveTokens(data['accessToken'], data['refreshToken']);
+      } else {
+        throw Exception('Failed to sign in');
+      }
+    } catch (e) {
+      print(e);
       throw Exception('Failed to sign in');
     }
+  }
+
+  Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('accessToken');
+  }
+
+  Future<String?> getRefreshToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('refreshToken');
+  }
+
+  Future<void> _saveTokens(String accessToken, String refreshToken) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('accessToken', accessToken);
+    await prefs.setString('refreshToken', refreshToken);
   }
 }

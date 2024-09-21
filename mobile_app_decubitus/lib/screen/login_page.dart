@@ -201,16 +201,14 @@ class _LoginPageState extends State<LoginPage> {
         if (_formKey.currentState!.validate()) {
           //checking key
           _formKey.currentState!.save();
-
-          //check email and password
           try {
-            final user = await _authService.signIn(
+            await _authService.signIn(
                 _emailController.text, _passwordController.text);
-            print('Logged in: ${user.name}');
+
             Navigator.pushReplacementNamed(context, '/home');
           } catch (e) {
             setState(() {
-              _errorMessage = e.toString();
+              _errorMessage = "Login failed. Please try again.";
             });
           }
         }

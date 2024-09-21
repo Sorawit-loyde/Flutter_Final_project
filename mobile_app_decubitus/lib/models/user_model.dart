@@ -1,15 +1,23 @@
+import 'dart:convert';
+
 class User {
-  final String id;
-  final String email;
-  final String name;
+  final int id;
+  final String username;
+  final String role;
 
-  User({required this.id, required this.email, required this.name});
+  User({required this.id, required this.username, required this.role});
 
-  factory User.fromJson(Map<String, dynamic> json) {
+  factory User.fromToken(String token) {
+    final parts = token.split('.');
+    if (parts.length != 3) {
+      throw Exception('Invalid token');
+    }
+    final payload = json
+        .decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
     return User(
-      id: json['id'],
-      email: json['email'],
-      name: json['name'],
+      id: payload['Uid'],
+      username: payload['username'],
+      role: payload['role'],
     );
   }
 }
