@@ -5,7 +5,6 @@ import 'package:mobile_app_decubitus/screen/chat_page.dart';
 import 'package:mobile_app_decubitus/screen/home_content.dart';
 import 'package:mobile_app_decubitus/screen/followUp_content.dart';
 import 'package:mobile_app_decubitus/screen/profile_content.dart';
-import 'package:mobile_app_decubitus/screen/chat_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
