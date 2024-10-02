@@ -9,6 +9,25 @@
       "client_info": {
         "mobilesdk_app_id": "1:286957351892:android:5f00c18e3a2ef13f649c41",
         "android_client_info": {
+          "package_name": "com.example.mobile_app_d"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-5ofGECl347gBchuLgGYLW_c90QPhQwY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:286957351892:android:2e79b00de80460f7649c41",
+        "android_client_info": {
           "package_name": "com.example.mobile_app_decubitus"
         }
       },
