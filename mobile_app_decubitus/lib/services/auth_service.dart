@@ -4,12 +4,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config/config.dart';
 
 class AuthService {
-  Future<void> signIn(String email, String password) async {
+  Future<void> signIn(String ssid, String password) async {
     try {
       final response = await http.post(
         Uri.parse('${Config.BASE_URL}/auth/login'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'user_name': email, 'password': password}),
+        body: json.encode({'ssid': ssid, 'password': password}), // Adjusted key
       );
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
@@ -25,13 +25,11 @@ class AuthService {
     }
   }
 
-// auth_service.dart
   Future<void> register({
     required String firstName,
     required String lastName,
-    required String email,
     required String password,
-    required int ssnId,
+    required int ssnId, // Assuming this is still needed for registration
     required String sex,
     required int phone,
     required String dateOfBirth,
@@ -45,11 +43,9 @@ class AuthService {
         body: json.encode({
           'first_name': firstName,
           'last_name': lastName,
-          'user_email': email,
           'password': password,
-          'ssid': ssnId,
+          'ssid': ssnId, // Ensure this matches your API requirements
           'sex': sex,
-          'phone': phone,
           'date_of_birth': dateOfBirth,
           'profile_image': profileImage,
           'roleId': roleId,

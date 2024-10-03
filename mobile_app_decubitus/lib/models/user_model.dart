@@ -14,6 +14,7 @@ class User {
     }
     final payload = json
         .decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
+
     return User(
       id: payload['Uid'],
       username: payload['username'],

@@ -14,11 +14,11 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final AuthService _authService = AuthService();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _ssidController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   String? _errorMessage;
-  String _email = '';
+  String _ssid = '';
   String _password = '';
   bool _obscureText = true;
 
@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 30),
                     _buildImage(),
                     const SizedBox(height: 30),
-                    _buildEmailField(),
+                    _buildSsidField(),
                     const SizedBox(height: 20),
                     _buildPasswordField(),
                     const SizedBox(height: 10),
@@ -111,11 +111,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  //Email Field
-  Widget _buildEmailField() {
+  //SSID Field
+  Widget _buildSsidField() {
     return TextField(
       decoration: InputDecoration(
-        labelText: 'Email',
+        labelText: 'SSID',
         filled: true,
         fillColor: secondaryColor,
         enabledBorder: OutlineInputBorder(
@@ -130,10 +130,9 @@ class _LoginPageState extends State<LoginPage> {
             borderSide: const BorderSide(color: primaryColor)),
         contentPadding: const EdgeInsets.all(15),
       ),
-      //controller for email
-      controller: _emailController,
+      controller: _ssidController, // Updated controller
       onChanged: (value) {
-        _email = value;
+        _ssid = value; // Updated variable
       },
     );
   }
@@ -156,7 +155,6 @@ class _LoginPageState extends State<LoginPage> {
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
             borderSide: const BorderSide(color: primaryColor)),
-        //On off hide Password
         suffixIcon: IconButton(
           onPressed: () {
             setState(() {
@@ -170,21 +168,20 @@ class _LoginPageState extends State<LoginPage> {
         ),
         contentPadding: const EdgeInsets.all(15),
       ),
-      //controller for password
-      controller: _passwordController,
+      controller: _passwordController, // Same controller for password
       onChanged: (value) {
-        _password = value;
+        _password = value; // Same variable for password
       },
     );
   }
 
-  //forget password
+  //Forgot password button
   Widget _buildForgotPasswordButton() {
     return Align(
       alignment: Alignment.centerRight,
       child: TextButton(
         onPressed: () {
-          //Navigate to page
+          //Navigate to page for forgot password functionality
         },
         child: const Text(
           'Forgot your password?',
@@ -194,16 +191,27 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  //Sign in Button checking Email and Password Field
+//Sign in Button checking SSID and Password Field
   Widget _buildSignInButton() {
     return ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          //checking key
-          _formKey.currentState!.save();
+          // Validate inputs
+          if (_ssidController.text.isEmpty ||
+              _passwordController.text.isEmpty) {
+            setState(() {
+              _errorMessage = "SSID and Password cannot be empty.";
+            });
+            return; // Prevent further execution if fields are empty
+          }
+
+          // Debug output
+          print('SSID: ${_ssidController.text}');
+          print('Password: ${_passwordController.text}');
+
           try {
-            await _authService.signIn(
-                _emailController.text, _passwordController.text);
+            await _authService.signIn(_ssidController.text,
+                _passwordController.text); // Use SSID from controller
 
             Navigator.pushReplacementNamed(context, '/home');
           } catch (e) {
@@ -214,16 +222,14 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryColor,
-        padding: const EdgeInsets.symmetric(horizontal: 137, vertical: 15),
-        textStyle: const TextStyle(
-          fontSize: 25,
-          fontWeight: FontWeight.bold,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-      ),
+          backgroundColor: primaryColor,
+          padding: const EdgeInsets.symmetric(horizontal: 137, vertical: 15),
+          textStyle: const TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0))),
       child: const Text(
         'Sign in',
         style: TextStyle(color: backGroundColor1),
@@ -231,11 +237,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  //Create Account Button
+//Create Account Button
   Widget _buildCreateAccountButton(BuildContext context) {
     return ElevatedButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/create-account'); //navigate to page
+          Navigator.pushNamed(context, '/create-account');
         },
         style: ElevatedButton.styleFrom(
             backgroundColor: primaryColor,
