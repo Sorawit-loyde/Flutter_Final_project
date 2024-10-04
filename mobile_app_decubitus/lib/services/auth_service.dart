@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../config/config.dart';
 
 class AuthService {
@@ -47,7 +49,7 @@ class AuthService {
           'ssid': ssnId,
           'sex': sex,
           'phone': phone,
-          'date_of_birth': dateOfBirth,
+          'birthdate': dateOfBirth,
           'profile_image': profileImage,
           'roleId': roleId,
         }),
