@@ -53,7 +53,6 @@ class CreateAccountPage extends StatelessWidget {
                     label: 'Phone',
                     controller: _phoneController), // Phone field
                 const SizedBox(height: 16),
-                // New field for Date of Birth with GestureDetector
                 _buildDateOfBirthField(context),
                 const SizedBox(height: 16),
                 _buildTextField(
@@ -168,35 +167,64 @@ class CreateAccountPage extends StatelessWidget {
     if (picked != null) {
       // Format and set the selected date in YYYY-MM-DD format
       String formattedDate = "${picked.toLocal()}".split(' ')[0];
-      _dobController.text = formattedDate;
+      _dobController.text = formattedDate; // Ensure this is set
     }
   }
 
   // Method to validate input fields
+// Method to validate input fields
   bool _validateInputs(BuildContext context) {
     final String firstName = _firstNameController.text.trim();
     final String lastName = _lastNameController.text.trim();
     final String password = _passwordController.text.trim();
     final String confirmPassword = _confirmPasswordController.text.trim();
 
+    // Validate SSID
+    final String ssid = _ssidController.text.trim();
+
+    // Validate Phone
+    final String phone = _phoneController.text.trim();
+
+    // Validate Date of Birth
+    final String dob = _dobController.text.trim(); // Get DOB from controller
+
+    if (ssid.isEmpty) {
+      _showSnackBar(context, 'SSID cannot be empty');
+      return false;
+    }
+
     if (firstName.isEmpty) {
       _showSnackBar(context, 'First Name cannot be empty');
       return false;
     }
+
     if (lastName.isEmpty) {
       _showSnackBar(context, 'Last Name cannot be empty');
       return false;
     }
+
+    if (phone.isEmpty || phone.length < 10) {
+      // Assuming phone should be at least 10 digits
+      _showSnackBar(context, 'Phone number must be at least 10 digits');
+      return false;
+    }
+
+    if (_dobController.text.isEmpty) {
+      _showSnackBar(context, 'Date of Birth cannot be empty');
+      return false; // Prevent further execution if DOB is empty
+    }
+
     if (password.isEmpty || password.length < 6) {
       _showSnackBar(context, 'Password must be at least 6 characters');
       return false;
     }
+
     if (password != confirmPassword) {
       _showSnackBar(context, 'Passwords do not match');
       return false;
     }
 
-    return true;
+    return true; // All validations passed
   }
 
   // Method to show SnackBar for feedback
@@ -217,16 +245,13 @@ class CreateAccountPage extends StatelessWidget {
               firstName: _firstNameController.text.trim(),
               lastName: _lastNameController.text.trim(),
               password: _passwordController.text.trim(),
-              ssnId: int.parse(
-                  _ssidController.text.trim()), // Convert SSN ID to int
+              ssnId: int.parse(_ssidController.text.trim()),
               sex: _sexController.text.trim(),
-              phone: int.parse(
-                  _phoneController.text.trim()), // Convert phone number to int
-              dateOfBirth: _dobController.text
-                  .trim(), // Get Date of Birth from new field
-              profileImage:
-                  '', // Optional image URL or leave it empty if not needed
-              roleId: 1, // Assign a default role ID or adjust as necessary
+              phone: int.parse(_phoneController.text.trim()),
+              dateOfBirth:
+                  _dobController.text.trim(), // Ensure this is included
+              profileImage: '',
+              roleId: 1,
             );
             _showSnackBar(context, 'Account Created!');
             Navigator.pushNamed(

@@ -29,7 +29,7 @@ class AuthService {
     required String firstName,
     required String lastName,
     required String password,
-    required int ssnId, // Assuming this is still needed for registration
+    required int ssnId,
     required String sex,
     required int phone,
     required String dateOfBirth,
@@ -44,8 +44,9 @@ class AuthService {
           'first_name': firstName,
           'last_name': lastName,
           'password': password,
-          'ssid': ssnId, // Ensure this matches your API requirements
+          'ssid': ssnId,
           'sex': sex,
+          'phone': phone,
           'date_of_birth': dateOfBirth,
           'profile_image': profileImage,
           'roleId': roleId,
