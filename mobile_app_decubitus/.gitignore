@@ -44,3 +44,5 @@ app.*.map.json
 /android
 
 /.vscode
+
+/mobile_app_decubitus/android
