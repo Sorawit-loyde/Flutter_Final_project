@@ -1,24 +1,50 @@
-import 'dart:convert';
-
 class User {
   final int id;
-  final String username;
-  final String role;
+  final String ssid;
+  final String firstName;
+  final String lastName;
+  final String profileImage;
+  final List<Role> roles;
 
-  User({required this.id, required this.username, required this.role});
+  const User({
+    required this.id,
+    required this.ssid,
+    required this.firstName,
+    required this.lastName,
+    required this.profileImage,
+    required this.roles,
+  });
 
-  factory User.fromToken(String token) {
-    final parts = token.split('.');
-    if (parts.length != 3) {
-      throw Exception('Invalid token');
-    }
-    final payload = json
-        .decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
-
+  factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: payload['Uid'],
-      username: payload['username'],
-      role: payload['role'],
+      id: json['id'] as int,
+      ssid: json['ssid'] as String,
+      firstName: json['first_name'] as String,
+      lastName: json['last_name'] as String,
+      profileImage: json['profile_image'] as String,
+      roles: (json['role'] as List<dynamic>)
+          .map((roleJson) => Role.fromJson(roleJson))
+          .toList(),
+    );
+  }
+}
+
+class Role {
+  final int id;
+  final String name;
+  final String description;
+
+  const Role({
+    required this.id,
+    required this.name,
+    required this.description,
+  });
+
+  factory Role.fromJson(Map<String, dynamic> json) {
+    return Role(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      description: json['description'] as String,
     );
   }
 }

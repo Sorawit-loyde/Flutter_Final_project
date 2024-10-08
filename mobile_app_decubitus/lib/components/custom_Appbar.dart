@@ -53,7 +53,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         children: [
           const CircleAvatar(
             radius: 44,
-            backgroundImage: NetworkImage('https://example.com/profile.jpg'),
+            backgroundImage: NetworkImage('https://via.placeholder.com/150'),
           ),
           const SizedBox(width: 10),
           Column(
