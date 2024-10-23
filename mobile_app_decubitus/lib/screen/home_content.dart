@@ -1,38 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
-import 'package:mobile_app_decubitus/services/user_service.dart';
 
-class HomeContent extends StatefulWidget {
+class HomeContent extends StatelessWidget {
   const HomeContent({super.key});
 
   @override
-  _HomeContentState createState() => _HomeContentState();
-}
-
-class _HomeContentState extends State<HomeContent> {
-  List<String> items = []; // This will hold your service data
-  bool isLoading = true; // To track loading state
-  final UserService _userService = UserService();
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchData(); // Call your service here
-  }
-
-  Future<void> _fetchData() async {
-    // Simulating a network call or service
-    await _userService.getprofile();
-    await Future.delayed(const Duration(seconds: 2)); // Simulate a delay
-    setState(() {
-      // Assuming you fetch a list of items from your service
-      items = List.generate(5, (index) => 'Item ${index + 1}');
-      isLoading = false; // Update loading state
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Sample static items for display
+    List<String> items = List.generate(5, (index) => 'Item ${index + 1}');
+
     return Scaffold(
       backgroundColor: backGroundColor1,
       body: Column(
@@ -61,26 +37,23 @@ class _HomeContentState extends State<HomeContent> {
 
           // Main Content Area (List)
           Expanded(
-            child: isLoading
-                ? const Center(
-                    child: CircularProgressIndicator()) // Loading indicator
-                : ListView.separated(
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(items[index]),
-                        // Add more properties as needed
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return const Divider(
-                        color: greyColor2,
-                        thickness: 1.0,
-                        indent: 16.0,
-                        endIndent: 16.0,
-                      );
-                    },
-                  ),
+            child: ListView.separated(
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(items[index]),
+                  // Add more properties as needed
+                );
+              },
+              separatorBuilder: (context, index) {
+                return const Divider(
+                  color: greyColor2,
+                  thickness: 1.0,
+                  indent: 16.0,
+                  endIndent: 16.0,
+                );
+              },
+            ),
           ),
         ],
       ),

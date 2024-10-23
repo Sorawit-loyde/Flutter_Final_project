@@ -1,8 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
+import 'package:mobile_app_decubitus/services/user_service.dart';
+import 'package:mobile_app_decubitus/models/user_model.dart'; // Import your User model
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
+
+  @override
+  _CustomAppBarState createState() => _CustomAppBarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(160);
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  final UserService _userService = UserService();
+
+  late Future<User> futureUser; // Declare a Future for the user data
+
+  @override
+  void initState() {
+    super.initState();
+    futureUser = _fetchData(); // Fetch user data on initialization
+  }
+
+  Future<User> _fetchData() async {
+    try {
+      return await _userService.getprofile(); // Fetch user profile
+    } catch (e) {
+      throw Exception('Failed to load user profile');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +46,28 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       toolbarHeight: 160,
       flexibleSpace: Padding(
         padding: const EdgeInsets.only(left: 20, top: 40),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context),
-            const SizedBox(height: 10),
-            _userProfile(),
-          ],
+        child: FutureBuilder<User>(
+          future: futureUser,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: CircularProgressIndicator()); // Loading state
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}'); // Error state
+            } else if (snapshot.hasData) {
+              User user = snapshot.data!;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(context),
+                  const SizedBox(height: 10),
+                  _userProfile(user), // Pass the fetched user data
+                ],
+              );
+            } else {
+              return const Text('No data found'); // Fallback for no data
+            }
+          },
         ),
       ),
     );
@@ -45,43 +88,53 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget _userProfile() {
+  Widget _userProfile(User user) {
+    // Accept user as parameter
     return Padding(
       padding: const EdgeInsets.only(left: 5),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 44,
-            backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+            backgroundImage: user.profileImage.isNotEmpty
+                ? NetworkImage(user.profileImage)
+                : const NetworkImage(
+                    'https://via.placeholder.com/150'), // Fallback image if no profile image is provided
           ),
           const SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Sorawit",
-                style: TextStyle(
+              Text(
+                "${user.firstName} ${user.lastName}", // Display fetched name
+                style: const TextStyle(
                     color: backGroundColor2,
                     fontSize: 17,
                     fontWeight: FontWeight.bold),
               ),
-              const Text(
-                "1100600467462",
-                style: TextStyle(
+              Text(
+                user.ssid, // Display fetched SSID
+                style: const TextStyle(
                     color: backGroundColor2,
                     fontSize: 17,
                     fontWeight: FontWeight.normal),
               ),
               const SizedBox(height: 3),
-              Container(
-                padding: const EdgeInsets.fromLTRB(15, 1, 15, 1),
-                decoration: BoxDecoration(
-                    color: secondaryColor,
-                    borderRadius: BorderRadius.circular(13.0)),
-                child: const Text('Patient',
-                    style: TextStyle(color: primaryColor, fontSize: 16)),
-              ),
+              // Display the role name
+              if (user.roles.isNotEmpty) // Check if there are roles available
+                Container(
+                  padding: const EdgeInsets.fromLTRB(15, 1, 15, 1),
+                  decoration: BoxDecoration(
+                      color: secondaryColor,
+                      borderRadius: BorderRadius.circular(13.0)),
+                  child: Text(
+                    user.roles[0].name, // Display the name of the first role
+                    style: const TextStyle(color: primaryColor, fontSize: 16),
+                  ),
+                )
+              else
+                const SizedBox.shrink(), // If no roles, show nothing
             ],
           ),
           const Spacer(),
@@ -96,7 +149,4 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(160);
 }
