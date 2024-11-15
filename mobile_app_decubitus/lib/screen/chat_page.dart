@@ -67,7 +67,7 @@ class _ChatState extends State<Chatroom> {
           enableCameraImagePicker: false,
           allowRecordingVoice: false,
           textFieldConfig: TextFieldConfiguration(
-            compositionThresholdTime: const Duration(seconds: 1),
+            compositionThresholdTime: Duration(seconds: 1),
             textStyle: TextStyle(color: Colors.black),
           ),
         ),

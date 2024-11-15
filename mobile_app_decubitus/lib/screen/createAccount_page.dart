@@ -3,7 +3,7 @@ import '../services/auth_service.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 
 class CreateAccountPage extends StatefulWidget {
-  CreateAccountPage({super.key});
+  const CreateAccountPage({super.key});
 
   @override
   _CreateAccountPageState createState() => _CreateAccountPageState();
