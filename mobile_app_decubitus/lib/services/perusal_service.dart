@@ -41,4 +41,37 @@ class PerusalService {
       throw Exception('Failed to getPerusals');
     }
   }
+
+  Future<void> addPerusal(DateTime perusalDate) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final patientId = prefs.getString('Uid');
+      final url = Uri.parse('${Config.BASE_URL}/perusal');
+
+      final payload = jsonEncode({
+        'perusal_date': perusalDate.toIso8601String(),
+        'patient_id': patientId,
+      });
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer ${await AuthService().getAccessToken()}"
+        },
+        body: payload,
+      );
+
+      logger.t('Response status: ${response.statusCode}');
+      logger.t('Response body: ${response.body}');
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        logger.e('Failed to save perusal: ${response.body}');
+        throw Exception('Failed to save perusal: ${response.body}');
+      }
+    } catch (e) {
+      logger.e('Error occurred while saving perusal: $e');
+      throw Exception('Error occurred while saving perusal');
+    }
+  }
 }
