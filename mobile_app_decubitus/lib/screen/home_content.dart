@@ -16,6 +16,7 @@ class _HomeContentState extends State<HomeContent> {
   String _searchQuery = '';
   List<Perusal> _allPerusals = [];
   List<Perusal> _filteredPerusals = [];
+  bool _showFab = true; // Variable to control FAB visibility
 
   Future<List<Perusal>> fetchPerusals() async {
     final perusalService = PerusalService();
@@ -174,6 +175,9 @@ class _HomeContentState extends State<HomeContent> {
 
                             return GestureDetector(
                               onTap: () {
+                                setState(() {
+                                  _showFab = false; // Hide FAB when navigating
+                                });
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -210,17 +214,19 @@ class _HomeContentState extends State<HomeContent> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showAddPerusalDialog(); // Show dialog when pressed
-        },
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 0.0,
-        shape: const CircleBorder(),
-        tooltip: 'Add Item',
-        child: const Icon(Icons.add, size: 25.0),
-      ),
+      floatingActionButton: (_showFab
+          ? FloatingActionButton(
+              onPressed: () {
+                _showAddPerusalDialog(); // Show dialog when pressed
+              },
+              backgroundColor: primaryColor,
+              foregroundColor: Colors.white,
+              elevation: 0.0,
+              shape: const CircleBorder(),
+              tooltip: 'Add Item',
+              child: const Icon(Icons.add, size: 25.0),
+            )
+          : null), // Show FAB only if `_showFab` is true
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
