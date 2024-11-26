@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/services/perusal_service.dart';
 import 'package:mobile_app_decubitus/models/perusal_model.dart';
-import 'package:intl/intl.dart'; // Import for date formatting
+import 'package:intl/intl.dart'; // For date formatting
 import 'wound_select_content.dart'; // Import your wound selection page
 
 class HomeContent extends StatefulWidget {
@@ -16,11 +16,55 @@ class _HomeContentState extends State<HomeContent> {
   String _searchQuery = '';
   List<Perusal> _allPerusals = [];
   List<Perusal> _filteredPerusals = [];
-  bool _showFab = true; // Variable to control FAB visibility
+  bool _showFab = true; // Control FAB visibility
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPerusals(); // Load perusals on initialization
+  }
 
   Future<List<Perusal>> fetchPerusals() async {
     final perusalService = PerusalService();
     return await perusalService.getPerusals();
+  }
+
+  Future<void> deletePerusal(int id) async {
+    bool confirmDelete = await _showDeleteConfirmationDialog();
+    if (confirmDelete) {
+      try {
+        await PerusalService().deletePerusal(id);
+        setState(() {
+          _allPerusals.removeWhere((perusal) => perusal.id == id);
+          _filteredPerusals = _allPerusals;
+        });
+      } catch (e) {
+        print(e); // Handle error appropriately
+      }
+    }
+  }
+
+  Future<bool> _showDeleteConfirmationDialog() async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('ยืนยันการลบ'),
+              content: const Text('คุณแน่ใจหรือว่าต้องการลบรายการนี้?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false), // Cancel
+                  child: const Text('ยกเลิก'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true), // Confirm
+                  child: const Text('ยืนยัน'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false; // Default to false if dialog is dismissed
   }
 
   String formatPerusalDate(DateTime date, int index) {
@@ -30,84 +74,64 @@ class _HomeContentState extends State<HomeContent> {
   void _filterPerusals(String query) {
     setState(() {
       _searchQuery = query;
-      if (_searchQuery.isEmpty) {
-        _filteredPerusals = _allPerusals;
-      } else {
-        _filteredPerusals = _allPerusals.where((perusal) {
-          return perusal.perusalDate.toString().contains(_searchQuery);
-        }).toList();
-      }
+      _filteredPerusals = _searchQuery.isEmpty
+          ? _allPerusals
+          : _allPerusals
+              .where((perusal) =>
+                  perusal.perusalDate.toString().contains(_searchQuery))
+              .toList();
     });
   }
 
   void _showAddPerusalDialog() {
-    // Get today's date
     DateTime today = DateTime.now();
-    String formattedDate =
-        DateFormat('dd/MM/yyyy').format(today); // Format date
+    String formattedDate = DateFormat('dd/MM/yyyy').format(today);
+    int newIndex = _allPerusals.length + 1;
 
-    // Determine the count of existing perusals
-    int newIndex = _allPerusals.length + 1; // Index for new entry
-
-    // Create the text to display
     String displayText = "การตรวจครั้งที่ $newIndex - $formattedDate";
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(
-            'เพิ่มรายการตรวจ',
-            style: TextStyle(fontSize: 24), // Adjust font size for title
-          ),
+          title: const Text('เพิ่มรายการตรวจ', style: TextStyle(fontSize: 24)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                displayText,
-                style: const TextStyle(
-                    fontSize: 16), // Adjust font size for content
-              ),
+              Text(displayText, style: const TextStyle(fontSize: 16)),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () async {
                 try {
-                  await PerusalService()
-                      .addPerusal(today); // Save with today's date
+                  await PerusalService().addPerusal(today);
                   Navigator.pop(context); // Close the dialog
-
-                  // Refresh the perusals list after adding a new one
-                  setState(() {
-                    fetchPerusals().then((value) {
-                      _allPerusals = value; // Update all perusals
-                      _filteredPerusals = _allPerusals; // Reset filtered list
-                    });
-                  });
+                  fetchUpdatedPerusals(); // Refresh the list after adding
                 } catch (e) {
-                  // Handle error (e.g., show an error message)
-                  print(e);
+                  print(e); // Handle error appropriately
                 }
               },
-              child: const Text(
-                'ยืนยัน',
-                style: TextStyle(color: primaryColor),
-              ),
+              child:
+                  const Text('ยืนยัน', style: TextStyle(color: primaryColor)),
             ),
             TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog without saving
-              },
-              child: const Text(
-                'ยกเลิก',
-                style: TextStyle(color: primaryColor),
-              ),
+              onPressed: () => Navigator.pop(context), // Close without saving
+              child:
+                  const Text('ยกเลิก', style: TextStyle(color: primaryColor)),
             ),
           ],
         );
       },
     );
+  }
+
+  Future<void> fetchUpdatedPerusals() async {
+    final fetchedPerusals = await fetchPerusals();
+    setState(() {
+      _allPerusals = fetchedPerusals;
+      _filteredPerusals = fetchedPerusals;
+    });
   }
 
   @override
@@ -119,12 +143,11 @@ class _HomeContentState extends State<HomeContent> {
           return MaterialPageRoute(
             builder: (context) => Column(
               children: [
-                // Search Bar
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 8.0),
                   child: TextField(
-                    onChanged: _filterPerusals, // Update filter on text change
+                    onChanged: _filterPerusals,
                     decoration: InputDecoration(
                       hintText: 'Search...',
                       enabledBorder: OutlineInputBorder(
@@ -141,8 +164,6 @@ class _HomeContentState extends State<HomeContent> {
                     ),
                   ),
                 ),
-
-                // Main Content Area (List)
                 Expanded(
                   child: FutureBuilder<List<Perusal>>(
                     future: fetchPerusals(),
@@ -152,26 +173,21 @@ class _HomeContentState extends State<HomeContent> {
                       } else if (snapshot.hasError) {
                         return Center(
                             child:
-                                Text('Error fetching data: ${snapshot.error}'));
+                                Text('Error fetching data:${snapshot.error}'));
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         return const Center(
                             child:
                                 Text('กดปุ่มเพิ่มขวาล่างเพื่อเพิ่มรายการตรวจ'));
                       } else {
-                        _allPerusals = snapshot
-                            .data!; // Store all fetched perusals in state variable
-                        _filteredPerusals =
-                            _allPerusals; // Initialize filtered list with all entries
+                        _allPerusals = snapshot.data!;
+                        _filteredPerusals = _allPerusals;
 
                         return ListView.separated(
                           itemCount: _filteredPerusals.length,
-                          separatorBuilder: (context, index) {
-                            return const SizedBox(
-                                height: 8); // Space between cards
-                          },
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 8),
                           itemBuilder: (context, index) {
-                            final perusal = _filteredPerusals[
-                                index]; // Get filtered perusal entry
+                            final perusal = _filteredPerusals[index];
 
                             return GestureDetector(
                               onTap: () {
@@ -193,14 +209,30 @@ class _HomeContentState extends State<HomeContent> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8)),
                                 child: ListTile(
-                                  contentPadding:
-                                      const EdgeInsets.fromLTRB(10, 4, 10, 4),
-                                  title: Text(
-                                      formatPerusalDate(
-                                          perusal.perusalDate, index + 1),
-                                      style: const TextStyle(
-                                          fontSize: 16, color: Colors.black)),
-                                ),
+                                    contentPadding:
+                                        const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                    title: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                                formatPerusalDate(
+                                                    perusal.perusalDate,
+                                                    index + 1),
+                                                style: const TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.black)),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.close,
+                                                color: primaryColor),
+                                            onPressed: () {
+                                              deletePerusal(perusal
+                                                  .id); // Call delete method
+                                            },
+                                          )
+                                        ])),
                               ),
                             );
                           },
@@ -226,7 +258,7 @@ class _HomeContentState extends State<HomeContent> {
               tooltip: 'Add Item',
               child: const Icon(Icons.add, size: 25.0),
             )
-          : null), // Show FAB only if `_showFab` is true
+          : null),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }

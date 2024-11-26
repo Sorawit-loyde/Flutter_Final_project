@@ -74,4 +74,31 @@ class PerusalService {
       throw Exception('Error occurred while saving perusal');
     }
   }
+
+  Future<void> deletePerusal(int id) async {
+    try {
+      final url = Uri.parse(
+          '${Config.BASE_URL}/perusal/$id'); // Use the appropriate endpoint
+
+      final response = await http.delete(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer ${await AuthService().getAccessToken()}"
+        },
+      );
+
+      logger.t('Response status: ${response.statusCode}');
+      logger.t('Response body: ${response.body}');
+
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        // Check for success status codes
+        logger.e('Failed to delete perusal: ${response.body}');
+        throw Exception('Failed to delete perusal: ${response.body}');
+      }
+    } catch (e) {
+      logger.e('Error occurred while deleting perusal: $e');
+      throw Exception('Error occurred while deleting perusal');
+    }
+  }
 }

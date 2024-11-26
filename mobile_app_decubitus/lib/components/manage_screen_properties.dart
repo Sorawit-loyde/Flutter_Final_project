@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
           return false; // Returning false prevents the back action
         },
 
-        //manage main content between nav bar and bottom nav bar
+        //manage role in this zone seperrate 3 array for 3 roles****
         child: const Scaffold(
           appBar: CustomAppBar(),
           body: BottomNavBar(

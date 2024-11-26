@@ -1,34 +1,98 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/models/perusal_model.dart';
+import 'package:mobile_app_decubitus/models/wound_model.dart'; // Import the wound model
+import 'package:mobile_app_decubitus/screen/home_content.dart'; // Import HomeContent for navigation
+import 'package:mobile_app_decubitus/services/wound_service.dart'; // Import the wound service
+import 'package:mobile_app_decubitus/constant.dart'; // Import your constants
 
-class WoundSelectPage extends StatelessWidget {
+class WoundSelectPage extends StatefulWidget {
   final Perusal perusal;
 
   const WoundSelectPage({super.key, required this.perusal});
 
   @override
+  _WoundSelectPageState createState() => _WoundSelectPageState();
+}
+
+class _WoundSelectPageState extends State<WoundSelectPage> {
+  late Future<List<WoundGroup>> futureWounds;
+
+  @override
+  void initState() {
+    super.initState();
+    futureWounds = WoundService(
+            'http://10.0.2.2:3000/api/v0') // Use appropriate URL for emulator
+        .fetchGroupedWounds(widget.perusal.id);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wound Selection'),
+        backgroundColor:
+            backGroundColor1, // Set AppBar background color to backGroundColor1
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      const HomeContent()), // Navigate to HomeContent
+            );
+          },
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Perusal ID: ${perusal.id}',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Perusal Date: ${perusal.perusalDate.toLocal()}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 10),
-            // Add more details or functionality as needed
-          ],
+      body: Container(
+        color:
+            backGroundColor1, // Set body background color to backGroundColor1
+        child: FutureBuilder<List<WoundGroup>>(
+          future: futureWounds,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(
+                  child: Text('Error fetching data: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No wounds found.'));
+            }
+
+            final woundGroups = snapshot.data!;
+
+            // Display categorized wound groups with details
+            return ListView.builder(
+              itemCount: woundGroups.length,
+              itemBuilder: (context, index) {
+                final group = woundGroups[index];
+                return ExpansionTile(
+                  title: Text(
+                    group.area,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18), // Increased font size for area title
+                  ),
+                  children: group.wounds.asMap().entries.map((entry) {
+                    int woundIndex = entry.key + 1; // Start numbering from 1
+                    Wound wound = entry.value;
+                    String woundLabel =
+                        'แผล $woundIndex'; // Format the wound label
+                    String status = 'Status: ${wound.status}';
+
+                    return ListTile(
+                      title: Text(
+                        woundLabel,
+                        style: const TextStyle(
+                            fontSize:
+                                16), // Increased font size for wound label
+                      ),
+                      subtitle: Text(status),
+                    );
+                  }).toList(),
+                );
+              },
+            );
+          },
         ),
       ),
     );
