@@ -66,12 +66,8 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
               itemBuilder: (context, index) {
                 final group = woundGroups[index];
                 return ExpansionTile(
-                  title: Text(
-                    group.area,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18), // Increased font size for area title
-                  ),
+                  title: Text(group.area,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   children: group.wounds.asMap().entries.map((entry) {
                     int woundIndex = entry.key + 1; // Start numbering from 1
                     Wound wound = entry.value;
@@ -80,12 +76,7 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
                     String status = 'Status: ${wound.status}';
 
                     return ListTile(
-                      title: Text(
-                        woundLabel,
-                        style: const TextStyle(
-                            fontSize:
-                                16), // Increased font size for wound label
-                      ),
+                      title: Text(woundLabel),
                       subtitle: Text(status),
                     );
                   }).toList(),

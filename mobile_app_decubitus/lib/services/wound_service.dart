@@ -1,5 +1,3 @@
-// wound_service.dart
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app_decubitus/models/wound_model.dart';
