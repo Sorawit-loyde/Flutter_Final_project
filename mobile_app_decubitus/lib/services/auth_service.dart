@@ -13,7 +13,7 @@ class AuthService {
   Future<void> signIn(String ssid, String password) async {
     try {
       final response = await http.post(
-        Uri.parse('${Config.BASE_URL}/auth/login'),
+        Uri.parse('${Custom_Config.BASE_URL}/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'ssid': ssid, 'password': password}), // Adjusted key
       );
@@ -44,7 +44,7 @@ class AuthService {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('${Config.BASE_URL}/users/register'),
+        Uri.parse('${Custom_Config.BASE_URL}/users/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'first_name': firstName,

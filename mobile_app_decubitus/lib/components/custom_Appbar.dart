@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/constant.dart';
-import 'package:mobile_app_decubitus/services/user_service.dart';
 import 'package:mobile_app_decubitus/models/user_model.dart'; // Import your User model
+import 'package:mobile_app_decubitus/services/user_service.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -98,9 +99,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
           CircleAvatar(
             radius: 44,
             backgroundImage: user.profileImage.isNotEmpty
-                ? NetworkImage(user.profileImage)
+                ? NetworkImage('${Custom_Config.Image_URL}/${user.profileImage}')
                 : const NetworkImage(
-                    'https://via.placeholder.com/150'), // Fallback image if no profile image is provided
+                    '${Custom_Config.Image_URL}/static/profile.jpg'), // Fallback image if no profile image is provided
           ),
           const SizedBox(width: 10),
           Column(

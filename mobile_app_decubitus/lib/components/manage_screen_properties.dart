@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
           body: BottomNavBar(
             pages: [
               HomeContent(), // Home tab content
-              Chatroom(), //Chat tab content
+              Chatroom(roomId: 1,), //Chat tab content
               FollowupContent(), // FollowUp tab content
               ProfileContent(), // Profile tab content
             ],

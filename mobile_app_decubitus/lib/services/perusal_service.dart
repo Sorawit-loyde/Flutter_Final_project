@@ -18,7 +18,7 @@ class PerusalService {
       logger.i('Fetching perusals for user ID: $id');
 
       final response = await http.get(
-        Uri.parse('${Config.BASE_URL}/perusal/Pages/$id'),
+        Uri.parse('${Custom_Config.BASE_URL}/perusal/Pages/$id'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': "Bearer ${await AuthService().getAccessToken()}"
@@ -46,7 +46,7 @@ class PerusalService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final patientId = prefs.getString('Uid');
-      final url = Uri.parse('${Config.BASE_URL}/perusal');
+      final url = Uri.parse('${Custom_Config.BASE_URL}/perusal');
 
       final payload = jsonEncode({
         'perusal_date': perusalDate.toIso8601String(),
@@ -78,7 +78,7 @@ class PerusalService {
   Future<void> deletePerusal(int id) async {
     try {
       final url = Uri.parse(
-          '${Config.BASE_URL}/perusal/$id'); // Use the appropriate endpoint
+          '${Custom_Config.BASE_URL}/perusal/$id'); // Use the appropriate endpoint
 
       final response = await http.delete(
         url,

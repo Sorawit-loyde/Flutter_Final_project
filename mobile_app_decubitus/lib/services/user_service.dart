@@ -14,7 +14,7 @@ class UserService {
       final prefs = await SharedPreferences.getInstance();
       final id = prefs.getString('Uid');
       final response = await http.get(
-        Uri.parse('${Config.BASE_URL}/users/profile/$id'),
+        Uri.parse('${Custom_Config.BASE_URL}/users/profile/$id'),
         headers: {'Content-Type': 'application/json',
         'Authorization':"Bearer ${await AuthService().getAccessToken()}"},
       );
