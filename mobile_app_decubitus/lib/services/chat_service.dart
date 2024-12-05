@@ -40,4 +40,29 @@ class ChatService {
       throw Exception('Failed to fetch chats. Please try again later.');
     }
   }
+
+  Future<String?> uploadImageFromPath(String filePath) async {
+  try {
+    final url = Uri.parse('${Custom_Config.BASE_URL}/upload/file'); // Replace with your backend endpoint
+    final request = http.MultipartRequest('POST', url);
+    request.files.add(
+      await http.MultipartFile.fromPath('file', filePath),
+    );
+
+    final response = await request.send();
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final resBody = await response.stream.bytesToString();
+      final data = jsonDecode(resBody);
+      // logger.i(data['path']);
+      return data['path']; // Assuming the backend returns the file path in 'path'
+    } else {
+      logger.e("Failed to upload image: ${response.statusCode}");
+      return null;
+    }
+  } catch (e) {
+    logger.e("Error uploading image: $e");
+    return null;
+  }
+}
+
 }
