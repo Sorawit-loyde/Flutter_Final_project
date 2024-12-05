@@ -70,8 +70,7 @@ class _ChatroomState extends State<Chatroom> {
         return Message(
           id: chat.id.toString(),
           message: messageType == MessageType.image
-              ? '${Custom_Config.Image_URL}/${chat.imageUrl}' ??
-                  '${Custom_Config.Image_URL}/static/unable_image.jpg'
+              ? '${Custom_Config.Image_URL}/${chat.imageUrl}'
               : chat.message ?? "",
           createdAt: chat.createdAt,
           sentBy: chat.sender.id.toString(),
@@ -116,9 +115,10 @@ class _ChatroomState extends State<Chatroom> {
   }
 
   void _handleIncomingMessage(Map<String, dynamic> data) {
+    logger.i(data);
     final newMessage = Message(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      message: data['event'] == 'image' ? data['image'] : data['message'],
+      message: data['event'] == 'image' ? '${Custom_Config.Image_URL}/${data['image']}' : data['message'],
       createdAt: DateTime.now(),
       sentBy: data['sendId'].toString(),
       messageType:
@@ -128,28 +128,22 @@ class _ChatroomState extends State<Chatroom> {
     chatController.addMessage(newMessage);
   }
 
-  void sendMessage(String messageText,
+  void sendMessage(String? messageText,
       {String? imageUrl, MessageType messageType = MessageType.text}) {
-    final newMessage = Message(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      message: messageType == MessageType.image ? imageUrl! : messageText,
-      createdAt: DateTime.now(),
-      sentBy: chatController.currentUser.id,
-      messageType: messageType,
-    );
+    final messagePayload = <String, dynamic>{
+      'roomId': widget.roomId,
+      'sendId': currentUserId,
+      'message': messageType == MessageType.text ? messageText : null,
+      'imageUrl': messageType == MessageType.image ? imageUrl : null,
+      'messageType': messageType == MessageType.image ? 'image' : 'text',
+    };
 
-    // chatController.addMessage(newMessage);
+    // Debug log to verify the payload
+    debugPrint('Sending message payload: ${jsonEncode(messagePayload)}');
 
-    // Send the message to the server
     channel?.sink.add(jsonEncode({
       'event': 'sendMessage',
-      'data': {
-        'roomId': widget.roomId,
-        'sendId': currentUserId,
-        'message': messageText,
-        'imageUrl': imageUrl,
-        'messageType': messageType == MessageType.image ? 'image' : 'text',
-      },
+      'data': messagePayload,
     }));
   }
 
@@ -162,7 +156,7 @@ class _ChatroomState extends State<Chatroom> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Chatroom")),
+      // appBar: AppBar(title: const Text("Chatroom")),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : ChatView(
@@ -170,11 +164,17 @@ class _ChatroomState extends State<Chatroom> {
                 chatTitle: "Chatroom",
               ),
               chatController: chatController,
-              onSendTap: (messageText, replyMessage, messageType) {
+              onSendTap: (messageText, replyMessage, messageType) async {
                 if (messageType == MessageType.text) {
                   sendMessage(messageText);
-                } else {
-                  // Implement sending images if required
+                } else if (messageType == MessageType.image) {
+                  // The messageText contains the file path for the selected image
+                  String? imageUrl =
+                      await chatService.uploadImageFromPath(messageText);
+                  if (imageUrl != null) {
+                    sendMessage(null,
+                        imageUrl: imageUrl, messageType: MessageType.image);
+                  }
                 }
               },
               chatViewState: chatController.initialMessageList.isNotEmpty
