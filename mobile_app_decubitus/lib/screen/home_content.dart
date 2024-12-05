@@ -53,12 +53,14 @@ class _HomeContentState extends State<HomeContent> {
               content: const Text('คุณแน่ใจหรือว่าต้องการลบรายการนี้?'),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(false), // Cancel
-                  child: const Text('ยกเลิก'),
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('ยืนยัน',
+                      style: TextStyle(color: primaryColor)),
                 ),
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(true), // Confirm
-                  child: const Text('ยืนยัน'),
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('ยกเลิก',
+                      style: TextStyle(color: primaryColor)),
                 ),
               ],
             );
