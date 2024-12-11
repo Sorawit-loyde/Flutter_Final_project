@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  dropdown_button2: ^2.3.8
   animations: ^2.0.11
   chatview: ^2.2.0
   cupertino_icons: ^1.0.6

@@ -18,8 +18,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   String? _errorMessage;
-  String _ssid = '';
-  String _password = '';
   bool _obscureText = true;
 
   //Manage Content
@@ -132,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       controller: _ssidController, // Updated controller
       onChanged: (value) {
-        _ssid = value; // Updated variable
+// Updated variable
       },
     );
   }
@@ -170,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       controller: _passwordController, // Same controller for password
       onChanged: (value) {
-        _password = value; // Same variable for password
+// Same variable for password
       },
     );
   }
