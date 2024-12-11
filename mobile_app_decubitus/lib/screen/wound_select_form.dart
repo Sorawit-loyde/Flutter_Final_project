@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_app_decubitus/config/config.dart';
 import 'dart:io';
 import 'package:mobile_app_decubitus/constant.dart'; // Import your constants file
 import 'package:dropdown_button2/dropdown_button2.dart'; // Import DropdownButton2
+import 'package:mobile_app_decubitus/services/wound_service.dart'; // Import WoundService
 
 class WoundSelectForm extends StatefulWidget {
   const WoundSelectForm({super.key});
@@ -66,9 +68,29 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
     }
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       print('Form submitted');
+
+      if (imageFile != null) {
+        // Instantiate WoundService
+        final woundService = WoundService(Custom_Config.BASE_URL);
+
+        // Upload the image and get the response
+        String? uploadedImagePath =
+            await woundService.uploadImageFromPath(imageFile!.path);
+
+        if (uploadedImagePath != null) {
+          print('Image uploaded successfully! Path: $uploadedImagePath');
+          // Handle successful upload (e.g., show a success message, navigate, etc.)
+        } else {
+          print('Failed to upload image.');
+          // Handle upload failure (e.g., show an error message)
+        }
+      } else {
+        print('No image selected.');
+        // Handle case where no image is selected
+      }
     }
   }
 
@@ -129,7 +151,7 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
                     filled: true, // Fill color
                     fillColor: backGroundColor1, // Background color
                     border: OutlineInputBorder(),
-                    hintText: 'เลือกแผล',
+                    hintText: 'เลือกส่วนที่เป็นแผล',
                     hintStyle: TextStyle(color: greyColor3), // Hint text color
                     enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
