@@ -9,7 +9,6 @@ import 'package:mobile_app_decubitus/screen/wound_select_form.dart'; // Import y
 
 class WoundSelectPage extends StatefulWidget {
   final Perusal perusal;
-
   const WoundSelectPage({super.key, required this.perusal});
 
   @override
@@ -72,7 +71,7 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
                   color:
                       backGroundColor1, // Set card background color to backGroundColor1
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(
+                    side: const BorderSide(
                         color: primaryColor,
                         width: 2), // Set outline color to primaryColor
                     borderRadius:
@@ -101,7 +100,9 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const WoundSelectForm()),
+                                builder: (context) => WoundSelectForm(
+                                      perusalId: widget.perusal.id,
+                                    )),
                           );
                         },
                         child: ListTile(
@@ -122,8 +123,9 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    WoundSelectForm()), // Navigate to the wound form page
+                builder: (context) => WoundSelectForm(
+                      perusalId: widget.perusal.id,
+                    )),
           );
         },
         backgroundColor: primaryColor,
