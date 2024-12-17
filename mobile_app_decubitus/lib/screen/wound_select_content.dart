@@ -61,7 +61,6 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
 
             final woundGroups = snapshot.data!;
 
-            // Display categorized wound groups with details
             return ListView.builder(
               itemCount: woundGroups.length,
               itemBuilder: (context, index) {
@@ -86,13 +85,10 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
                           fontWeight: FontWeight.bold,
                           fontSize: 18), // Increased font size for area title
                     ),
-                    childrenPadding: const EdgeInsets.symmetric(
-                        vertical: 8.0), // Add padding for child items
-                    children: group.wounds.asMap().entries.map((entry) {
-                      int woundIndex = entry.key + 1; // Start numbering from 1
-                      Wound wound = entry.value;
+                    childrenPadding: const EdgeInsets.symmetric(vertical: 8.0),
+                    children: group.wounds.map((wound) {
                       String woundLabel =
-                          'แผล $woundIndex'; // Format the wound label
+                          'แผล ${wound.count}'; // Use count from each Wound instance directly
                       String status = 'Status: ${wound.status}';
 
                       return GestureDetector(
@@ -132,7 +128,7 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
         foregroundColor: Colors.white,
         elevation: 0.0,
         tooltip: 'Add Wound',
-        child: const Icon(Icons.add), // Icon for the FAB
+        child: const Icon(Icons.add),
       ),
     );
   }

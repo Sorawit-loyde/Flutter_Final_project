@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import '../config/config.dart';
 import 'auth_service.dart';
+
 class UserService {
   var logger = Logger();
 
@@ -15,8 +16,10 @@ class UserService {
       final id = prefs.getString('Uid');
       final response = await http.get(
         Uri.parse('${Custom_Config.BASE_URL}/users/profile/$id'),
-        headers: {'Content-Type': 'application/json',
-        'Authorization':"Bearer ${await AuthService().getAccessToken()}"},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer ${await AuthService().getAccessToken()}"
+        },
       );
       logger.t(response.body);
       logger.t(response.statusCode);

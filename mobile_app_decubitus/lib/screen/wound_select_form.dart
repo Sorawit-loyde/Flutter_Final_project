@@ -6,13 +6,12 @@ import 'package:dropdown_button2/dropdown_button2.dart'; // Import DropdownButto
 import 'package:mobile_app_decubitus/models/wound_model.dart'; // Import your wound model
 import 'package:mobile_app_decubitus/services/wound_service.dart'; // Import your wound service
 import 'package:mobile_app_decubitus/config/config.dart';
-import 'package:mobile_app_decubitus/models/user_model.dart';
 
 class WoundSelectForm extends StatefulWidget {
   final int perusalId; // Add perusal ID as a parameter
+  final WoundService _woundService = WoundService(Custom_Config.BASE_URL);
 
-  const WoundSelectForm(
-      {super.key, required this.perusalId}); // Update constructor
+  WoundSelectForm({super.key, required this.perusalId}); // Update constructor
 
   @override
   _WoundSelectFormState createState() => _WoundSelectFormState();
@@ -21,30 +20,41 @@ class WoundSelectForm extends StatefulWidget {
 class _WoundSelectFormState extends State<WoundSelectForm> {
   final _formKey = GlobalKey<FormState>();
   DateTime? selectedDate;
-  String? selectedLocation;
-  String? selectedOldWound;
-  bool isNewWound = false;
-  XFile? imageFile;
-
+  String? selectedLocation; // Selected location from dropdown
+  String? selectedOldWound; // Selected old wound reference
+  bool isNewWound = false; // Flag for new or old wound
+  XFile? imageFile; // Image file for the wound
   final List<String> locations = ['หัว', 'แขน', 'หลัง', 'ขา', 'ก้น', 'เท้า'];
-
-  // This will hold the list of old wounds fetched from the backend
-  List<Wound> oldWoundsList = [];
+  List<Wound> oldWoundsList = []; // List to hold old wounds
+  int? userId; // User ID (changed to int for consistency)
 
   @override
   void initState() {
     super.initState();
-    // Fetch old wounds when the form initializes
-    _fetchOldWounds();
+    _fetchUserId(); // Fetch user ID on initialization
+  }
+
+  Future<void> _fetchUserId() async {
+    try {
+      userId = (await widget._woundService.getId()) as int?;
+      if (userId != null) {
+        print('Fetched User ID: $userId'); // Log the user ID
+        await _fetchOldWounds(); // Fetch old wounds after getting user ID
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching user ID: $e')),
+      );
+    }
   }
 
   Future<void> _fetchOldWounds() async {
     try {
-      WoundService service =
-          WoundService(Custom_Config.BASE_URL); // Your base URL
-      oldWoundsList = await service.fetchOldWounds(widget.perusalId,
-          "หัว"); // Replace "หัว" with the appropriate area if needed
-      setState(() {}); // Update UI after fetching data
+      if (userId != null && selectedLocation != null) {
+        oldWoundsList = await widget._woundService
+            .fetchOldWounds(userId!, selectedLocation!);
+        setState(() {});
+      }
     } catch (e) {
       print('Error fetching old wounds: $e');
     }
@@ -86,37 +96,47 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
         );
       },
     );
-
     if (pickedFile != null) {
       setState(() {
-        imageFile = pickedFile;
+        imageFile = pickedFile; // Set selected image file
       });
     }
   }
 
   void _submit() async {
     if (_formKey.currentState!.validate()) {
-      // Create a new Wound object using the perusalId passed from the previous page
+      int? woundCount;
+      if (!isNewWound && selectedOldWound != null) {
+        // Find the count of the selected old wound
+        final oldWound = oldWoundsList
+            .firstWhere((wound) => wound.id.toString() == selectedOldWound);
+        woundCount =
+            oldWound.count; // Get the count from the selected old wound
+      }
+
       Wound newWound = Wound(
         id: 0, // Set to a default value; backend will generate this ID
         perusalId: widget.perusalId, // Use the passed perusalId
         woundImage:
             imageFile?.path ?? '', // Ensure you handle image paths correctly
-        area: selectedLocation ?? '',
+        area: selectedLocation ?? '', // Area selected from dropdown
         status: 'รอตรวจ', // Default status or based on user input
         woundType:
             isNewWound ? "แผลใหม่" : "แผลเก่า", // Set based on user selection
         woundRef: selectedOldWound != null
             ? int.parse(selectedOldWound!)
-            : null, // Use null for no reference when creating a new wound.
+            : null, // Reference to an existing wound if applicable
+        count: woundCount ?? 0, // Include count; default to 0 if not applicable
       );
 
       print('Submitting Wound: ${newWound.toJson()}'); // Debug print
 
       try {
-        await WoundService(Custom_Config.BASE_URL).createWound(newWound);
+        await widget._woundService
+            .createWound(newWound); // Submit new wound to API
         print('Wound submitted successfully');
-        // Optionally, navigate back or show success message
+        Navigator.pop(
+            context); // Optionally navigate back or show success message
       } catch (e) {
         print('Error submitting wound: $e');
       }
@@ -127,7 +147,7 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wound Information'),
+        title: const Text('ข้อมูลแผล'),
         backgroundColor: backGroundColor1,
       ),
       body: Container(
@@ -193,6 +213,7 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
                   onChanged: (value) {
                     setState(() {
                       selectedLocation = value;
+                      _fetchOldWounds(); // Fetch old wounds when location is selected
                     });
                   },
                   isExpanded: true,
@@ -203,36 +224,30 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Checkbox(
+                    Row(children: [
+                      Checkbox(
                           value: isNewWound,
                           activeColor: primaryColor,
                           onChanged: (value) {
                             setState(() {
                               isNewWound = value!;
                             });
-                          },
-                        ),
-                        const Expanded(child: Text('ใช่, แผลในรูปเป็นแผลใหม่')),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Checkbox(
+                          }),
+                      const Expanded(child: Text('ใช่, แผลในรูปเป็นแผลใหม่')),
+                    ]),
+                    Row(children: [
+                      Checkbox(
                           value: !isNewWound,
                           activeColor: primaryColor,
                           onChanged: (value) {
                             setState(() {
                               isNewWound = !value!;
                             });
-                          },
-                        ),
-                        const Expanded(
-                            child: Text(
-                                'ไม่ใช่, แผลในรูปเป็นแผลที่เคยมีการบันทึกในแอปแล้ว')),
-                      ],
-                    ),
+                          }),
+                      const Expanded(
+                          child: Text(
+                              'ไม่ใช่, แผลในรูปเป็นแผลที่เคยมีการบันทึกในแอปแล้ว')),
+                    ]),
                   ],
                 ),
                 if (!isNewWound) ...[
@@ -253,10 +268,9 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
                           borderSide: BorderSide(color: primaryColor)),
                     ),
                     items: oldWoundsList.map((wound) {
-                      // Use fetched list of old wounds here
                       return DropdownMenuItem<String>(
-                        value: wound.id.toString(), // Use the wound ID as value
-                        child: Text('แผล ID ${wound.id}',
+                        value: wound.id.toString(),
+                        child: Text('แผล ${wound.count}',
                             style: const TextStyle(fontSize: 16)),
                       );
                     }).toList(),

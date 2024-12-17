@@ -8,6 +8,7 @@ class Wound {
   final String status; // Status of the wound
   final String woundType; // Type of wound (new or old)
   final int? woundRef; // Reference ID for old wounds (nullable)
+  final int count; // Count of this specific wound
 
   Wound({
     required this.id,
@@ -17,6 +18,7 @@ class Wound {
     required this.status,
     required this.woundType,
     this.woundRef, // Allow null for reference ID
+    required this.count, // Initialize count
   });
 
   Map<String, dynamic> toJson() {
@@ -27,6 +29,7 @@ class Wound {
       'status': status,
       'wound_type': woundType,
       'wound_ref': woundRef,
+      'count': count, // Include count in JSON representation
     };
   }
 
@@ -39,6 +42,8 @@ class Wound {
       status: json['status'] ?? '', // Default to empty string if null
       woundType: json['wound_type'] ?? '', // Default to empty string if null
       woundRef: json['wound_ref'], // Allow null for reference ID
+      count: json['count'] ??
+          0, // Capture count from response, default to 0 if null
     );
   }
 }
@@ -63,7 +68,7 @@ class WoundGroup {
     return WoundGroup(
       area: json['area'],
       wounds: woundsList,
-      count: json['count'],
+      count: json['count'], // Ensure count is captured
       statusBreakdown: Map<String, int>.from(json['statusBreakdown']),
     );
   }

@@ -99,7 +99,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
           CircleAvatar(
             radius: 44,
             backgroundImage: user.profileImage.isNotEmpty
-                ? NetworkImage('${Custom_Config.Image_URL}/${user.profileImage}')
+                ? NetworkImage(
+                    '${Custom_Config.Image_URL}/${user.profileImage}')
                 : const NetworkImage(
                     '${Custom_Config.Image_URL}/static/profile.jpg'), // Fallback image if no profile image is provided
           ),

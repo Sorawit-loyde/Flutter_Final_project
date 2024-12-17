@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app_decubitus/models/wound_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:logger/logger.dart';
 
 class WoundService {
   final String baseUrl;
+  var logger = Logger();
 
   WoundService(this.baseUrl);
 
@@ -47,6 +50,8 @@ class WoundService {
 
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = json.decode(response.body);
+
+      // Return a list of WoundGroup objects
       return jsonResponse.map((json) => WoundGroup.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load grouped wounds');
@@ -76,5 +81,14 @@ class WoundService {
       print("Error uploading image: $e");
       return null;
     }
+  }
+
+  Future<int?> getId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = prefs.getString('Uid'); // Retrieve the user ID as a String
+
+    logger.t(id); // Log the retrieved ID
+
+    return id != null ? int.tryParse(id) : null;
   }
 }
