@@ -6,6 +6,7 @@ import 'package:dropdown_button2/dropdown_button2.dart'; // Import DropdownButto
 import 'package:mobile_app_decubitus/models/wound_model.dart'; // Import your wound model
 import 'package:mobile_app_decubitus/services/wound_service.dart'; // Import your wound service
 import 'package:mobile_app_decubitus/config/config.dart';
+import 'package:mobile_app_decubitus/screen/model_result_page.dart';
 
 class WoundSelectForm extends StatefulWidget {
   final int perusalId; // Add perusal ID as a parameter
@@ -36,7 +37,7 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
 
   Future<void> _fetchUserId() async {
     try {
-      userId = (await widget._woundService.getId()) as int?;
+      userId = (await widget._woundService.getId());
       if (userId != null) {
         print('Fetched User ID: $userId'); // Log the user ID
         await _fetchOldWounds(); // Fetch old wounds after getting user ID
@@ -106,39 +107,77 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       int? woundCount;
-      if (!isNewWound && selectedOldWound != null) {
-        // Find the count of the selected old wound
-        final oldWound = oldWoundsList
-            .firstWhere((wound) => wound.id.toString() == selectedOldWound);
-        woundCount =
-            oldWound.count; // Get the count from the selected old wound
+      int? woundRef;
+      String? uploadedImagePath;
+
+      if (imageFile != null) {
+        // Upload the image using the service
+        try {
+          uploadedImagePath =
+              await widget._woundService.uploadImageFromPath(imageFile!.path);
+          if (uploadedImagePath == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Failed to upload image.')),
+            );
+            return; // Stop submission if image upload fails
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error uploading image: $e')),
+          );
+          return; // Stop submission if an error occurs
+        }
+      }
+
+      if (!isNewWound) {
+        if (selectedOldWound != null) {
+          // Find the selected old wound
+          final selectedWound = oldWoundsList.firstWhere(
+            (wound) => wound.id.toString() == selectedOldWound,
+          );
+
+          // Use the root wound reference if available, otherwise the selected ID
+          woundRef = selectedWound.woundRef ?? selectedWound.id;
+          woundCount =
+              selectedWound.count; // Use the count of the selected wound
+        } else if (oldWoundsList.isNotEmpty) {
+          // Default to the root wound of the first wound in the list
+          final firstWound = oldWoundsList.first;
+          woundRef = firstWound.woundRef ?? firstWound.id;
+        }
       }
 
       Wound newWound = Wound(
-        id: 0, // Set to a default value; backend will generate this ID
-        perusalId: widget.perusalId, // Use the passed perusalId
-        woundImage:
-            imageFile?.path ?? '', // Ensure you handle image paths correctly
-        area: selectedLocation ?? '', // Area selected from dropdown
-        status: 'รอตรวจ', // Default status or based on user input
-        woundType:
-            isNewWound ? "แผลใหม่" : "แผลเก่า", // Set based on user selection
-        woundRef: selectedOldWound != null
-            ? int.parse(selectedOldWound!)
-            : null, // Reference to an existing wound if applicable
-        count: woundCount ?? 0, // Include count; default to 0 if not applicable
+        id: 0, // Default; backend will generate the actual ID
+        perusalId: widget.perusalId, // Current perusal ID
+        woundImage: uploadedImagePath ?? '', // Path to uploaded image
+        area: selectedLocation ?? '', // Selected location
+        status: 'รอตรวจ', // Default status
+        woundType: isNewWound ? "แผลใหม่" : "แผลเก่า", // New or old wound
+        woundRef: isNewWound ? null : woundRef, // Root wound reference or null
+        count: woundCount ?? 0, // Default count to 0 if not applicable
       );
 
-      print('Submitting Wound: ${newWound.toJson()}'); // Debug print
+      print(
+          'Submitting Wound: ${newWound.toJson()}'); // Debug log for submission
 
       try {
         await widget._woundService
-            .createWound(newWound); // Submit new wound to API
+            .createWound(newWound); // Send data to backend
         print('Wound submitted successfully');
-        Navigator.pop(
-            context); // Optionally navigate back or show success message
+
+        // After submitting, navigate to ModelResultScreen and pass woundId (use `newWound.id` once the backend assigns it)
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ModelResultScreen(woundId: newWound.id), // Pass woundId
+          ),
+        );
       } catch (e) {
-        print('Error submitting wound: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error submitting wound: $e')),
+        );
       }
     }
   }
@@ -176,12 +215,12 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
                       borderRadius: BorderRadius.circular(12),
                       child: imageFile != null
                           ? Image.file(File(imageFile!.path), fit: BoxFit.cover)
-                          : Column(
+                          : const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.camera_alt, size: 50),
-                                const SizedBox(height: 10),
-                                const Text(
+                                SizedBox(height: 10),
+                                Text(
                                     'กดเพื่อถ่ายรูปแผลหรืออัปโหลดรูปจากเครื่อง',
                                     style: TextStyle(fontSize: 16)),
                               ],
@@ -199,7 +238,7 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
                     fillColor: backGroundColor1,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(color: tertiaryColor)),
+                        borderSide: const BorderSide(color: tertiaryColor)),
                   ),
                   hint: Text('เลือกตำแหน่งแผล',
                       style: TextStyle(color: Colors.grey[600])),
@@ -259,12 +298,12 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: backGroundColor1,
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       hintText: 'เลือกแผล',
                       hintStyle: TextStyle(color: Colors.grey[600]),
-                      enabledBorder: OutlineInputBorder(
+                      enabledBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: tertiaryColor)),
-                      focusedBorder: OutlineInputBorder(
+                      focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: primaryColor)),
                     ),
                     items: oldWoundsList.map((wound) {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/services/perusal_service.dart';
 import 'package:mobile_app_decubitus/models/perusal_model.dart';
-import 'package:intl/intl.dart'; // For date formatting
-import 'wound_select_content.dart'; // Import your wound selection page
+import 'package:intl/intl.dart';
+import 'wound_select_content.dart';
 
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
@@ -16,12 +16,12 @@ class _HomeContentState extends State<HomeContent> {
   String _searchQuery = '';
   List<Perusal> _allPerusals = [];
   List<Perusal> _filteredPerusals = [];
-  bool _showFab = true; // Control FAB visibility
+  bool _showFab = true;
 
   @override
   void initState() {
     super.initState();
-    fetchPerusals(); // Load perusals on initialization
+    fetchPerusals();
   }
 
   Future<List<Perusal>> fetchPerusals() async {
@@ -39,7 +39,7 @@ class _HomeContentState extends State<HomeContent> {
           _filteredPerusals = _allPerusals;
         });
       } catch (e) {
-        print(e); // Handle error appropriately
+        print(e);
       }
     }
   }
@@ -66,7 +66,7 @@ class _HomeContentState extends State<HomeContent> {
             );
           },
         ) ??
-        false; // Default to false if dialog is dismissed
+        false;
   }
 
   String formatPerusalDate(DateTime date, int index) {
@@ -108,17 +108,17 @@ class _HomeContentState extends State<HomeContent> {
               onPressed: () async {
                 try {
                   await PerusalService().addPerusal(today);
-                  Navigator.pop(context); // Close the dialog
-                  fetchUpdatedPerusals(); // Refresh the list after adding
+                  Navigator.pop(context);
+                  fetchUpdatedPerusals();
                 } catch (e) {
-                  print(e); // Handle error appropriately
+                  print(e);
                 }
               },
               child:
                   const Text('ยืนยัน', style: TextStyle(color: primaryColor)),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context), // Close without saving
+              onPressed: () => Navigator.pop(context),
               child:
                   const Text('ยกเลิก', style: TextStyle(color: primaryColor)),
             ),
@@ -175,7 +175,7 @@ class _HomeContentState extends State<HomeContent> {
                       } else if (snapshot.hasError) {
                         return Center(
                             child:
-                                Text('Error fetching data:${snapshot.error}'));
+                                Text('Error fetching data: ${snapshot.error}'));
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         return const Center(
                             child:
@@ -194,7 +194,7 @@ class _HomeContentState extends State<HomeContent> {
                             return GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  _showFab = false; // Hide FAB when navigating
+                                  _showFab = false;
                                 });
                                 Navigator.pushReplacement(
                                   context,
@@ -211,30 +211,31 @@ class _HomeContentState extends State<HomeContent> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8)),
                                 child: ListTile(
-                                    contentPadding:
-                                        const EdgeInsets.fromLTRB(10, 4, 10, 4),
-                                    title: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                                formatPerusalDate(
-                                                    perusal.perusalDate,
-                                                    index + 1),
-                                                style: const TextStyle(
-                                                    fontSize: 16,
-                                                    color: Colors.black)),
-                                          ),
-                                          IconButton(
-                                            icon: const Icon(Icons.close,
-                                                color: primaryColor),
-                                            onPressed: () {
-                                              deletePerusal(perusal
-                                                  .id); // Call delete method
-                                            },
-                                          )
-                                        ])),
+                                  contentPadding:
+                                      const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                  title: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          formatPerusalDate(
+                                              perusal.perusalDate, index + 1),
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.close,
+                                            color: primaryColor),
+                                        onPressed: () {
+                                          deletePerusal(perusal.id);
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                ),
                               ),
                             );
                           },
@@ -251,7 +252,7 @@ class _HomeContentState extends State<HomeContent> {
       floatingActionButton: (_showFab
           ? FloatingActionButton(
               onPressed: () {
-                _showAddPerusalDialog(); // Show dialog when pressed
+                _showAddPerusalDialog();
               },
               backgroundColor: primaryColor,
               foregroundColor: Colors.white,
@@ -261,7 +262,6 @@ class _HomeContentState extends State<HomeContent> {
               child: const Icon(Icons.add, size: 25.0),
             )
           : null),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

@@ -68,7 +68,7 @@ class WoundGroup {
     return WoundGroup(
       area: json['area'],
       wounds: woundsList,
-      count: json['count'], // Ensure count is captured
+      count: json['count'],
       statusBreakdown: Map<String, int>.from(json['statusBreakdown']),
     );
   }
