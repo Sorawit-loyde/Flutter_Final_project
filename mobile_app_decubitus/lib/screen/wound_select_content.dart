@@ -80,8 +80,35 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
                       ),
                     ),
                     childrenPadding: const EdgeInsets.symmetric(vertical: 8.0),
+// Update this inside WoundSelectPage widget, within the ListView.builder
                     children: group.wounds.map((wound) {
-                      return GestureDetector(
+                      return ListTile(
+                        title: Text('แผล ${wound.count}'),
+                        subtitle: Text('Status: ${wound.status}'),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () async {
+                            // Show the confirmation dialog
+                            bool shouldDelete =
+                                await _showDeleteConfirmationDialog(context);
+                            if (shouldDelete) {
+                              try {
+                                await WoundService(Custom_Config.BASE_URL)
+                                    .deleteWound(wound.id);
+                                setState(() {
+                                  // Update the list by removing the deleted wound
+                                  group.wounds.remove(wound);
+                                });
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content:
+                                          Text('Failed to delete wound: $e')),
+                                );
+                              }
+                            }
+                          },
+                        ),
                         onTap: () {
                           // Pass the woundId to the ModelResultScreen
                           Navigator.pushReplacement(
@@ -93,10 +120,6 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
                             ),
                           );
                         },
-                        child: ListTile(
-                          title: Text('แผล ${wound.count}'),
-                          subtitle: Text('Status: ${wound.status}'),
-                        ),
                       );
                     }).toList(),
                   ),
@@ -124,5 +147,35 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  Future<bool> _showDeleteConfirmationDialog(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false, // User must press one of the buttons
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('ยืนยันการลบ'),
+              content: const Text('คุณแน่ใจหรือว่าต้องการลบรายการแผลนี้'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true); // User presses cancel
+                  },
+                  child: const Text('ยืนยัน',
+                      style: TextStyle(color: primaryColor)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false); // User presses confirm
+                  },
+                  child: const Text('ยกเลิก',
+                      style: TextStyle(color: primaryColor)),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false; // Default to false if dialog is dismissed outside of the buttons
   }
 }

@@ -50,7 +50,7 @@ class _HomeContentState extends State<HomeContent> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('ยืนยันการลบ'),
-              content: const Text('คุณแน่ใจหรือว่าต้องการลบรายการนี้?'),
+              content: const Text('คุณแน่ใจหรือว่าต้องการลบรายการตรวจครั้งนี้'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(true),
@@ -227,8 +227,8 @@ class _HomeContentState extends State<HomeContent> {
                                         ),
                                       ),
                                       IconButton(
-                                        icon: const Icon(Icons.close,
-                                            color: primaryColor),
+                                        icon: const Icon(Icons.delete,
+                                            color: Colors.red),
                                         onPressed: () {
                                           deletePerusal(perusal.id);
                                         },

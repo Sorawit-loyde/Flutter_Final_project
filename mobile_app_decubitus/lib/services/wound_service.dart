@@ -90,4 +90,16 @@ class WoundService {
 
     return id != null ? int.tryParse(id) : null;
   }
+
+  Future<void> deleteWound(int woundId) async {
+    final url = '$baseUrl/wound/$woundId'; // API endpoint to delete a wound
+    final response = await http.delete(Uri.parse(url));
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      // Successfully deleted the wound
+      print("Wound with ID $woundId deleted successfully.");
+    } else {
+      throw Exception('Failed to delete wound: ${response.body}');
+    }
+  }
 }
