@@ -1,5 +1,3 @@
-// wound_model.dart
-
 class Wound {
   final int id; // Wound ID
   final int perusalId; // Foreign key from Perusal

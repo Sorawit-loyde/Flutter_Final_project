@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/services/diagnosis_service.dart';
 import 'package:mobile_app_decubitus/models/diagnosis_model.dart';
+import 'package:mobile_app_decubitus/config/config.dart';
 
 class ModelResultScreen extends StatefulWidget {
   final int woundId; // Accept woundId as a parameter
@@ -110,7 +111,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'รูปแผลกดทับ:',
           style: TextStyle(
             fontSize: 20,
@@ -128,9 +129,12 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              imagePath,
+            child: Image.network(
+              '${Custom_Config.BASE_URL}/uploads/$imagePath',
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(child: Text('Image not available'));
+              },
             ),
           ),
         ),

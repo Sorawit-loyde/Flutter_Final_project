@@ -7,11 +7,22 @@ class DiagnosisService {
   final String baseUrl = '${Custom_Config.BASE_URL}/diagnosis/wound/';
 
   Future<DiagnosisModel> fetchDiagnosis(int woundId) async {
-    final response = await http.get(Uri.parse('$baseUrl$woundId'));
+    final url = Uri.parse('$baseUrl$woundId');
+    print('Fetching diagnosis data from: $url');
 
-    if (response.statusCode == 200) {
-      return DiagnosisModel.fromJson(json.decode(response.body)[0]);
-    } else {
+    try {
+      final response = await http.get(url);
+      print('Response status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return DiagnosisModel.fromJson(json.decode(response.body));
+      } else {
+        throw Exception(
+            'Failed to load diagnosis data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
       throw Exception('Failed to load diagnosis data');
     }
   }

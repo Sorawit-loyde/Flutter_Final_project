@@ -22,18 +22,17 @@ class WoundService {
     }
   }
 
-  Future<void> createWound(Wound wound) async {
-    final url = '$baseUrl/wound/create'; // Replace with your actual endpoint
+  Future<int?> createWound(Wound wound) async {
+    final url = '$baseUrl/wound/create'; // Endpoint for creating a wound
     final response = await http.post(
       Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: json.encode(wound.toJson()),
     );
 
-    if (response.statusCode == 201) {
-      print('Wound created successfully');
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      return jsonResponse['wound']?['id']; // Return the wound ID
     } else {
       throw Exception('Failed to create wound: ${response.body}');
     }

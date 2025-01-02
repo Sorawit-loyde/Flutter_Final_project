@@ -6,6 +6,7 @@ class DiagnosisModel {
   final int state;
   final String description;
   final List<Treatment> treat;
+  final String woundImage;
 
   DiagnosisModel({
     required this.id,
@@ -15,6 +16,7 @@ class DiagnosisModel {
     required this.state,
     required this.description,
     required this.treat,
+    required this.woundImage,
   });
 
   factory DiagnosisModel.fromJson(Map<String, dynamic> json) {
@@ -30,6 +32,7 @@ class DiagnosisModel {
       state: json['state'],
       description: json['description'],
       treat: treat,
+      woundImage: json['wound_image'],
     );
   }
 }

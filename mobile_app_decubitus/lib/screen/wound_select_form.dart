@@ -106,12 +106,11 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
 
   void _submit() async {
     if (_formKey.currentState!.validate()) {
-      int? woundCount;
       int? woundRef;
       String? uploadedImagePath;
 
+      // Upload the image
       if (imageFile != null) {
-        // Upload the image using the service
         try {
           uploadedImagePath =
               await widget._woundService.uploadImageFromPath(imageFile!.path);
@@ -119,61 +118,49 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Failed to upload image.')),
             );
-            return; // Stop submission if image upload fails
+            return;
           }
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error uploading image: $e')),
           );
-          return; // Stop submission if an error occurs
+          return;
         }
       }
 
-      if (!isNewWound) {
-        if (selectedOldWound != null) {
-          // Find the selected old wound
-          final selectedWound = oldWoundsList.firstWhere(
-            (wound) => wound.id.toString() == selectedOldWound,
-          );
-
-          // Use the root wound reference if available, otherwise the selected ID
-          woundRef = selectedWound.woundRef ?? selectedWound.id;
-          woundCount =
-              selectedWound.count; // Use the count of the selected wound
-        } else if (oldWoundsList.isNotEmpty) {
-          // Default to the root wound of the first wound in the list
-          final firstWound = oldWoundsList.first;
-          woundRef = firstWound.woundRef ?? firstWound.id;
-        }
+      // Handle old wound reference
+      if (!isNewWound && selectedOldWound != null) {
+        final selectedWound = oldWoundsList.firstWhere(
+          (wound) => wound.id.toString() == selectedOldWound,
+        );
+        woundRef = selectedWound.woundRef ?? selectedWound.id;
       }
 
+      // Create new wound object
       Wound newWound = Wound(
-        id: 0, // Default; backend will generate the actual ID
-        perusalId: widget.perusalId, // Current perusal ID
-        woundImage: uploadedImagePath ?? '', // Path to uploaded image
-        area: selectedLocation ?? '', // Selected location
-        status: 'รอตรวจ', // Default status
-        woundType: isNewWound ? "แผลใหม่" : "แผลเก่า", // New or old wound
-        woundRef: isNewWound ? null : woundRef, // Root wound reference or null
-        count: woundCount ?? 0, // Default count to 0 if not applicable
+        id: 0,
+        perusalId: widget.perusalId,
+        woundImage: uploadedImagePath ?? '',
+        area: selectedLocation ?? '',
+        status: 'รอตรวจ',
+        woundType: isNewWound ? "แผลใหม่" : "แผลเก่า",
+        woundRef: isNewWound ? null : woundRef,
+        count: 0,
       );
 
-      print(
-          'Submitting Wound: ${newWound.toJson()}'); // Debug log for submission
-
       try {
-        await widget._woundService
-            .createWound(newWound); // Send data to backend
-        print('Wound submitted successfully');
-
-        // After submitting, navigate to ModelResultScreen and pass woundId (use `newWound.id` once the backend assigns it)
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                ModelResultScreen(woundId: newWound.id), // Pass woundId
-          ),
-        );
+        final woundId = await widget._woundService.createWound(newWound);
+        if (woundId != null) {
+          // Navigate to the ModelResultScreen with the wound ID
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ModelResultScreen(woundId: woundId),
+            ),
+          );
+        } else {
+          throw Exception('Failed to retrieve wound ID.');
+        }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error submitting wound: $e')),
