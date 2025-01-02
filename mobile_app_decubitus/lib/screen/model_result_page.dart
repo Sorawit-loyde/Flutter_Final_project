@@ -3,6 +3,7 @@ import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/services/diagnosis_service.dart';
 import 'package:mobile_app_decubitus/models/diagnosis_model.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
+import 'package:intl/intl.dart';
 
 class ModelResultScreen extends StatefulWidget {
   final int woundId; // Accept woundId as a parameter
@@ -72,6 +73,12 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
   }
 
   Widget _buildDateSection(String date) {
+    // Parse the date string into a DateTime object
+    DateTime dateTime = DateTime.parse(date);
+
+    // Format the date in dd/mm/yyyy format
+    String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -94,7 +101,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              date,
+              formattedDate, // Display formatted date
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.normal,
@@ -130,7 +137,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.network(
-              '${Custom_Config.BASE_URL}/uploads/$imagePath',
+              '${Custom_Config.BASE_URL}/$imagePath', // Combine BASE_URL and image path
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return const Center(child: Text('Image not available'));
