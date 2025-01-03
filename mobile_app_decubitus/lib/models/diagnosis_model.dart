@@ -1,4 +1,4 @@
-class DiagnosisModel {
+class Diagnosis {
   final int id;
   final String createdAt;
   final String updatedAt;
@@ -7,8 +7,9 @@ class DiagnosisModel {
   final String description;
   final List<Treatment> treat;
   final String woundImage;
+  final int perusalId; // Add perusalId
 
-  DiagnosisModel({
+  Diagnosis({
     required this.id,
     required this.createdAt,
     required this.updatedAt,
@@ -17,14 +18,15 @@ class DiagnosisModel {
     required this.description,
     required this.treat,
     required this.woundImage,
+    required this.perusalId, // Initialize perusalId
   });
 
-  factory DiagnosisModel.fromJson(Map<String, dynamic> json) {
+  factory Diagnosis.fromJson(Map<String, dynamic> json) {
     var treatList = json['treat'] as List;
     List<Treatment> treat =
         treatList.map((i) => Treatment.fromJson(i)).toList();
 
-    return DiagnosisModel(
+    return Diagnosis(
       id: json['id'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
@@ -33,6 +35,7 @@ class DiagnosisModel {
       description: json['description'],
       treat: treat,
       woundImage: json['wound_image'],
+      perusalId: json['persual_id'], // Map perusalId from JSON
     );
   }
 }

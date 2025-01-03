@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
-import 'package:mobile_app_decubitus/services/diagnosis_service.dart';
 import 'package:mobile_app_decubitus/models/diagnosis_model.dart';
+import 'package:mobile_app_decubitus/services/diagnosis_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
+import 'package:mobile_app_decubitus/screen/wound_select_content.dart';
 import 'package:intl/intl.dart';
 
 class ModelResultScreen extends StatefulWidget {
-  final int woundId; // Accept woundId as a parameter
+  final int woundId;
 
-  const ModelResultScreen(
-      {super.key, required this.woundId}); // Constructor to accept woundId
+  const ModelResultScreen({super.key, required this.woundId});
 
   @override
   _ModelResultScreenState createState() => _ModelResultScreenState();
 }
 
 class _ModelResultScreenState extends State<ModelResultScreen> {
-  late Future<DiagnosisModel> diagnosis;
+  late Future<Diagnosis> diagnosis;
 
   @override
   void initState() {
     super.initState();
-    diagnosis =
-        DiagnosisService().fetchDiagnosis(widget.woundId); // Use widget.woundId
+    diagnosis = DiagnosisService().fetchDiagnosis(widget.woundId);
   }
 
   @override
@@ -36,15 +35,23 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context);
+            diagnosis.then((data) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      WoundSelectPage(perusalId: data.perusalId),
+                ),
+              );
+            });
           },
         ),
       ),
-      body: FutureBuilder<DiagnosisModel>(
+      body: FutureBuilder<Diagnosis>(
         future: diagnosis,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
@@ -65,7 +72,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
               ),
             );
           } else {
-            return Center(child: Text('No data available'));
+            return const Center(child: Text('No data available'));
           }
         },
       ),
@@ -73,10 +80,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
   }
 
   Widget _buildDateSection(String date) {
-    // Parse the date string into a DateTime object
     DateTime dateTime = DateTime.parse(date);
-
-    // Format the date in dd/mm/yyyy format
     String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
 
     return Column(
@@ -101,7 +105,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              formattedDate, // Display formatted date
+              formattedDate,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.normal,
@@ -137,7 +141,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.network(
-              '${Custom_Config.BASE_URL}/$imagePath', // Combine BASE_URL and image path
+              '${Custom_Config.BASE_URL}/$imagePath',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return const Center(child: Text('Image not available'));
@@ -153,7 +157,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'แผลระดับ: ',
           style: TextStyle(
             fontSize: 20,
@@ -178,7 +182,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'แนวทางการรักษาเบื้องต้น:',
           style: TextStyle(
             fontSize: 20,
@@ -201,7 +205,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
         Expanded(
           child: Text(
             step,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               color: primaryColor,
             ),

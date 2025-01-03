@@ -6,7 +6,7 @@ import 'package:mobile_app_decubitus/config/config.dart';
 class DiagnosisService {
   final String baseUrl = '${Custom_Config.BASE_URL}/diagnosis/wound/';
 
-  Future<DiagnosisModel> fetchDiagnosis(int woundId) async {
+  Future<Diagnosis> fetchDiagnosis(int woundId) async {
     final url = Uri.parse('$baseUrl$woundId');
     print('Fetching diagnosis data from: $url');
 
@@ -16,7 +16,7 @@ class DiagnosisService {
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        return DiagnosisModel.fromJson(json.decode(response.body));
+        return Diagnosis.fromJson(json.decode(response.body));
       } else {
         throw Exception(
             'Failed to load diagnosis data. Status code: ${response.statusCode}');

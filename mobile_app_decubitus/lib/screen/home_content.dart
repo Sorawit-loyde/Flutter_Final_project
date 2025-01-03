@@ -200,7 +200,7 @@ class _HomeContentState extends State<HomeContent> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        WoundSelectPage(perusal: perusal),
+                                        WoundSelectPage(perusalId: perusal.id),
                                   ),
                                 );
                               },

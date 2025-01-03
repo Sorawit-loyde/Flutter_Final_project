@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app_decubitus/models/perusal_model.dart';
 import 'package:mobile_app_decubitus/models/wound_model.dart';
 import 'package:mobile_app_decubitus/screen/home_content.dart';
 import 'package:mobile_app_decubitus/services/wound_service.dart';
@@ -9,8 +8,9 @@ import 'package:mobile_app_decubitus/screen/wound_select_form.dart';
 import 'package:mobile_app_decubitus/screen/model_result_page.dart';
 
 class WoundSelectPage extends StatefulWidget {
-  final Perusal perusal;
-  const WoundSelectPage({super.key, required this.perusal});
+  final int perusalId;
+
+  const WoundSelectPage({super.key, required this.perusalId});
 
   @override
   _WoundSelectPageState createState() => _WoundSelectPageState();
@@ -23,7 +23,7 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
   void initState() {
     super.initState();
     futureWounds = WoundService(Custom_Config.BASE_URL)
-        .fetchGroupedWounds(widget.perusal.id);
+        .fetchGroupedWounds(widget.perusalId);
   }
 
   @override
@@ -80,7 +80,6 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
                       ),
                     ),
                     childrenPadding: const EdgeInsets.symmetric(vertical: 8.0),
-// Update this inside WoundSelectPage widget, within the ListView.builder
                     children: group.wounds.map((wound) {
                       return ListTile(
                         title: Text('แผล ${wound.count}'),
@@ -88,7 +87,6 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
                         trailing: IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () async {
-                            // Show the confirmation dialog
                             bool shouldDelete =
                                 await _showDeleteConfirmationDialog(context);
                             if (shouldDelete) {
@@ -96,7 +94,6 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
                                 await WoundService(Custom_Config.BASE_URL)
                                     .deleteWound(wound.id);
                                 setState(() {
-                                  // Update the list by removing the deleted wound
                                   group.wounds.remove(wound);
                                 });
                               } catch (e) {
@@ -110,12 +107,11 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
                           },
                         ),
                         onTap: () {
-                          // Pass the woundId to the ModelResultScreen
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ModelResultScreen(
-                                woundId: wound.id, // Pass woundId here
+                                woundId: wound.id,
                               ),
                             ),
                           );
@@ -134,9 +130,8 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => WoundSelectForm(
-                perusalId: widget.perusal.id,
-              ),
+              builder: (context) =>
+                  WoundSelectForm(perusalId: widget.perusalId),
             ),
           );
         },
@@ -152,7 +147,7 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
   Future<bool> _showDeleteConfirmationDialog(BuildContext context) async {
     return await showDialog<bool>(
           context: context,
-          barrierDismissible: false, // User must press one of the buttons
+          barrierDismissible: false,
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('ยืนยันการลบ'),
@@ -160,14 +155,14 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(true); // User presses cancel
+                    Navigator.of(context).pop(true);
                   },
                   child: const Text('ยืนยัน',
                       style: TextStyle(color: primaryColor)),
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(false); // User presses confirm
+                    Navigator.of(context).pop(false);
                   },
                   child: const Text('ยกเลิก',
                       style: TextStyle(color: primaryColor)),
@@ -176,6 +171,6 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
             );
           },
         ) ??
-        false; // Default to false if dialog is dismissed outside of the buttons
+        false;
   }
 }
