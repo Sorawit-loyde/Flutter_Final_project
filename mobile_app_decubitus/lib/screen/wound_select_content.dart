@@ -83,7 +83,14 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
                     children: group.wounds.map((wound) {
                       return ListTile(
                         title: Text('แผล ${wound.count}'),
-                        subtitle: Text('Status: ${wound.status}'),
+                        subtitle: Text(
+                          'Status: ${wound.status}',
+                          style: TextStyle(
+                            color: wound.status == 'ตรวจแล้ว'
+                                ? primaryColor
+                                : const Color(0xFFE87001),
+                          ),
+                        ),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () async {

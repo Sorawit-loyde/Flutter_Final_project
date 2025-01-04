@@ -97,10 +97,37 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
         );
       },
     );
+
     if (pickedFile != null) {
       setState(() {
         imageFile = pickedFile; // Set selected image file
       });
+    }
+  }
+
+// Widget to display the selected image with BoxFit.contain
+  Widget _buildImagePreview() {
+    if (imageFile != null) {
+      return Container(
+        width: double.infinity,
+        height: 200, // Adjust the height as needed
+        decoration: BoxDecoration(
+          border: Border.all(color: primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.file(
+            File(imageFile!.path),
+            fit: BoxFit.contain, // Ensures the image fits within the box
+            errorBuilder: (context, error, stackTrace) {
+              return const Center(child: Text('Image not available'));
+            },
+          ),
+        ),
+      );
+    } else {
+      return const SizedBox.shrink(); // Or some placeholder
     }
   }
 
@@ -201,7 +228,8 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: imageFile != null
-                          ? Image.file(File(imageFile!.path), fit: BoxFit.cover)
+                          ? Image.file(File(imageFile!.path),
+                              fit: BoxFit.contain)
                           : const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [

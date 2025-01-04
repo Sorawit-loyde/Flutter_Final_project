@@ -63,7 +63,8 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
                 children: [
                   _buildDateSection(data.createdAt),
                   const SizedBox(height: 20),
-                  _buildImageSection('assets/images/decubitus_flower.png'),
+                  _buildImageSection(
+                      data.woundImage), // Pass the woundImage here
                   const SizedBox(height: 20),
                   _buildDescriptionSection(data.description),
                   const SizedBox(height: 20),
@@ -118,7 +119,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
     );
   }
 
-  Widget _buildImageSection(String imagePath) {
+  Widget _buildImageSection(String woundImage) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -133,7 +134,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
         const SizedBox(height: 10),
         Container(
           width: double.infinity,
-          height: 200,
+          height: 200, // Adjust the height as needed
           decoration: BoxDecoration(
             border: Border.all(color: primaryColor, width: 2),
             borderRadius: BorderRadius.circular(12),
@@ -141,8 +142,9 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.network(
-              '${Custom_Config.BASE_URL}/$imagePath',
-              fit: BoxFit.cover,
+              '${Custom_Config.Image_URL}/$woundImage',
+              fit: BoxFit
+                  .contain, // Ensures the entire image fits within the box
               errorBuilder: (context, error, stackTrace) {
                 return const Center(child: Text('Image not available'));
               },
