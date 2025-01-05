@@ -3,9 +3,9 @@ import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/config.dart';
+import 'package:mobile_app_decubitus/config/config.dart';
 import 'auth_service.dart';
+
 class UserProfileService {
   var logger = Logger();
 
@@ -14,9 +14,11 @@ class UserProfileService {
       final prefs = await SharedPreferences.getInstance();
       final id = prefs.getString('Uid'); // Retrieve user ID
       final response = await http.get(
-        Uri.parse('${Config.BASE_URL}/users/$id'),
-        headers: {'Content-Type': 'application/json',
-          'Authorization': "Bearer ${await AuthService().getAccessToken()}"},
+        Uri.parse('${Custom_Config.BASE_URL}/users/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer ${await AuthService().getAccessToken()}"
+        },
       );
       logger.t(response.body);
       logger.t(response.statusCode);
