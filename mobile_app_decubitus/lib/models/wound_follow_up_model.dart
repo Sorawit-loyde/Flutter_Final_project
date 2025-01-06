@@ -7,7 +7,7 @@ class FollowUp {
   final String area;
   final String status;
   final String type;
-  final String? reference;
+  final int? woundRef;
   final int count;
   final int perusalId;
 
@@ -20,7 +20,7 @@ class FollowUp {
     required this.area,
     required this.status,
     required this.type,
-    this.reference,
+    this.woundRef,
     required this.count,
     required this.perusalId,
   });
@@ -30,12 +30,12 @@ class FollowUp {
       id: json['id'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
-      deletedAt: json['deletedAt'],
+      deletedAt: json['deletedAt']?.toString(),
       imageUrl: json['wound_image'],
       area: json['area'],
       status: json['status'],
       type: json['wound_type'],
-      reference: json['wound_ref'],
+      woundRef: json['wound_ref'],
       count: json['count'],
       perusalId: json['perusal_id'],
     );
