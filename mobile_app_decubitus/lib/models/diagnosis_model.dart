@@ -7,7 +7,8 @@ class Diagnosis {
   final String description;
   final List<Treatment> treat;
   final String woundImage;
-  final int perusalId; // Add perusalId
+  final int perusalId;
+  final String woundStatus; // Add woundStatus
 
   Diagnosis({
     required this.id,
@@ -18,7 +19,8 @@ class Diagnosis {
     required this.description,
     required this.treat,
     required this.woundImage,
-    required this.perusalId, // Initialize perusalId
+    required this.perusalId,
+    required this.woundStatus, // Initialize woundStatus
   });
 
   factory Diagnosis.fromJson(Map<String, dynamic> json) {
@@ -35,7 +37,8 @@ class Diagnosis {
       description: json['description'],
       treat: treat,
       woundImage: json['wound_image'],
-      perusalId: json['persual_id'], // Map perusalId from JSON
+      perusalId: json['persual_id'],
+      woundStatus: json['wound_status'], // Map woundStatus from JSON
     );
   }
 }

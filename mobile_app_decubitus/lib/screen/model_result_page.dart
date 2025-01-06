@@ -63,8 +63,10 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
                 children: [
                   _buildDateSection(data.createdAt),
                   const SizedBox(height: 20),
-                  _buildImageSection(
-                      data.woundImage), // Pass the woundImage here
+                  _buildStatusSection(
+                      data.woundStatus), // Updated to use woundStatus
+                  const SizedBox(height: 20),
+                  _buildImageSection(data.woundImage),
                   const SizedBox(height: 20),
                   _buildDescriptionSection(data.description),
                   const SizedBox(height: 20),
@@ -107,6 +109,42 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
             alignment: Alignment.centerLeft,
             child: Text(
               formattedDate,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.normal,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatusSection(String status) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'สถานะ:',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: primaryColor,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              status,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.normal,
