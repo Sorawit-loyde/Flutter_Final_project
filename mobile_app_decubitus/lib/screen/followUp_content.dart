@@ -26,30 +26,37 @@ class _FollowupContentState extends State<FollowupContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: backGroundColor1, // Set the background color of the page
-        child: FutureBuilder<List<FollowUp>>(
-          future: _futureFollowUps,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (snapshot.hasData) {
-              final followUps = snapshot.data!;
-              return ListView.builder(
-                padding: const EdgeInsets.all(16.0),
-                itemCount: followUps.length,
-                itemBuilder: (context, index) {
-                  final followUp = followUps[index];
-                  return FollowUpCard(followUp: followUp);
+      backgroundColor: backGroundColor1,
+      body: Navigator(
+        onGenerateRoute: (RouteSettings settings) {
+          return MaterialPageRoute(
+            builder: (context) => Container(
+              color: backGroundColor1, // Set the background color of the page
+              child: FutureBuilder<List<FollowUp>>(
+                future: _futureFollowUps,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (snapshot.hasData) {
+                    final followUps = snapshot.data!;
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(16.0),
+                      itemCount: followUps.length,
+                      itemBuilder: (context, index) {
+                        final followUp = followUps[index];
+                        return FollowUpCard(followUp: followUp);
+                      },
+                    );
+                  } else {
+                    return const Center(child: Text('No data available'));
+                  }
                 },
-              );
-            } else {
-              return const Center(child: Text('No data available'));
-            }
-          },
-        ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -66,10 +73,11 @@ class FollowUpCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
+        // Navigate to WoundProgressPage, passing the woundId
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => WoundProgress(),
+            builder: (context) => WoundProgress(woundId: followUp.id),
           ),
         );
       },
@@ -102,7 +110,7 @@ class FollowUpCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4.0),
                     Text(
-                      'ระดับความรุนแรงแผล: ${followUp.count}',
+                      'ระดับความรุนแรงแผล: ${followUp.woundState.id}',
                       style: TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
