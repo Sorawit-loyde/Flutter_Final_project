@@ -69,9 +69,41 @@ class PerusalService {
         logger.e('Failed to save perusal: ${response.body}');
         throw Exception('Failed to save perusal: ${response.body}');
       }
+
+      final responseData = jsonDecode(response.body);
+
+      final int perusalId = responseData['id'];
+      final int ownerId = int.parse(responseData['user']['id']);
+      final String perusaldate = responseData['perusal_date'];
+
+      await createRoom(perusalId, ownerId, perusaldate);
     } catch (e) {
       logger.e('Error occurred while saving perusal: $e');
       throw Exception('Error occurred while saving perusal');
+    }
+  }
+
+  Future<void> createRoom(int perusalId, int ownerId, String roomName) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final patientId = prefs.getString('Uid');
+      final url = Uri.parse('${Custom_Config.BASE_URL}/rooms');
+      final payload = jsonEncode(
+          {'name': roomName, 'perusalId': patientId, 'ownerId': ownerId});
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer ${await AuthService().getAccessToken()}"
+        },
+        body: payload,
+      );
+
+      logger.t('Response status: ${response.statusCode}');
+      logger.t('Response body: ${response.body}');
+    } catch (e) {
+      logger.e('Error create room: $e');
+      throw Exception('Error at create room');
     }
   }
 
