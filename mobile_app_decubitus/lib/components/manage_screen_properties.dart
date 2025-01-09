@@ -5,6 +5,7 @@ import 'package:mobile_app_decubitus/screen/chat_page.dart';
 import 'package:mobile_app_decubitus/screen/home_content.dart';
 import 'package:mobile_app_decubitus/screen/followUp_content.dart';
 import 'package:mobile_app_decubitus/screen/profile_content.dart';
+import 'package:mobile_app_decubitus/screen/room_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -22,7 +23,8 @@ class HomePage extends StatelessWidget {
           body: BottomNavBar(
             pages: [
               HomeContent(), // Home tab content
-              Chatroom(roomId: 1,), //Chat tab content
+              RoomPage(),
+              // Chatroom(roomId: 1,), //Chat tab content
               FollowupContent(), // FollowUp tab content
               ProfileContent(), // Profile tab content
             ],
