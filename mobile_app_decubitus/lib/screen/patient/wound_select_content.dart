@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/models/wound_model.dart';
-import 'package:mobile_app_decubitus/screen/home_content.dart';
+import 'package:mobile_app_decubitus/screen/patient/home_content.dart';
 import 'package:mobile_app_decubitus/services/wound_service.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
-import 'package:mobile_app_decubitus/screen/wound_select_form.dart';
-import 'package:mobile_app_decubitus/screen/model_result_page.dart';
+import 'package:mobile_app_decubitus/screen/patient/wound_select_form.dart';
+import 'package:mobile_app_decubitus/screen/patient/model_result_page.dart';
 
 class WoundSelectPage extends StatefulWidget {
   final int perusalId;

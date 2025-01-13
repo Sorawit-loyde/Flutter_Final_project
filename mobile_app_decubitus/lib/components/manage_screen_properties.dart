@@ -2,31 +2,71 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/components/custom_Appbar.dart';
 import 'package:mobile_app_decubitus/components/bottom_Navbar.dart';
 import 'package:mobile_app_decubitus/screen/chat_page.dart';
-import 'package:mobile_app_decubitus/screen/home_content.dart';
-import 'package:mobile_app_decubitus/screen/followUp_content.dart';
-import 'package:mobile_app_decubitus/screen/profile_content.dart';
+import 'package:mobile_app_decubitus/screen/patient/home_content.dart';
+import 'package:mobile_app_decubitus/screen/patient/followUp_content.dart';
+import 'package:mobile_app_decubitus/screen/patient/profile_content.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_home_content.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_followUp_content.dart';
+// import 'package:mobile_app_decubitus/screen/nurse/profile_content.dart';
+import 'package:mobile_app_decubitus/services/user_service.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  Future<int> fetchRoleId() async {
+    final userService = UserService();
+    return await userService.getRoleId();
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () async {
-          return false; // Returning false prevents the back action
-        },
+      onWillPop: () async {
+        return false; // Prevents back action
+      },
+      child: Scaffold(
+        appBar: const CustomAppBar(),
+        body: FutureBuilder<int>(
+          future: fetchRoleId(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(child: Text('Error fetching role'));
+            } else if (!snapshot.hasData || snapshot.data == 0) {
+              return const Center(child: Text('No role assigned'));
+            } else {
+              final roleId = snapshot.data!;
+              List<Widget> pages;
 
-        //manage role in this zone seperrate 3 array for 3 roles****
-        child: const Scaffold(
-          appBar: CustomAppBar(),
-          body: BottomNavBar(
-            pages: [
-              HomeContent(), // Home tab content
-              Chatroom(roomId: 1,), //Chat tab content
-              FollowupContent(), // FollowUp tab content
-              ProfileContent(), // Profile tab content
-            ],
-          ),
-        ));
+              if (roleId == 1) {
+                // Patient screens
+                pages = [
+                  HomeContent(),
+                  Chatroom(roomId: 1),
+                  FollowupContent(),
+                  ProfileContent(),
+                ];
+              } else if (roleId == 2) {
+                // Nurse screens
+                pages = [
+                  NurseHomeContent(),
+                  Chatroom(roomId: 2),
+                  NurseFollowupContent(),
+                  ProfileContent(),
+                ];
+              } else {
+                // Default or other role screens
+                pages = [/* Default pages or an error page */];
+              }
+
+              return BottomNavBar(
+                pages: pages,
+              );
+            }
+          },
+        ),
+      ),
+    );
   }
 }

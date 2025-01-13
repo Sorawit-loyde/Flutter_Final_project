@@ -4,7 +4,7 @@ import 'package:mobile_app_decubitus/models/wound_list_model.dart';
 import 'package:mobile_app_decubitus/services/wound_list_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/constant.dart';
-import 'package:mobile_app_decubitus/screen/follow_up_result.dart';
+import 'package:mobile_app_decubitus/screen/patient/follow_up_result.dart';
 
 class WoundProgress extends StatelessWidget {
   final int woundId;

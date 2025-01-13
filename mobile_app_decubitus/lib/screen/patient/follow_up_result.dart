@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/models/diagnosis_model.dart';
-import 'package:mobile_app_decubitus/screen/wound_progress.dart';
+import 'package:mobile_app_decubitus/screen/patient/wound_progress.dart';
 import 'package:mobile_app_decubitus/services/diagnosis_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
-import 'package:mobile_app_decubitus/screen/wound_select_content.dart';
 import 'package:intl/intl.dart';
 
 class FollowupResultScreen extends StatefulWidget {

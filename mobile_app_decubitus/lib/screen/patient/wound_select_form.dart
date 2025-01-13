@@ -6,7 +6,7 @@ import 'package:dropdown_button2/dropdown_button2.dart'; // Import DropdownButto
 import 'package:mobile_app_decubitus/models/wound_model.dart'; // Import your wound model
 import 'package:mobile_app_decubitus/services/wound_service.dart'; // Import your wound service
 import 'package:mobile_app_decubitus/config/config.dart';
-import 'package:mobile_app_decubitus/screen/model_result_page.dart';
+import 'package:mobile_app_decubitus/screen/patient/model_result_page.dart';
 
 class WoundSelectForm extends StatefulWidget {
   final int perusalId; // Add perusal ID as a parameter

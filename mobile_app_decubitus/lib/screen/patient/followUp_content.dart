@@ -4,7 +4,7 @@ import 'package:mobile_app_decubitus/models/wound_follow_up_model.dart';
 import 'package:mobile_app_decubitus/services/wound_follow_up_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/constant.dart';
-import 'package:mobile_app_decubitus/screen/wound_progress.dart'; // Import the wound progress page
+import 'package:mobile_app_decubitus/screen/patient/wound_progress.dart'; // Import the wound progress page
 
 class FollowupContent extends StatefulWidget {
   const FollowupContent({super.key});
