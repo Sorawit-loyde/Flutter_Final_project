@@ -51,13 +51,15 @@ class AuthService {
     required int roleId,
   }) async {
     try {
+      final rsaService = RSAService(publicKey);
+      final encryptedPassword = await rsaService.encryptPassword(password);
       final response = await http.post(
         Uri.parse('${Custom_Config.BASE_URL}/users/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'first_name': firstName,
           'last_name': lastName,
-          'password': password,
+          'password': encryptedPassword,
           'ssid': ssnId,
           'sex': sex,
           'phone': phone,
