@@ -26,22 +26,19 @@ class Room {
           ? DateTime.parse(json['deletedAt'] as String)
           : null,
       name: json['name'] as String,
-      owner: User.fromJson(json['owner']),
+      owner: _parseOwner(json['owner']),
     );
   }
-}
 
-class RoomResponse {
-  final List<Room> rooms;
-
-  const RoomResponse({
-    required this.rooms,
-  });
-
-  factory RoomResponse.fromJson(List<dynamic> jsonList) {
-    List<Room> roomList =
-        jsonList.map((item) => Room.fromJson(item as Map<String, dynamic>)).toList();
-
-    return RoomResponse(rooms: roomList);
+  // Helper method to parse the owner field
+  static User _parseOwner(Map<String, dynamic> ownerJson) {
+    return User(
+      id: ownerJson['id'] as int,
+      ssid: ownerJson['ssid'] as String,
+      firstName: ownerJson['first_name'] as String,
+      lastName: ownerJson['last_name'] as String,
+      profileImage: ownerJson['profile_image'] as String,
+      roles: [], // Provide an empty list for roles
+    );
   }
 }

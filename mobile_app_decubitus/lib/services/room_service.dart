@@ -1,13 +1,14 @@
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/models/room_model.dart';
 import 'package:mobile_app_decubitus/services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+
 class RoomService {
-    var logger = Logger();
+  var logger = Logger();
 
   Future<List<Room>> getRooms() async {
     try {
@@ -18,24 +19,31 @@ class RoomService {
         Uri.parse('${Custom_Config.BASE_URL}/rooms/$id'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': "Bearer ${await AuthService().getAccessToken()}"
+          'Authorization': "Bearer ${await AuthService().getAccessToken()}",
         },
       );
 
-      logger.t('Response status: ${response.statusCode}');
-      logger.t('Response body: ${response.body}');
+      logger.d('Response status: ${response.statusCode}');
+      logger.d('Response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        // Check if the body is empty or null
+        if (response.body.isEmpty) {
+          throw Exception('Empty response body from server');
+        }
+
+        // Decode the response body
         final List<dynamic> jsonData = json.decode(response.body);
-        final roomResponse = RoomResponse.fromJson(jsonData);
-        return roomResponse.rooms;
+
+        // Map the JSON data to a list of Room objects
+        return jsonData.map((item) => Room.fromJson(item)).toList();
       } else {
-        logger.e('Status code error: ${response.statusCode}');
-        throw Exception('Status code error');
+        throw Exception(
+            'Failed to fetch rooms. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      logger.e(e);
-      throw Exception('Failed to getPerusals');
+      logger.e('Error fetching rooms: $e');
+      throw Exception('Error fetching rooms: $e');
     }
   }
 }
