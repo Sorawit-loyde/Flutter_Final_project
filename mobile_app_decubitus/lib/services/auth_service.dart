@@ -1,21 +1,29 @@
 import 'dart:convert';
 
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:mobile_app_decubitus/services/key_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:logger/logger.dart';
 
 import '../config/config.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:pointycastle/export.dart' as pc;
 
 class AuthService {
   var logger = Logger();
+  final String publicKey = Custom_Config.PUBLIC_KEY;
+
   Future<void> signIn(String ssid, String password) async {
     try {
+      final rsaService = RSAService(publicKey);
+      final encryptedPassword = await rsaService.encryptPassword(password);
+      logger.i('Encrypted password: $encryptedPassword');
       final response = await http.post(
         Uri.parse('${Custom_Config.BASE_URL}/auth/login'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'ssid': ssid, 'password': password}), // Adjusted key
+        body: json.encode({'ssid': ssid, 'password': encryptedPassword}), // Adjusted key
       );
       logger.i('Response status: ${response.statusCode}');
       logger.i('Response body: ${response.body}');
@@ -43,13 +51,15 @@ class AuthService {
     required int roleId,
   }) async {
     try {
+      final rsaService = RSAService(publicKey);
+      final encryptedPassword = await rsaService.encryptPassword(password);
       final response = await http.post(
         Uri.parse('${Custom_Config.BASE_URL}/users/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'first_name': firstName,
           'last_name': lastName,
-          'password': password,
+          'password': encryptedPassword,
           'ssid': ssnId,
           'sex': sex,
           'phone': phone,
@@ -71,12 +81,12 @@ class AuthService {
 
   Future<String?> getAccessToken() async {
     const storage = FlutterSecureStorage();
-    return storage.read(key:'accessToken');
+    return storage.read(key: 'accessToken');
   }
 
   Future<String?> getRefreshToken() async {
     const storage = FlutterSecureStorage();
-    return storage.read(key:'refreshToken');
+    return storage.read(key: 'refreshToken');
   }
 
   Future<void> _saveTokens(String accessToken, String refreshToken) async {
@@ -90,7 +100,7 @@ class AuthService {
       await prefs.setString('Uid', userId);
     }
 
-    await storage.write(key: 'accessToken',value: accessToken);
-    await storage.write(key: 'refreshToken',value: refreshToken);
+    await storage.write(key: 'accessToken', value: accessToken);
+    await storage.write(key: 'refreshToken', value: refreshToken);
   }
 }

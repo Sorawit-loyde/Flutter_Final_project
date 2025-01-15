@@ -1,5 +1,3 @@
-// perusal_model.dart
-
 class Perusal {
   final int id;
   final DateTime createdAt;

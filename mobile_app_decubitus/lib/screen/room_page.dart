@@ -1,0 +1,141 @@
+import 'package:flutter/material.dart';
+import 'package:mobile_app_decubitus/constant.dart';
+import 'package:mobile_app_decubitus/models/room_model.dart';
+import 'package:mobile_app_decubitus/screen/chat_page.dart';
+import 'package:mobile_app_decubitus/services/room_service.dart';
+
+class RoomPage extends StatefulWidget {
+  const RoomPage({super.key});
+
+  @override
+  _RoomPageState createState() => _RoomPageState();
+}
+
+class _RoomPageState extends State<RoomPage> {
+  String _searchQuery = '';
+  List<Room> _allRooms = [];
+  List<Room> _filteredRooms = [];
+  bool _showFab = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchRooms();
+  }
+
+  Future<List<Room>> fetchRooms() async {
+    final roomService = RoomService();
+    return await roomService.getRooms();
+  }
+
+  String formatRoomName(String name, int index) {
+    return "ห้องที่ $index - $name";
+  }
+
+  void _filterRooms(String query) {
+    setState(() {
+      _searchQuery = query;
+      _filteredRooms = _searchQuery.isEmpty
+          ? _allRooms
+          : _allRooms
+              .where((room) => room.name.contains(_searchQuery))
+              .toList();
+    });
+  }
+
+  Future<void> fetchUpdatedRooms() async {
+    final fetchedRooms = await fetchRooms();
+    setState(() {
+      _allRooms = fetchedRooms;
+      _filteredRooms = fetchedRooms;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: backGroundColor1,
+      body: Column(
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: TextField(
+              onChanged: _filterRooms,
+              decoration: InputDecoration(
+                hintText: 'Search...',
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: greyColor1),
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.black),
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                fillColor: greyColor1,
+                filled: true,
+                suffixIcon: const Icon(Icons.search),
+              ),
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder<List<Room>>(
+              future: fetchRooms(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(
+                      child: Text('Error fetching data: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No rooms available.'));
+                } else {
+                  _allRooms = snapshot.data!;
+                  _filteredRooms = _allRooms;
+
+                  return ListView.separated(
+                    itemCount: _filteredRooms.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      final room = _filteredRooms[index];
+
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _showFab = false;
+                          });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Chatroom(roomId: room.id),
+                            ),
+                          );
+                        },
+                        child: Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                          color: tertiaryColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          child: ListTile(
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                            title: Text(
+                              formatRoomName(room.name, index + 1),
+                              style: const TextStyle(
+                                  fontSize: 16, color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
