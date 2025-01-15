@@ -5,7 +5,7 @@ import 'package:mobile_app_decubitus/screen/chat_page.dart';
 import 'package:mobile_app_decubitus/screen/patient/home_content.dart';
 import 'package:mobile_app_decubitus/screen/patient/followUp_content.dart';
 import 'package:mobile_app_decubitus/screen/patient/profile_content.dart';
-import 'package:mobile_app_decubitus/screen/nurse/Nurse_home_content.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_patient_list.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_followUp_content.dart';
 // import 'package:mobile_app_decubitus/screen/nurse/profile_content.dart';
 import 'package:mobile_app_decubitus/services/user_service.dart';
@@ -39,18 +39,16 @@ class HomePage extends StatelessWidget {
               final roleId = snapshot.data!;
               List<Widget> pages;
 
-              if (roleId == 1) {
-                // Patient screens
+              if (roleId == 2) {
                 pages = [
                   HomeContent(),
                   Chatroom(roomId: 1),
                   FollowupContent(),
                   ProfileContent(),
                 ];
-              } else if (roleId == 2) {
-                // Nurse screens
+              } else if (roleId == 3) {
                 pages = [
-                  NurseHomeContent(),
+                  PatientListPage(),
                   Chatroom(roomId: 2),
                   NurseFollowupContent(),
                   ProfileContent(),
