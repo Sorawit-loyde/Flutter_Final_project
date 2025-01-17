@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/components/custom_Appbar.dart';
 import 'package:mobile_app_decubitus/components/bottom_Navbar.dart';
-import 'package:mobile_app_decubitus/screen/chat_page.dart';
 import 'package:mobile_app_decubitus/screen/patient/home_content.dart';
 import 'package:mobile_app_decubitus/screen/patient/followUp_content.dart';
 import 'package:mobile_app_decubitus/screen/patient/profile_content.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_patient_list.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_followUp_content.dart';
+import 'package:mobile_app_decubitus/screen/room_page.dart';
 // import 'package:mobile_app_decubitus/screen/nurse/profile_content.dart';
 import 'package:mobile_app_decubitus/services/user_service.dart';
 
@@ -42,14 +42,14 @@ class HomePage extends StatelessWidget {
               if (roleId == 2) {
                 pages = [
                   HomeContent(),
-                  Chatroom(roomId: 1),
+                  RoomPage(),
                   FollowupContent(),
                   ProfileContent(),
                 ];
               } else if (roleId == 3) {
                 pages = [
                   PatientListPage(),
-                  Chatroom(roomId: 2),
+                  RoomPage(),
                   NurseFollowupContent(),
                   ProfileContent(),
                 ];

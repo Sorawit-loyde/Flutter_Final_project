@@ -50,6 +50,82 @@ class _PatientListPageState extends State<PatientListPage> {
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
+  void _showDialogList(BuildContext context) {
+    List<int> selectedIndices = [];
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Select Patients'),
+              content: SizedBox(
+                width: double.maxFinite,
+                height: 300.0, // Set a fixed height for the list container
+                child: Scrollbar(
+                  // Add a scrollbar for better UX
+                  thumbVisibility: true,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _filteredPatients.length,
+                    itemBuilder: (context, index) {
+                      final patient = _filteredPatients[index];
+                      bool isSelected = selectedIndices.contains(index);
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                              '${Custom_Config.Image_URL}/${patient.profileImage}'),
+                        ),
+                        title: Text('${patient.firstName} ${patient.lastName}'),
+                        trailing: Checkbox(
+                          value: isSelected,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                selectedIndices.add(index);
+                              } else {
+                                selectedIndices.remove(index);
+                              }
+                            });
+                          },
+                        ),
+                        onTap: () {
+                          setState(() {
+                            if (isSelected) {
+                              selectedIndices.remove(index);
+                            } else {
+                              selectedIndices.add(index);
+                            }
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Handle confirm action with selectedIndices
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text('Confirm'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,10 +191,14 @@ class _PatientListPageState extends State<PatientListPage> {
       floatingActionButton: _showFab
           ? FloatingActionButton(
               onPressed: () {
-                // Implement add functionality if needed
+                _showDialogList(context);
               },
-              backgroundColor: tertiaryColor,
-              child: const Icon(Icons.add),
+              backgroundColor: primaryColor,
+              foregroundColor: Colors.white,
+              elevation: 0.0,
+              shape: const CircleBorder(),
+              tooltip: 'Add Item',
+              child: const Icon(Icons.add, size: 25.0),
             )
           : null,
     );

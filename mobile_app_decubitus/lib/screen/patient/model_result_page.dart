@@ -63,14 +63,15 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
                 children: [
                   _buildDateSection(data.createdAt),
                   const SizedBox(height: 20),
-                  _buildStatusSection(
-                      data.woundStatus), // Updated to use woundStatus
+                  _buildStatusSection(data.woundStatus),
                   const SizedBox(height: 20),
                   _buildImageSection(data.woundImage),
                   const SizedBox(height: 20),
                   _buildDescriptionSection(data.description),
                   const SizedBox(height: 20),
                   _buildTreatmentSteps(data.treat),
+                  const SizedBox(height: 20),
+                  _buildCommentBox(data.remark), // Add the comment box here
                 ],
               ),
             );
@@ -172,7 +173,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
         const SizedBox(height: 10),
         Container(
           width: double.infinity,
-          height: 200, // Adjust the height as needed
+          height: 200,
           decoration: BoxDecoration(
             border: Border.all(color: primaryColor, width: 2),
             borderRadius: BorderRadius.circular(12),
@@ -181,8 +182,7 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
             borderRadius: BorderRadius.circular(12),
             child: Image.network(
               '${Custom_Config.Image_URL}/$woundImage',
-              fit: BoxFit
-                  .contain, // Ensures the entire image fits within the box
+              fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
                 return const Center(child: Text('Image not available'));
               },
@@ -248,6 +248,38 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
             style: const TextStyle(
               fontSize: 16,
               color: primaryColor,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCommentBox(String? remark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'ความคิดเห็น:',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: primaryColor,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            remark ?? 'ไม่มีความคิดเห็น',
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
             ),
           ),
         ),

@@ -145,8 +145,9 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         elevation: 0.0,
-        tooltip: 'Add Wound',
-        child: const Icon(Icons.add),
+        shape: const CircleBorder(),
+        tooltip: 'Add Item',
+        child: const Icon(Icons.add, size: 25.0),
       ),
     );
   }
