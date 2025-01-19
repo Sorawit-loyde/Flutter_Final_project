@@ -14,20 +14,29 @@ class PatientListPage extends StatefulWidget {
 
 class _PatientListPageState extends State<PatientListPage> {
   String _searchQuery = '';
-  List<Patient> _allPatients = [];
+  List<Patient> _nursePatients = [];
   List<Patient> _filteredPatients = [];
   bool _showFab = true;
 
   @override
   void initState() {
     super.initState();
-    fetchPatients();
+    fetchNursePatients(); // Fetch nurse-specific patients for the list view
   }
 
-  Future<void> fetchPatients() async {
-    final patients = await ApiService().fetchPatients();
+  // Fetch nurse-specific patients using the API for the ListView
+  Future<void> fetchNursePatients() async {
+    final patients = await ApiService().fetchNursePatients();
     setState(() {
-      _allPatients = patients;
+      _nursePatients = patients;
+      _filteredPatients = patients;
+    });
+  }
+
+  // Fetch all patients using the API for the dialog
+  Future<void> fetchAllPatientsForDialog() async {
+    final patients = await ApiService().fetchAllPatients();
+    setState(() {
       _filteredPatients = patients;
     });
   }
@@ -36,8 +45,8 @@ class _PatientListPageState extends State<PatientListPage> {
     setState(() {
       _searchQuery = query;
       _filteredPatients = _searchQuery.isEmpty
-          ? _allPatients
-          : _allPatients
+          ? _nursePatients
+          : _nursePatients
               .where((patient) => '${patient.firstName} ${patient.lastName}'
                   .toLowerCase()
                   .contains(_searchQuery.toLowerCase()))
@@ -64,42 +73,57 @@ class _PatientListPageState extends State<PatientListPage> {
                 width: double.maxFinite,
                 height: 300.0, // Set a fixed height for the list container
                 child: Scrollbar(
-                  // Add a scrollbar for better UX
                   thumbVisibility: true,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: _filteredPatients.length,
-                    itemBuilder: (context, index) {
-                      final patient = _filteredPatients[index];
-                      bool isSelected = selectedIndices.contains(index);
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              '${Custom_Config.Image_URL}/${patient.profileImage}'),
-                        ),
-                        title: Text('${patient.firstName} ${patient.lastName}'),
-                        trailing: Checkbox(
-                          value: isSelected,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              if (value == true) {
-                                selectedIndices.add(index);
-                              } else {
-                                selectedIndices.remove(index);
-                              }
-                            });
+                  child: FutureBuilder(
+                    future: ApiService()
+                        .fetchAllPatients(), // Use fetchAllPatients for the dialog
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (!snapshot.hasData) {
+                        return const Center(child: Text('No patients found.'));
+                      } else {
+                        final patients = snapshot.data as List<Patient>;
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: patients.length,
+                          itemBuilder: (context, index) {
+                            final patient = patients[index];
+                            bool isSelected = selectedIndices.contains(index);
+                            return ListTile(
+                              leading: CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                    '${Custom_Config.Image_URL}/${patient.profileImage}'),
+                              ),
+                              title: Text(
+                                  '${patient.firstName} ${patient.lastName}'),
+                              trailing: Checkbox(
+                                value: isSelected,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    if (value == true) {
+                                      selectedIndices.add(index);
+                                    } else {
+                                      selectedIndices.remove(index);
+                                    }
+                                  });
+                                },
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  if (isSelected) {
+                                    selectedIndices.remove(index);
+                                  } else {
+                                    selectedIndices.add(index);
+                                  }
+                                });
+                              },
+                            );
                           },
-                        ),
-                        onTap: () {
-                          setState(() {
-                            if (isSelected) {
-                              selectedIndices.remove(index);
-                            } else {
-                              selectedIndices.add(index);
-                            }
-                          });
-                        },
-                      );
+                        );
+                      }
                     },
                   ),
                 ),
@@ -154,12 +178,12 @@ class _PatientListPageState extends State<PatientListPage> {
             ),
           ),
           Expanded(
-            child: _filteredPatients.isEmpty
+            child: _nursePatients.isEmpty
                 ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
-                    itemCount: _filteredPatients.length,
+                    itemCount: _nursePatients.length,
                     itemBuilder: (context, index) {
-                      final patient = _filteredPatients[index];
+                      final patient = _nursePatients[index];
                       return Card(
                         color: tertiaryColor,
                         margin: const EdgeInsets.symmetric(
@@ -173,8 +197,7 @@ class _PatientListPageState extends State<PatientListPage> {
                           ),
                           title:
                               Text('${patient.firstName} ${patient.lastName}'),
-                          subtitle: Text(
-                              'Date Added: ${formatPatientDate(patient.createdAt)}'),
+                          subtitle: Text('Status: ${patient.patientStatus}'),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
@@ -191,7 +214,8 @@ class _PatientListPageState extends State<PatientListPage> {
       floatingActionButton: _showFab
           ? FloatingActionButton(
               onPressed: () {
-                _showDialogList(context);
+                _showDialogList(
+                    context); // Show the dialog with fetchAllPatients
               },
               backgroundColor: primaryColor,
               foregroundColor: Colors.white,
