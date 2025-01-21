@@ -50,4 +50,52 @@ class ApiService {
       throw Exception('Failed to load nurse patients');
     }
   }
+
+  Future<void> deletePatient(int patientId, String nurseId) async {
+    final response = await http.delete(
+      Uri.parse(
+          '${Custom_Config.BASE_URL}/users/delete-patient-nurse/$patientId/$nurseId'),
+    );
+
+    if (response.statusCode == 200) {
+      logger.i("Patient $patientId deleted successfully.");
+    } else {
+      logger.e('Failed to delete patient. Status Code: ${response.statusCode}');
+      logger.e('Response body: ${response.body}');
+      throw Exception('Failed to delete patient');
+    }
+  }
+
+  Future<void> assignPatientsToNurse(int patientId, String nurseId) async {
+    final url = Uri.parse(
+        '${Custom_Config.BASE_URL}/users/add-patient-nurse/$patientId/$nurseId');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 201) {
+      print('Successfully assigned patient $patientId to nurse $nurseId');
+    } else {
+      print(
+          'Failed to assign patient. Status code: ${response.statusCode}, Response body: ${response.body}');
+      throw Exception('Failed to assign patient to nurse');
+    }
+  }
+
+  Future<List<Patient>> fetchAllPatientsForDropdown() async {
+    final prefs = await SharedPreferences.getInstance();
+    final nurseId = prefs.getString('Uid');
+    final response = await http.get(
+      Uri.parse('${Custom_Config.BASE_URL}/users/patient/dropdown/$nurseId'),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((json) => Patient.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load patients for dropdown');
+    }
+  }
 }

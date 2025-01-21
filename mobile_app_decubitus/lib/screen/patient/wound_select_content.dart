@@ -88,7 +88,7 @@ class _WoundSelectPageState extends State<WoundSelectPage> {
                           style: TextStyle(
                             color: wound.status == 'ตรวจแล้ว'
                                 ? primaryColor
-                                : const Color(0xFFE87001),
+                                : errorColor,
                           ),
                         ),
                         trailing: IconButton(

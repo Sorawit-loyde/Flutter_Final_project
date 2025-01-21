@@ -4,6 +4,7 @@ import 'package:mobile_app_decubitus/models/patient_model.dart';
 import 'package:mobile_app_decubitus/services/patient_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PatientListPage extends StatefulWidget {
   const PatientListPage({Key? key}) : super(key: key);
@@ -61,6 +62,7 @@ class _PatientListPageState extends State<PatientListPage> {
 
   void _showDialogList(BuildContext context) {
     List<int> selectedIndices = [];
+    List<Patient> patients = [];
 
     showDialog(
       context: context,
@@ -68,15 +70,14 @@ class _PatientListPageState extends State<PatientListPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Select Patients'),
+              title: const Text('เลือกผู้ป่วยที่จะดูแล'),
               content: SizedBox(
                 width: double.maxFinite,
-                height: 300.0, // Set a fixed height for the list container
+                height: 300.0,
                 child: Scrollbar(
                   thumbVisibility: true,
                   child: FutureBuilder(
-                    future: ApiService()
-                        .fetchAllPatients(), // Use fetchAllPatients for the dialog
+                    future: ApiService().fetchAllPatientsForDropdown(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
@@ -85,7 +86,7 @@ class _PatientListPageState extends State<PatientListPage> {
                       } else if (!snapshot.hasData) {
                         return const Center(child: Text('No patients found.'));
                       } else {
-                        final patients = snapshot.data as List<Patient>;
+                        patients = snapshot.data as List<Patient>;
                         return ListView.builder(
                           shrinkWrap: true,
                           itemCount: patients.length,
@@ -110,6 +111,8 @@ class _PatientListPageState extends State<PatientListPage> {
                                     }
                                   });
                                 },
+                                activeColor:
+                                    primaryColor, // Change this to your desired color
                               ),
                               onTap: () {
                                 setState(() {
@@ -130,17 +133,28 @@ class _PatientListPageState extends State<PatientListPage> {
               ),
               actions: [
                 TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    final nurseId = prefs.getString('Uid');
+                    if (nurseId != null) {
+                      for (int index in selectedIndices) {
+                        final patientId = patients[index].id;
+                        await ApiService()
+                            .assignPatientsToNurse(patientId, nurseId);
+                      }
+                      Navigator.of(context).pop();
+                      await fetchNursePatients(); // Refresh the patient list
+                    }
                   },
-                  child: const Text('Cancel'),
+                  child: const Text('ยืนยัน',
+                      style: TextStyle(color: primaryColor)),
                 ),
                 TextButton(
                   onPressed: () {
-                    // Handle confirm action with selectedIndices
-                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pop();
                   },
-                  child: const Text('Confirm'),
+                  child: const Text('ยกเลิก',
+                      style: TextStyle(color: primaryColor)),
                 ),
               ],
             );
@@ -148,6 +162,48 @@ class _PatientListPageState extends State<PatientListPage> {
         );
       },
     );
+  }
+
+  Future<bool> _showDeleteConfirmationDialog() async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('ยืนยันการลบ'),
+              content: const Text(
+                  'คุณแน่ใจหรือว่าต้องการลบผู้ป่วยคนนี้ออกจากการดูแล'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('ยืนยัน',
+                      style: TextStyle(color: primaryColor)),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('ยกเลิก',
+                      style: TextStyle(color: primaryColor)),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+  }
+
+  void _onDeletePatient(int patientId) async {
+    // Show delete confirmation dialog
+    bool confirmed = await _showDeleteConfirmationDialog();
+    if (confirmed) {
+      // Fetch the nurse's ID from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final nurseId = prefs.getString('Uid');
+      if (nurseId != null && nurseId.isNotEmpty) {
+        await ApiService().deletePatient(patientId, nurseId);
+        setState(() {
+          _nursePatients.removeWhere((patient) => patient.id == patientId);
+        });
+      }
+    }
   }
 
   @override
@@ -178,37 +234,56 @@ class _PatientListPageState extends State<PatientListPage> {
             ),
           ),
           Expanded(
-            child: _nursePatients.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: _nursePatients.length,
-                    itemBuilder: (context, index) {
-                      final patient = _nursePatients[index];
-                      return Card(
-                        color: tertiaryColor,
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 5.0),
-                        child: ListTile(
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 16.0),
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                '${Custom_Config.Image_URL}/${patient.profileImage}'),
+              child: _nursePatients.isEmpty
+                  ? Center(
+                      child: _filteredPatients.isEmpty && _searchQuery.isEmpty
+                          ? const Text(
+                              'ยังไม่มีผู้ป่วยในการดูแล',
+                            )
+                          : const CircularProgressIndicator(),
+                    )
+                  : ListView.builder(
+                      itemCount: _filteredPatients.length,
+                      itemBuilder: (context, index) {
+                        final patient = _filteredPatients[index];
+                        final String status = patient.patientStatus;
+
+                        // Define the text color based on the status
+                        Color statusColor;
+                        if (status == 'รอตรวจ') {
+                          statusColor = errorColor;
+                        } else if (status == 'เรียบร้อย') {
+                          statusColor = primaryColor;
+                        } else {
+                          statusColor =
+                              Colors.black; // Default color for other statuses
+                        }
+
+                        return Card(
+                          color: tertiaryColor,
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 5.0),
+                          child: ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                  '${Custom_Config.Image_URL}/${patient.profileImage}'),
+                            ),
+                            title: Text(
+                                '${patient.firstName} ${patient.lastName}'),
+                            subtitle: Text(
+                              'Status: $status',
+                              style: TextStyle(color: statusColor),
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _onDeletePatient(patient.id),
+                            ),
                           ),
-                          title:
-                              Text('${patient.firstName} ${patient.lastName}'),
-                          subtitle: Text('Status: ${patient.patientStatus}'),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () {
-                              // Implement delete functionality if needed
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-          ),
+                        );
+                      },
+                    )),
         ],
       ),
       floatingActionButton: _showFab
