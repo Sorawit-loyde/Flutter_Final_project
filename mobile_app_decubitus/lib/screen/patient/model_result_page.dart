@@ -71,7 +71,8 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
                   const SizedBox(height: 20),
                   _buildTreatmentSteps(data.treat),
                   const SizedBox(height: 20),
-                  _buildCommentBox(data.remark), // Add the comment box here
+                  if (data.woundStatus == "ตรวจแล้ว")
+                    _buildCommentBox(data.remark),
                 ],
               ),
             );

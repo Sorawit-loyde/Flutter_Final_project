@@ -9,6 +9,32 @@ import 'auth_service.dart';
 
 class PerusalService {
   var logger = Logger();
+  Future<List<Perusal>> getPerusalsNurse(id) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${Custom_Config.BASE_URL}/perusal/Pages/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer ${await AuthService().getAccessToken()}"
+        },
+      );
+
+      logger.t('Response status: ${response.statusCode}');
+      logger.t('Response body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+        final perusalResponse = PerusalResponse.fromJson(jsonData);
+        return perusalResponse.data;
+      } else {
+        logger.e('Status code error: ${response.statusCode}');
+        throw Exception('Status code error');
+      }
+    } catch (e) {
+      logger.e(e);
+      throw Exception('Failed to getPerusals');
+    }
+  }
 
   Future<List<Perusal>> getPerusals() async {
     try {
@@ -131,6 +157,29 @@ class PerusalService {
     } catch (e) {
       logger.e('Error occurred while deleting perusal: $e');
       throw Exception('Error occurred while deleting perusal');
+    }
+  }
+
+  Future<String> getPatientName(int id) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${Custom_Config.BASE_URL}/users/profile/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer ${await AuthService().getAccessToken()}",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+        final firstName = jsonData['first_name'] as String;
+        final lastName = jsonData['last_name'] as String;
+        return '$firstName $lastName';
+      } else {
+        throw Exception('Failed to fetch patient name');
+      }
+    } catch (e) {
+      throw Exception('Error occurred while fetching patient name: $e');
     }
   }
 }

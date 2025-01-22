@@ -3,16 +3,19 @@ import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/services/perusal_service.dart';
 import 'package:mobile_app_decubitus/models/perusal_model.dart';
 import 'package:intl/intl.dart';
-// import 'wound_select_content.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_wound_select_page.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_patient_list.dart';
 
 class NurseHomeContent extends StatefulWidget {
-  const NurseHomeContent({super.key});
+  const NurseHomeContent({super.key, required this.patientId});
+  final int patientId;
 
   @override
   _NurseHomeContentState createState() => _NurseHomeContentState();
 }
 
 class _NurseHomeContentState extends State<NurseHomeContent> {
+  String _patientName = 'Loading...';
   String _searchQuery = '';
   List<Perusal> _allPerusals = [];
   List<Perusal> _filteredPerusals = [];
@@ -21,12 +24,27 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
   @override
   void initState() {
     super.initState();
+    fetchPatientName();
     fetchPerusals();
+  }
+
+  Future<void> fetchPatientName() async {
+    try {
+      final name = await PerusalService().getPatientName(widget.patientId);
+      setState(() {
+        _patientName = name;
+      });
+    } catch (e) {
+      setState(() {
+        _patientName = 'Unknown';
+      });
+      print('Error fetching patient name: $e');
+    }
   }
 
   Future<List<Perusal>> fetchPerusals() async {
     final perusalService = PerusalService();
-    return await perusalService.getPerusals();
+    return await perusalService.getPerusalsNurse(widget.patientId);
   }
 
   Future<void> deletePerusal(int id) async {
@@ -143,108 +161,110 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
       body: Navigator(
         onGenerateRoute: (RouteSettings settings) {
           return MaterialPageRoute(
-            builder: (context) => Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
-                  child: TextField(
-                    onChanged: _filterPerusals,
-                    decoration: InputDecoration(
-                      hintText: 'Search...',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: greyColor1),
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      fillColor: greyColor1,
-                      filled: true,
-                      suffixIcon: const Icon(Icons.search),
-                    ),
-                  ),
+            builder: (context) => Scaffold(
+              appBar: AppBar(
+                backgroundColor: backGroundColor1,
+                toolbarHeight: 60.0,
+                title: Text(_patientName),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PatientListPage()),
+                    );
+                  },
                 ),
-                Expanded(
-                  child: FutureBuilder<List<Perusal>>(
-                    future: fetchPerusals(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(
-                            child:
-                                Text('Error fetching data: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(
-                            child:
-                                Text('กดปุ่มเพิ่มขวาล่างเพื่อเพิ่มรายการตรวจ'));
-                      } else {
-                        _allPerusals = snapshot.data!;
-                        _filteredPerusals = _allPerusals;
+              ),
+              backgroundColor: backGroundColor1,
+              body: Column(
+                children: [
+                  Expanded(
+                    child: FutureBuilder<List<Perusal>>(
+                      future: fetchPerusals(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(
+                              child: Text(
+                                  'Error fetching data: ${snapshot.error}'));
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const Center(
+                              child: Text(
+                                  'กดปุ่มเพิ่มขวาล่างเพื่อเพิ่มรายการตรวจ'));
+                        } else {
+                          _allPerusals = snapshot.data!;
+                          _filteredPerusals = _allPerusals;
 
-                        return ListView.separated(
-                          itemCount: _filteredPerusals.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 8),
-                          itemBuilder: (context, index) {
-                            final perusal = _filteredPerusals[index];
+                          return ListView.separated(
+                            itemCount: _filteredPerusals.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 8),
+                            itemBuilder: (context, index) {
+                              final perusal = _filteredPerusals[index];
 
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _showFab = false;
-                                });
-                                // Navigator.pushReplacement(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) =>
-                                //         WoundSelectPage(perusalId: perusal.id),
-                                //   ),
-                                // );
-                              },
-                              child: Card(
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                color: tertiaryColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: ListTile(
-                                  contentPadding:
-                                      const EdgeInsets.fromLTRB(10, 4, 10, 4),
-                                  title: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          formatPerusalDate(
-                                              perusal.perusalDate, index + 1),
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black),
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _showFab = false;
+                                  });
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          NurseWoundSelectPage(
+                                              perusalId: perusal.id,
+                                              patientId: widget.patientId),
+                                    ),
+                                  );
+                                },
+                                child: Card(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
+                                  color: tertiaryColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: ListTile(
+                                    contentPadding:
+                                        const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                    title: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            formatPerusalDate(
+                                                perusal.perusalDate, index + 1),
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black),
+                                          ),
                                         ),
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete,
-                                            color: Colors.red),
-                                        onPressed: () {
-                                          deletePerusal(perusal.id);
-                                        },
-                                      )
-                                    ],
+                                        IconButton(
+                                          icon: const Icon(Icons.delete,
+                                              color: Colors.red),
+                                          onPressed: () {
+                                            deletePerusal(perusal.id);
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        );
-                      }
-                    },
+                              );
+                            },
+                          );
+                        }
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

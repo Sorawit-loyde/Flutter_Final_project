@@ -5,6 +5,7 @@ import 'package:mobile_app_decubitus/services/patient_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_home_content.dart';
 
 class PatientListPage extends StatefulWidget {
   const PatientListPage({Key? key}) : super(key: key);
@@ -210,82 +211,104 @@ class _PatientListPageState extends State<PatientListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backGroundColor1,
-      body: Column(
-        children: [
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: TextField(
-              onChanged: _filterPatients,
-              decoration: InputDecoration(
-                hintText: 'Search...',
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: greyColor1),
-                  borderRadius: BorderRadius.circular(20.0),
+      body: Navigator(onGenerateRoute: (RouteSettings settings) {
+        return MaterialPageRoute(
+          builder: (context) => Column(
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: TextField(
+                  onChanged: _filterPatients,
+                  decoration: InputDecoration(
+                    hintText: 'Search...',
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: greyColor1),
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.black),
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    fillColor: greyColor1,
+                    filled: true,
+                    suffixIcon: const Icon(Icons.search),
+                  ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.black),
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                fillColor: greyColor1,
-                filled: true,
-                suffixIcon: const Icon(Icons.search),
               ),
-            ),
+              Expanded(
+                  child: _nursePatients.isEmpty
+                      ? Center(
+                          child:
+                              _filteredPatients.isEmpty && _searchQuery.isEmpty
+                                  ? const Text(
+                                      'ยังไม่มีผู้ป่วยในการดูแล',
+                                    )
+                                  : const CircularProgressIndicator(),
+                        )
+                      : ListView.builder(
+                          itemCount: _filteredPatients.length,
+                          itemBuilder: (context, index) {
+                            final patient = _filteredPatients[index];
+                            final String status = patient.patientStatus;
+
+                            // Define the text color based on the status
+                            Color statusColor;
+                            if (status == 'รอตรวจ') {
+                              statusColor = errorColor;
+                            } else if (status == 'เรียบร้อย') {
+                              statusColor = primaryColor;
+                            } else {
+                              statusColor = Colors
+                                  .black; // Default color for other statuses
+                            }
+
+                            return Card(
+                              color: tertiaryColor,
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 5.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _showFab = false;
+                                  });
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => NurseHomeContent(
+                                        patientId: patient.id,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
+                                  leading: CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        '${Custom_Config.Image_URL}/${patient.profileImage}'),
+                                  ),
+                                  title: Text(
+                                      '${patient.firstName} ${patient.lastName}'),
+                                  subtitle: Text(
+                                    'Status: $status',
+                                    style: TextStyle(color: statusColor),
+                                  ),
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
+                                    onPressed: () =>
+                                        _onDeletePatient(patient.id),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        )),
+            ],
           ),
-          Expanded(
-              child: _nursePatients.isEmpty
-                  ? Center(
-                      child: _filteredPatients.isEmpty && _searchQuery.isEmpty
-                          ? const Text(
-                              'ยังไม่มีผู้ป่วยในการดูแล',
-                            )
-                          : const CircularProgressIndicator(),
-                    )
-                  : ListView.builder(
-                      itemCount: _filteredPatients.length,
-                      itemBuilder: (context, index) {
-                        final patient = _filteredPatients[index];
-                        final String status = patient.patientStatus;
-
-                        // Define the text color based on the status
-                        Color statusColor;
-                        if (status == 'รอตรวจ') {
-                          statusColor = errorColor;
-                        } else if (status == 'เรียบร้อย') {
-                          statusColor = primaryColor;
-                        } else {
-                          statusColor =
-                              Colors.black; // Default color for other statuses
-                        }
-
-                        return Card(
-                          color: tertiaryColor,
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 5.0),
-                          child: ListTile(
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            leading: CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                  '${Custom_Config.Image_URL}/${patient.profileImage}'),
-                            ),
-                            title: Text(
-                                '${patient.firstName} ${patient.lastName}'),
-                            subtitle: Text(
-                              'Status: $status',
-                              style: TextStyle(color: statusColor),
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _onDeletePatient(patient.id),
-                            ),
-                          ),
-                        );
-                      },
-                    )),
-        ],
-      ),
+        );
+      }),
       floatingActionButton: _showFab
           ? FloatingActionButton(
               onPressed: () {

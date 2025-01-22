@@ -9,7 +9,8 @@ class Diagnosis {
   final String woundImage;
   final int perusalId;
   final String woundStatus;
-  final String? remark;
+  final int count;
+  final String? remark; // This remains the same
 
   Diagnosis({
     required this.id,
@@ -22,6 +23,7 @@ class Diagnosis {
     required this.woundImage,
     required this.perusalId,
     required this.woundStatus,
+    required this.count, // Added count field
     this.remark,
   });
 
@@ -39,8 +41,9 @@ class Diagnosis {
       description: json['description'],
       treat: treat,
       woundImage: json['wound_image'],
-      perusalId: json['perusal_id'],
+      perusalId: json['persual_id'],
       woundStatus: json['wound_status'],
+      count: json['count'], // Parse count from JSON
       remark: json['remark'],
     );
   }
