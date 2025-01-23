@@ -4,10 +4,8 @@ import 'package:mobile_app_decubitus/models/diagnosis_model.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 
 class DiagnosisService {
-  final String baseUrl = '${Custom_Config.BASE_URL}/diagnosis/wound/';
-
   Future<Diagnosis> fetchDiagnosis(int woundId) async {
-    final url = Uri.parse('$baseUrl$woundId');
+    final url = Uri.parse('${Custom_Config.BASE_URL}/diagnosis/wound/');
     print('Fetching diagnosis data from: $url');
 
     try {

@@ -144,7 +144,7 @@ class _PatientListPageState extends State<PatientListPage> {
                             .assignPatientsToNurse(patientId, nurseId);
                       }
                       Navigator.of(context).pop();
-                      await fetchNursePatients(); // Refresh the patient list
+                      await fetchNursePatients();
                     }
                   },
                   child: const Text('ยืนยัน',
@@ -272,7 +272,7 @@ class _PatientListPageState extends State<PatientListPage> {
                                   setState(() {
                                     _showFab = false;
                                   });
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => NurseHomeContent(
@@ -309,11 +309,10 @@ class _PatientListPageState extends State<PatientListPage> {
           ),
         );
       }),
-      floatingActionButton: _showFab
+      floatingActionButton: (_showFab
           ? FloatingActionButton(
               onPressed: () {
-                _showDialogList(
-                    context); // Show the dialog with fetchAllPatients
+                _showDialogList(context);
               },
               backgroundColor: primaryColor,
               foregroundColor: Colors.white,
@@ -322,7 +321,7 @@ class _PatientListPageState extends State<PatientListPage> {
               tooltip: 'Add Item',
               child: const Icon(Icons.add, size: 25.0),
             )
-          : null,
+          : null),
     );
   }
 }

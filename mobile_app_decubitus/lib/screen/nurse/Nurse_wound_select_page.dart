@@ -5,7 +5,8 @@ import 'package:mobile_app_decubitus/models/wound_model.dart';
 import 'package:mobile_app_decubitus/services/wound_service.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_home_content.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_wound_select_form.dart';
-import 'package:mobile_app_decubitus/screen/patient/model_result_page.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_model_result.dart';
+import 'package:intl/intl.dart';
 
 class NurseWoundSelectPage extends StatefulWidget {
   final int perusalId;
@@ -20,6 +21,7 @@ class NurseWoundSelectPage extends StatefulWidget {
 
 class _NurseWoundSelectPageState extends State<NurseWoundSelectPage> {
   late Future<List<WoundGroup>> futureWounds;
+  bool _showFab = true;
 
   @override
   void initState() {
@@ -68,7 +70,8 @@ class _NurseWoundSelectPageState extends State<NurseWoundSelectPage> {
               itemBuilder: (context, index) {
                 final group = woundGroups[index];
                 return Card(
-                  margin: const EdgeInsets.all(8.0),
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 4.0),
                   color: backGroundColor1,
                   shape: RoundedRectangleBorder(
                     side: const BorderSide(color: primaryColor, width: 2),
@@ -83,12 +86,12 @@ class _NurseWoundSelectPageState extends State<NurseWoundSelectPage> {
                         fontSize: 18,
                       ),
                     ),
-                    childrenPadding: const EdgeInsets.symmetric(vertical: 8.0),
+                    childrenPadding: const EdgeInsets.symmetric(vertical: 4.0),
                     children: group.wounds.map((wound) {
                       return ListTile(
                         title: Text('แผล ${wound.count}'),
                         subtitle: Text(
-                          'Status: ${wound.status}',
+                          'Status: ${wound.status}', // Added date formatting
                           style: TextStyle(
                             color: wound.status == 'ตรวจแล้ว'
                                 ? primaryColor
@@ -121,7 +124,7 @@ class _NurseWoundSelectPageState extends State<NurseWoundSelectPage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ModelResultScreen(
+                              builder: (context) => NurseModelResultScreen(
                                 woundId: wound.id,
                               ),
                             ),

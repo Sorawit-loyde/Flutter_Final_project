@@ -6,10 +6,10 @@ import 'package:dropdown_button2/dropdown_button2.dart'; // Import DropdownButto
 import 'package:mobile_app_decubitus/models/wound_model.dart'; // Import your wound model
 import 'package:mobile_app_decubitus/services/wound_service.dart'; // Import your wound service
 import 'package:mobile_app_decubitus/config/config.dart';
-import 'package:mobile_app_decubitus/screen/patient/model_result_page.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_model_result.dart';
 
 class NurseWoundSelectForm extends StatefulWidget {
-  final int perusalId; // Add perusal ID as a parameter
+  final int perusalId;
   final WoundService _woundService = WoundService(Custom_Config.BASE_URL);
 
   NurseWoundSelectForm(
@@ -179,11 +179,10 @@ class _NurseWoundSelectFormState extends State<NurseWoundSelectForm> {
       try {
         final woundId = await widget._woundService.createWound(newWound);
         if (woundId != null) {
-          // Navigate to the ModelResultScreen with the wound ID
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ModelResultScreen(woundId: woundId),
+              builder: (context) => NurseModelResultScreen(woundId: woundId),
             ),
           );
         } else {

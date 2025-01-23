@@ -169,10 +169,14 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () {
+                    setState(() {
+                      _showFab = false;
+                    });
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => PatientListPage()),
+                        builder: (context) => const PatientListPage(),
+                      ),
                     );
                   },
                 ),
@@ -230,8 +234,8 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8)),
                                   child: ListTile(
-                                    contentPadding:
-                                        const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0),
                                     title: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
