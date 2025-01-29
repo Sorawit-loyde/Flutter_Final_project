@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_app_decubitus/models/wound_follow_up_model.dart';
-import 'package:mobile_app_decubitus/services/wound_follow_up_service.dart';
+import 'package:mobile_app_decubitus/models/patient_model.dart';
+import 'package:mobile_app_decubitus/services/patient_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/constant.dart';
-import 'package:mobile_app_decubitus/screen/patient/wound_progress.dart'; // Import the wound progress page
+import 'package:mobile_app_decubitus/screen/patient/wound_progress.dart';
 
 class NurseFollowupContent extends StatefulWidget {
   const NurseFollowupContent({super.key});
@@ -14,13 +14,13 @@ class NurseFollowupContent extends StatefulWidget {
 }
 
 class _NurseFollowupContentState extends State<NurseFollowupContent> {
-  final FollowUpService _followUpService = FollowUpService();
-  late Future<List<FollowUp>> _futureFollowUps;
+  final ApiService _apiService = ApiService();
+  late Future<List<Patient>> _futurePatients;
 
   @override
   void initState() {
     super.initState();
-    _futureFollowUps = _followUpService.fetchFollowUps('patientId');
+    _futurePatients = _apiService.fetchNursePatients();
   }
 
   @override
@@ -32,21 +32,21 @@ class _NurseFollowupContentState extends State<NurseFollowupContent> {
           return MaterialPageRoute(
             builder: (context) => Container(
               color: backGroundColor1, // Set the background color of the page
-              child: FutureBuilder<List<FollowUp>>(
-                future: _futureFollowUps,
+              child: FutureBuilder<List<Patient>>(
+                future: _futurePatients,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (snapshot.hasData) {
-                    final followUps = snapshot.data!;
+                    final patients = snapshot.data!;
                     return ListView.builder(
                       padding: const EdgeInsets.all(16.0),
-                      itemCount: followUps.length,
+                      itemCount: patients.length,
                       itemBuilder: (context, index) {
-                        final followUp = followUps[index];
-                        return FollowUpCard(followUp: followUp);
+                        final patient = patients[index];
+                        return FollowUpCard(patient: patient);
                       },
                     );
                   } else {
@@ -63,13 +63,14 @@ class _NurseFollowupContentState extends State<NurseFollowupContent> {
 }
 
 class FollowUpCard extends StatelessWidget {
-  final FollowUp followUp;
+  final Patient patient;
 
-  const FollowUpCard({required this.followUp});
+  const FollowUpCard({required this.patient});
 
   @override
   Widget build(BuildContext context) {
-    final formattedDate = DateFormat('dd/MM/yyyy').format(followUp.createdAt);
+    final formattedDate =
+        DateFormat('dd/MM/yyyy').format(DateTime.parse(patient.createdAt));
 
     return GestureDetector(
       onTap: () {
@@ -77,7 +78,7 @@ class FollowUpCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => WoundProgress(woundId: followUp.id),
+            builder: (context) => WoundProgress(woundId: patient.id),
           ),
         );
       },
@@ -92,7 +93,7 @@ class FollowUpCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
                 child: Image.network(
-                  '${Custom_Config.Image_URL}/${followUp.imageUrl}',
+                  '${Custom_Config.Image_URL}/${patient.profileImage}',
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,
@@ -104,19 +105,19 @@ class FollowUpCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'วันที่ทำรายการล่าสุด: $formattedDate',
+                      '${patient.firstName} ${patient.lastName}',
                       style: TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4.0),
                     Text(
-                      'ระดับความรุนแรงแผล: ${followUp.woundState.id}',
+                      'Patient Status: ${patient.patientStatus}',
                       style: TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4.0),
                     Text(
-                      'แผลกดทับที่ : ${followUp.area}',
+                      'Created At: $formattedDate',
                       style: TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),

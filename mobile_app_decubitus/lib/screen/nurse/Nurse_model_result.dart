@@ -17,11 +17,32 @@ class NurseModelResultScreen extends StatefulWidget {
 
 class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
   late Future<Diagnosis> diagnosis;
+  final TextEditingController _remarkController = TextEditingController();
+  int _woundState = 1; // Default wound state
+  String _selectedWoundState = 'แผลระดับ: 1'; // Default selected value
 
   @override
   void initState() {
     super.initState();
     diagnosis = DiagnosisService().fetchDiagnosis(widget.woundId);
+  }
+
+  Future<void> _updateDiagnosis() async {
+    try {
+      await DiagnosisService().updateDiagnosis(
+        woundId: widget.woundId,
+        woundState: _woundState,
+        remark: _remarkController.text,
+      );
+      // Provide feedback after successful update
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Diagnosis updated successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update diagnosis: $e')),
+      );
+    }
   }
 
   @override
@@ -40,7 +61,7 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => NurseWoundSelectPage(
-                      perusalId: data.perusalId, patientId: 2),
+                      perusalId: data.perusalId, patientId: data.patientId),
                 ),
               );
             });
@@ -56,23 +77,26 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final data = snapshot.data!;
+            _selectedWoundState =
+                'แผลระดับ: ${data.state}'; // Initialize with current state
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildDateSection(data.createdAt),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   _buildStatusSection(data.woundStatus),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   _buildImageSection(data.woundImage),
-                  const SizedBox(height: 20),
-                  _buildDescriptionSection(data.description),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
+                  _buildDescriptionSection(data.description, data.state),
+                  const SizedBox(height: 10),
                   _buildTreatmentSteps(data.treat),
-                  const SizedBox(height: 20),
-                  if (data.woundStatus == "ตรวจแล้ว")
-                    _buildCommentBox(data.remark),
+                  const SizedBox(height: 10),
+                  _buildCommentBox(),
+                  const SizedBox(height: 10),
+                  _buildUpdateButton(),
                 ],
               ),
             );
@@ -92,7 +116,7 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'วันที่สร้างรายการ:',
+          'วันที่สร้างรายการ: ',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -128,7 +152,7 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'สถานะ:',
+          'สถานะ: ',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -164,7 +188,7 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'รูปแผลกดทับ:',
+          'รูปแผลกดทับ: ',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -184,6 +208,10 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
             child: Image.network(
               '${Custom_Config.Image_URL}/$woundImage',
               fit: BoxFit.contain,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return const Center(child: CircularProgressIndicator());
+              },
               errorBuilder: (context, error, stackTrace) {
                 return const Center(child: Text('Image not available'));
               },
@@ -194,19 +222,12 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
     );
   }
 
-  Widget _buildDescriptionSection(String description) {
+  Widget _buildDescriptionSection(String description, int state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'แผลระดับ: ',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: primaryColor,
-          ),
-        ),
-        const SizedBox(height: 10),
+        _buildWoundLevelDropdown(),
+        SizedBox(height: 10),
         Text(
           description,
           style: const TextStyle(
@@ -224,15 +245,21 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'แนวทางการรักษาเบื้องต้น:',
+          'แนวทางการรักษาเบื้องต้น: ',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: primaryColor,
           ),
         ),
-        const SizedBox(height: 10),
-        ...steps.map((step) => _buildTreatmentStep(step.description)),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: steps.length,
+          itemBuilder: (context, index) {
+            return _buildTreatmentStep(steps[index].description);
+          },
+        ),
       ],
     );
   }
@@ -256,12 +283,12 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
     );
   }
 
-  Widget _buildCommentBox(String? remark) {
+  Widget _buildCommentBox() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'ความคิดเห็น:',
+          'ความคิดเห็น: ',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -269,22 +296,100 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
           ),
         ),
         const SizedBox(height: 10),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(8),
+        TextField(
+          controller: _remarkController,
+          decoration: InputDecoration(
+            hintText: 'Enter remark here...',
+            border: const OutlineInputBorder(),
+            filled: true,
+            fillColor: Colors.grey[200],
           ),
-          child: Text(
-            remark ?? 'ไม่มีความคิดเห็น',
+          maxLines: 4,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWoundLevelDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: primaryColor,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: DropdownButton<String>(
+            value: _selectedWoundState,
+            items: [
+              DropdownMenuItem(
+                value: 'แผลระดับ: 1',
+                child: Text(
+                  'แผลระดับ: 1',
+                  style: TextStyle(fontSize: 20), // Increase font size
+                ),
+              ),
+              DropdownMenuItem(
+                value: 'แผลระดับ: 2',
+                child: Text(
+                  'แผลระดับ: 2',
+                  style: TextStyle(fontSize: 20), // Increase font size
+                ),
+              ),
+              DropdownMenuItem(
+                value: 'แผลระดับ: 3',
+                child: Text(
+                  'แผลระดับ: 3',
+                  style: TextStyle(fontSize: 20), // Increase font size
+                ),
+              ),
+              DropdownMenuItem(
+                value: 'แผลระดับ: 4',
+                child: Text(
+                  'แผลระดับ: 4',
+                  style: TextStyle(fontSize: 20), // Increase font size
+                ),
+              ),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _selectedWoundState = value!;
+                _woundState = int.parse(value.split(': ')[1]);
+              });
+            },
             style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
-            ),
+                color: Colors.white,
+                fontSize: 16), // Increase font size for selected item
+            dropdownColor: primaryColor, // Primary color when dropdown is open
+            underline: Container(), // Remove the underline
+            iconEnabledColor: Colors.white, // White icon color
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildUpdateButton() {
+    return Center(
+      child: ElevatedButton(
+        onPressed: _updateDiagnosis,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryColor,
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          side: const BorderSide(color: primaryColor, width: 2),
+        ),
+        child: const Text(
+          'Update Diagnosis',
+          style: TextStyle(
+            fontSize: 18,
+            color: Colors.white,
+          ),
+        ),
+      ),
     );
   }
 }

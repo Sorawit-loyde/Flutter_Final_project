@@ -62,15 +62,15 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildDateSection(data.createdAt),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   _buildStatusSection(data.woundStatus),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   _buildImageSection(data.woundImage),
-                  const SizedBox(height: 20),
-                  _buildDescriptionSection(data.description),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
+                  _buildDescriptionSection(data.description, data.state),
+                  const SizedBox(height: 10),
                   _buildTreatmentSteps(data.treat),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   if (data.woundStatus == "ตรวจแล้ว")
                     _buildCommentBox(data.remark),
                 ],
@@ -184,6 +184,10 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
             child: Image.network(
               '${Custom_Config.Image_URL}/$woundImage',
               fit: BoxFit.contain,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return const Center(child: CircularProgressIndicator());
+              },
               errorBuilder: (context, error, stackTrace) {
                 return const Center(child: Text('Image not available'));
               },
@@ -194,13 +198,13 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
     );
   }
 
-  Widget _buildDescriptionSection(String description) {
+  Widget _buildDescriptionSection(String description, int state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'แผลระดับ: ',
-          style: TextStyle(
+        Text(
+          'แผลระดับ: $state',
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: primaryColor,
@@ -231,8 +235,14 @@ class _ModelResultScreenState extends State<ModelResultScreen> {
             color: primaryColor,
           ),
         ),
-        const SizedBox(height: 10),
-        ...steps.map((step) => _buildTreatmentStep(step.description)),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: steps.length,
+          itemBuilder: (context, index) {
+            return _buildTreatmentStep(steps[index].description);
+          },
+        ),
       ],
     );
   }

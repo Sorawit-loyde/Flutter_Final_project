@@ -38,6 +38,7 @@ class ApiService {
           'id': json['patient_id'],
           'createdAt': patientJson['createdAt'],
           'updatedAt': patientJson['updatedAt'],
+          'deletedAt': patientJson['deletedAt'],
           'ssid': patientJson['ssid'],
           'sex': patientJson['sex'],
           'first_name': patientJson['first_name'],

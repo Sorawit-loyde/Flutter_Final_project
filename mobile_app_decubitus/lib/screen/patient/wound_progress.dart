@@ -5,6 +5,7 @@ import 'package:mobile_app_decubitus/services/wound_list_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/screen/patient/follow_up_result.dart';
+import 'package:mobile_app_decubitus/screen/patient/followUp_content.dart';
 
 class WoundProgress extends StatelessWidget {
   final int woundId;
@@ -23,8 +24,12 @@ class WoundProgress extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(
-                context); // Navigate back to the previous screen (FollowupContent)
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FollowupContent(),
+              ),
+            );
           },
         ),
       ),
