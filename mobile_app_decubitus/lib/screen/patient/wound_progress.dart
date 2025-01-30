@@ -10,7 +10,7 @@ import 'package:mobile_app_decubitus/screen/patient/followUp_content.dart';
 class WoundProgress extends StatelessWidget {
   final int woundId;
 
-  const WoundProgress({required this.woundId});
+  const WoundProgress({super.key, required this.woundId});
 
   @override
   Widget build(BuildContext context) {
@@ -20,14 +20,14 @@ class WoundProgress extends StatelessWidget {
         toolbarHeight: 50.0, // Narrow the AppBar
         backgroundColor:
             backGroundColor1, // Set AppBar color to match the background
-        title: Text("Wound Progress"),
+        title: const Text("Wound Progress"),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => FollowupContent(),
+                builder: (context) => const FollowupContent(),
               ),
             );
           },
@@ -49,7 +49,7 @@ class WoundProgress extends StatelessWidget {
                   future: WoundService().fetchWounds(woundId),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
@@ -57,7 +57,7 @@ class WoundProgress extends StatelessWidget {
                         shrinkWrap:
                             true, // Prevent the ListView from taking unnecessary space
                         physics:
-                            NeverScrollableScrollPhysics(), // Disable scrolling within the ListView
+                            const NeverScrollableScrollPhysics(), // Disable scrolling within the ListView
                         itemCount:
                             snapshot.data!.length, // Number of cards to display
                         itemBuilder: (context, index) {
@@ -76,7 +76,7 @@ class WoundProgress extends StatelessWidget {
                               );
                             },
                             child: Card(
-                              margin: EdgeInsets.symmetric(
+                              margin: const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 20),
                               elevation: 5,
                               color:
@@ -92,7 +92,7 @@ class WoundProgress extends StatelessWidget {
                                       height: 100,
                                       fit: BoxFit.cover,
                                     ),
-                                    SizedBox(width: 15),
+                                    const SizedBox(width: 15),
                                     // Details on the right
                                     Expanded(
                                       child: Column(
@@ -102,19 +102,19 @@ class WoundProgress extends StatelessWidget {
                                           // Date of the last action
                                           Text(
                                             'วันที่ทำรายการล่าสุด: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(wound.updatedAt))}',
-                                            style: TextStyle(fontSize: 16),
+                                            style: const TextStyle(fontSize: 16),
                                           ),
-                                          SizedBox(height: 8),
+                                          const SizedBox(height: 8),
                                           // Wound severity level (just the ID number)
                                           Text(
                                             'ระดับความรุนแรงแผล: ${wound.woundState.id}', // Show only the ID number
-                                            style: TextStyle(fontSize: 16),
+                                            style: const TextStyle(fontSize: 16),
                                           ),
-                                          SizedBox(height: 8),
+                                          const SizedBox(height: 8),
                                           // Wound reference area (if exists)
                                           Text(
                                             'แผลกดทับที่: ${wound.area}',
-                                            style: TextStyle(fontSize: 16),
+                                            style: const TextStyle(fontSize: 16),
                                           ),
                                         ],
                                       ),
@@ -127,7 +127,7 @@ class WoundProgress extends StatelessWidget {
                         },
                       );
                     } else {
-                      return Text('No wounds found.');
+                      return const Text('No wounds found.');
                     }
                   },
                 ),

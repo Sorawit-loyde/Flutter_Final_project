@@ -227,7 +227,7 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildWoundLevelDropdown(),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           description,
           style: const TextStyle(
@@ -299,7 +299,7 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
         TextField(
           controller: _remarkController,
           decoration: InputDecoration(
-            hintText: 'Enter remark here...',
+            hintText: 'ความคิดเห็นเพิ่มเติม',
             border: const OutlineInputBorder(),
             filled: true,
             fillColor: Colors.grey[200],
@@ -322,7 +322,7 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: DropdownButton<String>(
             value: _selectedWoundState,
-            items: [
+            items: const [
               DropdownMenuItem(
                 value: 'แผลระดับ: 1',
                 child: Text(
@@ -383,7 +383,7 @@ class _NurseModelResultScreenState extends State<NurseModelResultScreen> {
           side: const BorderSide(color: primaryColor, width: 2),
         ),
         child: const Text(
-          'Update Diagnosis',
+          'รายงานผลการตรวจ',
           style: TextStyle(
             fontSize: 18,
             color: Colors.white,

@@ -37,16 +37,15 @@ class RSAService {
     final topLevelSeq = asn1Parser.nextObject() as ASN1Sequence;
 
     // Extract the public key's modulus and exponent
-    final publicKeyBitString = topLevelSeq.elements![1] as ASN1BitString;
+    final publicKeyBitString = topLevelSeq.elements[1] as ASN1BitString;
     final publicKeyAsn1 = ASN1Parser(publicKeyBitString.contentBytes());
     final publicKeySeq = publicKeyAsn1.nextObject() as ASN1Sequence;
 
-    final modulus =
-        (publicKeySeq.elements![0] as ASN1Integer).valueAsBigInteger;
+    final modulus = (publicKeySeq.elements[0] as ASN1Integer).valueAsBigInteger;
     final exponent =
-        (publicKeySeq.elements![1] as ASN1Integer).valueAsBigInteger;
+        (publicKeySeq.elements[1] as ASN1Integer).valueAsBigInteger;
 
-    return RSAPublicKey(modulus!, exponent!);
+    return RSAPublicKey(modulus, exponent);
   }
 
   /// Encrypt data using the provided RSAPublicKey with RSA-OAEP and SHA-256

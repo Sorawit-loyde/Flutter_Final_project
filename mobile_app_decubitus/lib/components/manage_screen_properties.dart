@@ -41,17 +41,17 @@ class HomePage extends StatelessWidget {
 
               if (roleId == 2) {
                 pages = [
-                  HomeContent(),
-                  RoomPage(),
-                  FollowupContent(),
-                  ProfileContent(),
+                  const HomeContent(),
+                  const RoomPage(),
+                  const FollowupContent(),
+                  const ProfileContent(),
                 ];
               } else if (roleId == 3) {
                 pages = [
-                  PatientListPage(),
-                  RoomPage(),
-                  NurseFollowupContent(),
-                  ProfileContent(),
+                  const PatientListPage(),
+                  const RoomPage(),
+                  const NurseFollowupContent(),
+                  const ProfileContent(),
                 ];
               } else {
                 // Default or other role screens

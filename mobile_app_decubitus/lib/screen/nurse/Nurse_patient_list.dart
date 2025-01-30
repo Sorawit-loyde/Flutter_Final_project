@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_home_content.dart';
 
 class PatientListPage extends StatefulWidget {
-  const PatientListPage({Key? key}) : super(key: key);
+  const PatientListPage({super.key});
 
   @override
   _PatientListPageState createState() => _PatientListPageState();

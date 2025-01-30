@@ -21,7 +21,7 @@ class NurseWoundSelectPage extends StatefulWidget {
 
 class _NurseWoundSelectPageState extends State<NurseWoundSelectPage> {
   late Future<List<WoundGroup>> futureWounds;
-  bool _showFab = true;
+  final bool _showFab = true;
 
   @override
   void initState() {

@@ -65,7 +65,7 @@ class _NurseFollowupContentState extends State<NurseFollowupContent> {
 class FollowUpCard extends StatelessWidget {
   final Patient patient;
 
-  const FollowUpCard({required this.patient});
+  const FollowUpCard({super.key, required this.patient});
 
   @override
   Widget build(BuildContext context) {
@@ -106,19 +106,19 @@ class FollowUpCard extends StatelessWidget {
                   children: [
                     Text(
                       '${patient.firstName} ${patient.lastName}',
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4.0),
                     Text(
                       'Patient Status: ${patient.patientStatus}',
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4.0),
                     Text(
                       'Created At: $formattedDate',
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
                   ],

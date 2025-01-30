@@ -3,7 +3,7 @@ import 'package:mobile_app_decubitus/services/user_profile_service.dart';
 import 'package:mobile_app_decubitus/models/user_profile_model.dart';
 
 class ProfileContent extends StatefulWidget {
-  const ProfileContent({Key? key}) : super(key: key);
+  const ProfileContent({super.key});
 
   @override
   State<ProfileContent> createState() => _ProfileContentState();

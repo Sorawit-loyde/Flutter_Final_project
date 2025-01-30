@@ -65,7 +65,7 @@ class _FollowupContentState extends State<FollowupContent> {
 class FollowUpCard extends StatelessWidget {
   final FollowUp followUp;
 
-  const FollowUpCard({required this.followUp});
+  const FollowUpCard({super.key, required this.followUp});
 
   @override
   Widget build(BuildContext context) {
@@ -105,19 +105,19 @@ class FollowUpCard extends StatelessWidget {
                   children: [
                     Text(
                       'วันที่ทำรายการล่าสุด: $formattedDate',
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4.0),
                     Text(
                       'ระดับความรุนแรงแผล: ${followUp.woundState.id}',
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4.0),
                     Text(
                       'แผลกดทับที่ : ${followUp.area}',
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
                   ],
