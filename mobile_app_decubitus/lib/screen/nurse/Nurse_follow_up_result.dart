@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/models/diagnosis_model.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_wound_progress.dart';
 import 'package:mobile_app_decubitus/services/diagnosis_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
-import 'package:mobile_app_decubitus/screen/Nurse/Nurse_wound_select_page.dart';
 import 'package:intl/intl.dart';
-import 'Nurse_model_edit.dart';
 
-class NurseModelResultScreen extends StatefulWidget {
+class NurseFollowupResultScreen extends StatefulWidget {
   final int woundId;
 
-  const NurseModelResultScreen({super.key, required this.woundId});
+  const NurseFollowupResultScreen({super.key, required this.woundId});
 
   @override
-  _NurseModelResultScreen createState() => _NurseModelResultScreen();
+  _NurseFollowupResultScreenState createState() =>
+      _NurseFollowupResultScreenState();
 }
 
-class _NurseModelResultScreen extends State<NurseModelResultScreen> {
+class _NurseFollowupResultScreenState extends State<NurseFollowupResultScreen> {
   late Future<Diagnosis> diagnosis;
 
   @override
@@ -40,27 +40,13 @@ class _NurseModelResultScreen extends State<NurseModelResultScreen> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NurseWoundSelectPage(
-                      perusalId: data.perusalId, patientId: data.patientId),
+                  builder: (context) =>
+                      NurseWoundProgress(woundId: widget.woundId),
                 ),
               );
             });
           },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit, color: primaryColor),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      NurseModelResultEditScreen(woundId: widget.woundId),
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: FutureBuilder<Diagnosis>(
         future: diagnosis,
@@ -77,17 +63,14 @@ class _NurseModelResultScreen extends State<NurseModelResultScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildDateSection(data.createdAt),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   _buildStatusSection(data.woundStatus),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   _buildImageSection(data.woundImage),
-                  const SizedBox(height: 10),
-                  _buildDescriptionSection(data.description, data.state),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
+                  _buildDescriptionSection(data.description),
+                  const SizedBox(height: 20),
                   _buildTreatmentSteps(data.treat),
-                  const SizedBox(height: 10),
-                  if (data.woundStatus == "ตรวจแล้ว")
-                    _buildCommentBox(data.remark),
                 ],
               ),
             );
@@ -107,7 +90,7 @@ class _NurseModelResultScreen extends State<NurseModelResultScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'วันที่สร้างรายการ: ',
+          'วันที่สร้างรายการ:',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -116,6 +99,7 @@ class _NurseModelResultScreen extends State<NurseModelResultScreen> {
         ),
         const SizedBox(height: 10),
         Container(
+          width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           decoration: BoxDecoration(
             color: Colors.grey[200],
@@ -188,7 +172,7 @@ class _NurseModelResultScreen extends State<NurseModelResultScreen> {
         const SizedBox(height: 10),
         Container(
           width: double.infinity,
-          height: 200,
+          height: 200, // Adjust the height as needed
           decoration: BoxDecoration(
             border: Border.all(color: primaryColor, width: 2),
             borderRadius: BorderRadius.circular(12),
@@ -197,11 +181,8 @@ class _NurseModelResultScreen extends State<NurseModelResultScreen> {
             borderRadius: BorderRadius.circular(12),
             child: Image.network(
               '${Custom_Config.Image_URL}/$woundImage',
-              fit: BoxFit.contain,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return const Center(child: CircularProgressIndicator());
-              },
+              fit: BoxFit
+                  .contain, // Ensures the entire image fits within the box
               errorBuilder: (context, error, stackTrace) {
                 return const Center(child: Text('Image not available'));
               },
@@ -212,13 +193,13 @@ class _NurseModelResultScreen extends State<NurseModelResultScreen> {
     );
   }
 
-  Widget _buildDescriptionSection(String description, int state) {
+  Widget _buildDescriptionSection(String description) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'แผลระดับ: $state',
-          style: const TextStyle(
+        const Text(
+          'แผลระดับ: ',
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: primaryColor,
@@ -249,14 +230,8 @@ class _NurseModelResultScreen extends State<NurseModelResultScreen> {
             color: primaryColor,
           ),
         ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: steps.length,
-          itemBuilder: (context, index) {
-            return _buildTreatmentStep(steps[index].description);
-          },
-        ),
+        const SizedBox(height: 10),
+        ...steps.map((step) => _buildTreatmentStep(step.description)),
       ],
     );
   }
@@ -273,38 +248,6 @@ class _NurseModelResultScreen extends State<NurseModelResultScreen> {
             style: const TextStyle(
               fontSize: 16,
               color: primaryColor,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCommentBox(String? remark) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'ความคิดเห็น:',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: primaryColor,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            remark ?? 'ไม่มีความคิดเห็น',
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
             ),
           ),
         ),

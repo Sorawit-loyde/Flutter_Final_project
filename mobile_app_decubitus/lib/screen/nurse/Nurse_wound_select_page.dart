@@ -6,7 +6,6 @@ import 'package:mobile_app_decubitus/services/wound_service.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_home_content.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_wound_select_form.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_model_result.dart';
-import 'package:intl/intl.dart';
 
 class NurseWoundSelectPage extends StatefulWidget {
   final int perusalId;

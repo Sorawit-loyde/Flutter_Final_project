@@ -4,7 +4,7 @@ import 'package:mobile_app_decubitus/models/patient_model.dart';
 import 'package:mobile_app_decubitus/services/patient_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/constant.dart';
-import 'package:mobile_app_decubitus/screen/patient/wound_progress.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_wound_progress.dart';
 
 class NurseFollowupContent extends StatefulWidget {
   const NurseFollowupContent({super.key});
@@ -78,7 +78,7 @@ class FollowUpCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => WoundProgress(woundId: patient.id),
+            builder: (context) => NurseWoundProgress(woundId: patient.id),
           ),
         );
       },
