@@ -139,14 +139,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 const SizedBox.shrink(), // If no roles, show nothing
             ],
           ),
-          const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.edit),
-            color: backGroundColor2,
-            onPressed: () {
-              print('Edit icon clicked!');
-            },
-          ),
         ],
       ),
     );

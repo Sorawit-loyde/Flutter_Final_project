@@ -69,9 +69,6 @@ class FollowUpCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formattedDate =
-        DateFormat('dd/MM/yyyy').format(DateTime.parse(patient.createdAt));
-
     return GestureDetector(
       onTap: () {
         // Navigate to WoundProgressPage, passing the woundId
@@ -116,11 +113,6 @@ class FollowUpCard extends StatelessWidget {
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4.0),
-                    Text(
-                      'Created At: $formattedDate',
-                      style: const TextStyle(
-                          fontSize: 16.0, fontWeight: FontWeight.bold),
-                    ),
                   ],
                 ),
               ),
