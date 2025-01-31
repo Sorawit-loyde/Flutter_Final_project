@@ -21,7 +21,6 @@ class NurseWoundProgress extends StatelessWidget {
         toolbarHeight: 50.0, // Narrow the AppBar
         backgroundColor:
             backGroundColor1, // Set AppBar color to match the background
-        title: const Text("Wound Progress"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {

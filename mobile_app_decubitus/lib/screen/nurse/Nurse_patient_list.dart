@@ -221,7 +221,7 @@ class _PatientListPageState extends State<PatientListPage> {
                 child: TextField(
                   onChanged: _filterPatients,
                   decoration: InputDecoration(
-                    hintText: 'Search...',
+                    hintText: 'ค้นหาผู้ป่วย...',
                     enabledBorder: OutlineInputBorder(
                       borderSide: const BorderSide(color: greyColor1),
                       borderRadius: BorderRadius.circular(20.0),

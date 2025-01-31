@@ -60,8 +60,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeader(context),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 45),
                   _userProfile(user), // Pass the fetched user data
                 ],
               );
@@ -71,21 +70,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
           },
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return const Row(
-      children: [
-        Text(
-          'Home',
-          style: TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.w600,
-            color: backGroundColor2,
-          ),
-        ),
-      ],
     );
   }
 

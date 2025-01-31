@@ -10,10 +10,13 @@ import 'package:mobile_app_decubitus/screen/nurse/Nurse_model_result.dart';
 
 class NurseWoundSelectForm extends StatefulWidget {
   final int perusalId;
+  final int patinetId;
   final WoundService _woundService = WoundService(Custom_Config.BASE_URL);
 
   NurseWoundSelectForm(
-      {super.key, required this.perusalId}); // Update constructor
+      {super.key,
+      required this.perusalId,
+      required this.patinetId}); // Update constructor
 
   @override
   _NurseWoundSelectFormState createState() => _NurseWoundSelectFormState();
@@ -52,9 +55,11 @@ class _NurseWoundSelectFormState extends State<NurseWoundSelectForm> {
 
   Future<void> _fetchOldWounds() async {
     try {
-      if (userId != null && selectedLocation != null) {
+      if (widget.patinetId != null && selectedLocation != null) {
         oldWoundsList = await widget._woundService
-            .fetchOldWounds(userId!, selectedLocation!);
+            .fetchOldWounds(widget.patinetId!, selectedLocation!);
+        print(widget.patinetId);
+        print(selectedLocation!);
         setState(() {});
       }
     } catch (e) {

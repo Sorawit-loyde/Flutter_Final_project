@@ -143,8 +143,10 @@ class _NurseWoundSelectPageState extends State<NurseWoundSelectPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  NurseWoundSelectForm(perusalId: widget.perusalId),
+              builder: (context) => NurseWoundSelectForm(
+                perusalId: widget.perusalId,
+                patinetId: widget.patientId,
+              ),
             ),
           );
         },

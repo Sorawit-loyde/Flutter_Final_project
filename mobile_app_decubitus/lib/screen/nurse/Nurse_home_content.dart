@@ -25,7 +25,12 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
   void initState() {
     super.initState();
     fetchPatientName();
-    fetchPerusals();
+    fetchPerusals().then((perusals) {
+      setState(() {
+        _allPerusals = perusals;
+        _filteredPerusals = perusals;
+      });
+    });
   }
 
   Future<void> fetchPatientName() async {
@@ -47,58 +52,20 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
     return await perusalService.getPerusalsNurse(widget.patientId);
   }
 
-  Future<void> deletePerusal(int id) async {
-    bool confirmDelete = await _showDeleteConfirmationDialog();
-    if (confirmDelete) {
-      try {
-        await PerusalService().deletePerusal(id);
-        setState(() {
-          _allPerusals.removeWhere((perusal) => perusal.id == id);
-          _filteredPerusals = _allPerusals;
-        });
-      } catch (e) {
-        print(e);
-      }
-    }
-  }
-
-  Future<bool> _showDeleteConfirmationDialog() async {
-    return await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('ยืนยันการลบ'),
-              content: const Text('คุณแน่ใจหรือว่าต้องการลบรายการตรวจครั้งนี้'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('ยืนยัน',
-                      style: TextStyle(color: primaryColor)),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('ยกเลิก',
-                      style: TextStyle(color: primaryColor)),
-                ),
-              ],
-            );
-          },
-        ) ??
-        false;
-  }
-
   String formatPerusalDate(DateTime date, int index) {
     return "การตรวจครั้งที่ $index - ${DateFormat('dd/MM/yyyy').format(date)}";
   }
 
   void _filterPerusals(String query) {
     setState(() {
-      _searchQuery = query;
+      _searchQuery = query.toLowerCase();
       _filteredPerusals = _searchQuery.isEmpty
           ? _allPerusals
           : _allPerusals
-              .where((perusal) =>
-                  perusal.perusalDate.toString().contains(_searchQuery))
+              .where((perusal) => formatPerusalDate(
+                      perusal.perusalDate, _allPerusals.indexOf(perusal) + 1)
+                  .toLowerCase()
+                  .contains(_searchQuery))
               .toList();
     });
   }
@@ -125,7 +92,8 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
             TextButton(
               onPressed: () async {
                 try {
-                  await PerusalService().addPerusal(today);
+                  await PerusalService()
+                      .NurseaddPerusal(today, widget.patientId as int);
                   Navigator.pop(context);
                   fetchUpdatedPerusals();
                 } catch (e) {
@@ -164,7 +132,7 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
             builder: (context) => Scaffold(
               appBar: AppBar(
                 backgroundColor: backGroundColor1,
-                toolbarHeight: 60.0,
+                toolbarHeight: 50.0,
                 title: Text(_patientName),
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),
@@ -184,31 +152,36 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
               backgroundColor: backGroundColor1,
               body: Column(
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 14.0),
+                    child: TextField(
+                      onChanged: _filterPerusals,
+                      decoration: InputDecoration(
+                        hintText: 'ค้นหาการตรวจ...',
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: greyColor1),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.black),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        fillColor: greyColor1,
+                        filled: true,
+                        suffixIcon: const Icon(Icons.search),
+                      ),
+                    ),
+                  ),
                   Expanded(
-                    child: FutureBuilder<List<Perusal>>(
-                      future: fetchPerusals(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(
-                              child: Text(
-                                  'Error fetching data: ${snapshot.error}'));
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return const Center(
-                              child: Text(
-                                  'กดปุ่มเพิ่มขวาล่างเพื่อเพิ่มรายการตรวจ'));
-                        } else {
-                          _allPerusals = snapshot.data!;
-                          _filteredPerusals = _allPerusals;
-
-                          return ListView.separated(
+                    child: _filteredPerusals.isEmpty
+                        ? Center(
+                            child:
+                                Text('กดปุ่มเพิ่มขวาล่างเพื่อเพิ่มรายการตรวจ'),
+                          )
+                        : ListView.separated(
                             itemCount: _filteredPerusals.length,
                             separatorBuilder: (context, index) =>
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 10),
                             itemBuilder: (context, index) {
                               final perusal = _filteredPerusals[index];
 
@@ -222,8 +195,9 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
                                     MaterialPageRoute(
                                       builder: (context) =>
                                           NurseWoundSelectPage(
-                                              perusalId: perusal.id,
-                                              patientId: widget.patientId),
+                                        perusalId: perusal.id,
+                                        patientId: widget.patientId,
+                                      ),
                                     ),
                                   );
                                 },
@@ -232,10 +206,11 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
                                       horizontal: 16.0),
                                   color: tertiaryColor,
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8)),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                   child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0),
+                                    contentPadding:
+                                        const EdgeInsets.fromLTRB(10, 4, 10, 4),
                                     title: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
@@ -249,43 +224,33 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
                                                 color: Colors.black),
                                           ),
                                         ),
-                                        IconButton(
-                                          icon: const Icon(Icons.delete,
-                                              color: Colors.red),
-                                          onPressed: () {
-                                            deletePerusal(perusal.id);
-                                          },
-                                        ),
                                       ],
                                     ),
                                   ),
                                 ),
                               );
                             },
-                          );
-                        }
-                      },
-                    ),
+                          ),
                   ),
                 ],
               ),
+              floatingActionButton: (_showFab
+                  ? FloatingActionButton(
+                      onPressed: () {
+                        _showAddPerusalDialog();
+                      },
+                      backgroundColor: primaryColor,
+                      foregroundColor: Colors.white,
+                      elevation: 0.0,
+                      shape: const CircleBorder(),
+                      tooltip: 'Add Item',
+                      child: const Icon(Icons.add, size: 25.0),
+                    )
+                  : null),
             ),
           );
         },
       ),
-      floatingActionButton: (_showFab
-          ? FloatingActionButton(
-              onPressed: () {
-                _showAddPerusalDialog();
-              },
-              backgroundColor: primaryColor,
-              foregroundColor: Colors.white,
-              elevation: 0.0,
-              shape: const CircleBorder(),
-              tooltip: 'Add Item',
-              child: const Icon(Icons.add, size: 25.0),
-            )
-          : null),
     );
   }
 }

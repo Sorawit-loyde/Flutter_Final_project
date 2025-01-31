@@ -21,52 +21,17 @@ class _HomeContentState extends State<HomeContent> {
   @override
   void initState() {
     super.initState();
-    fetchPerusals();
+    fetchPerusals().then((perusals) {
+      setState(() {
+        _allPerusals = perusals;
+        _filteredPerusals = perusals;
+      });
+    });
   }
 
   Future<List<Perusal>> fetchPerusals() async {
     final perusalService = PerusalService();
     return await perusalService.getPerusals();
-  }
-
-  Future<void> deletePerusal(int id) async {
-    bool confirmDelete = await _showDeleteConfirmationDialog();
-    if (confirmDelete) {
-      try {
-        await PerusalService().deletePerusal(id);
-        setState(() {
-          _allPerusals.removeWhere((perusal) => perusal.id == id);
-          _filteredPerusals = _allPerusals;
-        });
-      } catch (e) {
-        print(e);
-      }
-    }
-  }
-
-  Future<bool> _showDeleteConfirmationDialog() async {
-    return await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('ยืนยันการลบ'),
-              content: const Text('คุณแน่ใจหรือว่าต้องการลบรายการตรวจครั้งนี้'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('ยืนยัน',
-                      style: TextStyle(color: primaryColor)),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('ยกเลิก',
-                      style: TextStyle(color: primaryColor)),
-                ),
-              ],
-            );
-          },
-        ) ??
-        false;
   }
 
   String formatPerusalDate(DateTime date, int index) {
@@ -75,12 +40,14 @@ class _HomeContentState extends State<HomeContent> {
 
   void _filterPerusals(String query) {
     setState(() {
-      _searchQuery = query;
+      _searchQuery = query.toLowerCase();
       _filteredPerusals = _searchQuery.isEmpty
           ? _allPerusals
           : _allPerusals
-              .where((perusal) =>
-                  perusal.perusalDate.toString().contains(_searchQuery))
+              .where((perusal) => formatPerusalDate(
+                      perusal.perusalDate, _allPerusals.indexOf(perusal) + 1)
+                  .toLowerCase()
+                  .contains(_searchQuery))
               .toList();
     });
   }
@@ -151,7 +118,7 @@ class _HomeContentState extends State<HomeContent> {
                   child: TextField(
                     onChanged: _filterPerusals,
                     decoration: InputDecoration(
-                      hintText: 'Search...',
+                      hintText: 'ค้นหาการตรวจ...',
                       enabledBorder: OutlineInputBorder(
                         borderSide: const BorderSide(color: greyColor1),
                         borderRadius: BorderRadius.circular(20.0),
@@ -167,27 +134,14 @@ class _HomeContentState extends State<HomeContent> {
                   ),
                 ),
                 Expanded(
-                  child: FutureBuilder<List<Perusal>>(
-                    future: fetchPerusals(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(
-                            child:
-                                Text('Error fetching data: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(
-                            child:
-                                Text('กดปุ่มเพิ่มขวาล่างเพื่อเพิ่มรายการตรวจ'));
-                      } else {
-                        _allPerusals = snapshot.data!;
-                        _filteredPerusals = _allPerusals;
-
-                        return ListView.separated(
+                  child: _filteredPerusals.isEmpty
+                      ? Center(
+                          child: Text('กดปุ่มเพิ่มขวาล่างเพื่อเพิ่มรายการตรวจ'),
+                        )
+                      : ListView.separated(
                           itemCount: _filteredPerusals.length,
                           separatorBuilder: (context, index) =>
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 10),
                           itemBuilder: (context, index) {
                             final perusal = _filteredPerusals[index];
 
@@ -199,8 +153,9 @@ class _HomeContentState extends State<HomeContent> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        WoundSelectPage(perusalId: perusal.id),
+                                    builder: (context) => WoundSelectPage(
+                                      perusalId: perusal.id,
+                                    ),
                                   ),
                                 );
                               },
@@ -209,7 +164,8 @@ class _HomeContentState extends State<HomeContent> {
                                     horizontal: 16.0),
                                 color: tertiaryColor,
                                 shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8)),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                                 child: ListTile(
                                   contentPadding:
                                       const EdgeInsets.fromLTRB(10, 4, 10, 4),
@@ -226,23 +182,13 @@ class _HomeContentState extends State<HomeContent> {
                                               color: Colors.black),
                                         ),
                                       ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete,
-                                            color: Colors.red),
-                                        onPressed: () {
-                                          deletePerusal(perusal.id);
-                                        },
-                                      )
                                     ],
                                   ),
                                 ),
                               ),
                             );
                           },
-                        );
-                      }
-                    },
-                  ),
+                        ),
                 ),
               ],
             ),

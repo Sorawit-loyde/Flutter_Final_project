@@ -10,8 +10,8 @@ class WoundService {
 
   WoundService(this.baseUrl);
 
-  Future<List<Wound>> fetchOldWounds(int perusalId, String area) async {
-    final url = '$baseUrl/wound/wounds/$perusalId/$area'; // Construct the URL
+  Future<List<Wound>> fetchOldWounds(int patinetId, String area) async {
+    final url = '$baseUrl/wound/wounds/$patinetId/$area'; // Construct the URL
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {

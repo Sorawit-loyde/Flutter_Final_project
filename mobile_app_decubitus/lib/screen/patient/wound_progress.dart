@@ -17,10 +17,9 @@ class WoundProgress extends StatelessWidget {
     return Scaffold(
       backgroundColor: backGroundColor1,
       appBar: AppBar(
-        toolbarHeight: 50.0, // Narrow the AppBar
+        toolbarHeight: 30.0, // Narrow the AppBar
         backgroundColor:
             backGroundColor1, // Set AppBar color to match the background
-        title: const Text("Wound Progress"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -102,19 +101,22 @@ class WoundProgress extends StatelessWidget {
                                           // Date of the last action
                                           Text(
                                             'วันที่ทำรายการล่าสุด: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(wound.updatedAt))}',
-                                            style: const TextStyle(fontSize: 16),
+                                            style:
+                                                const TextStyle(fontSize: 16),
                                           ),
                                           const SizedBox(height: 8),
                                           // Wound severity level (just the ID number)
                                           Text(
                                             'ระดับความรุนแรงแผล: ${wound.woundState.id}', // Show only the ID number
-                                            style: const TextStyle(fontSize: 16),
+                                            style:
+                                                const TextStyle(fontSize: 16),
                                           ),
                                           const SizedBox(height: 8),
                                           // Wound reference area (if exists)
                                           Text(
                                             'แผลกดทับที่: ${wound.area}',
-                                            style: const TextStyle(fontSize: 16),
+                                            style:
+                                                const TextStyle(fontSize: 16),
                                           ),
                                         ],
                                       ),
