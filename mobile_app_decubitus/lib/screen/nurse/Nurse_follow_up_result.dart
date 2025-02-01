@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
-import 'package:mobile_app_decubitus/models/diagnosis_model.dart';
-import 'package:mobile_app_decubitus/screen/nurse/Nurse_wound_progress.dart';
-import 'package:mobile_app_decubitus/services/diagnosis_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_app_decubitus/models/diagnosis_model.dart';
+import 'package:mobile_app_decubitus/services/diagnosis_service.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_wound_progress.dart';
 
 class NurseFollowupResultScreen extends StatefulWidget {
   final int woundId;

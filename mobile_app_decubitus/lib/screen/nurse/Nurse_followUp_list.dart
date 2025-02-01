@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app_decubitus/models/patient_model.dart';
-import 'package:mobile_app_decubitus/services/patient_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/constant.dart';
+import 'package:mobile_app_decubitus/models/patient_model.dart';
+import 'package:mobile_app_decubitus/services/patient_service.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_follow_up_content.dart';
 
 class NurseFollowupList extends StatefulWidget {
@@ -38,7 +38,7 @@ class _NurseFollowupListState extends State<NurseFollowupList> {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (snapshot.hasData) {
+                  } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                     final patients = snapshot.data!;
                     return ListView.builder(
                       padding: const EdgeInsets.all(16.0),
@@ -49,7 +49,8 @@ class _NurseFollowupListState extends State<NurseFollowupList> {
                       },
                     );
                   } else {
-                    return const Center(child: Text('No data available'));
+                    return const Center(
+                        child: Text('ยังไม่มีผู้ป่วยในการดูแล'));
                   }
                 },
               ),

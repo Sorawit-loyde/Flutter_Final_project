@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_app_decubitus/models/wound_follow_up_model.dart';
-import 'package:mobile_app_decubitus/services/wound_follow_up_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/constant.dart';
+import 'package:mobile_app_decubitus/models/wound_follow_up_model.dart';
+import 'package:mobile_app_decubitus/services/wound_follow_up_service.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_wound_progress.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_followUp_list.dart';
 
@@ -25,6 +25,7 @@ class _NurseFollowUpContentState extends State<NurseFollowUpContent> {
     _futureFollowUps = _followUpService.nursefetchFollowUps(widget.patientId);
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backGroundColor1,
@@ -56,7 +57,7 @@ class _NurseFollowUpContentState extends State<NurseFollowUpContent> {
                       return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (snapshot.hasData) {
+                    } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                       final followUps = snapshot.data!;
                       return ListView.builder(
                         padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
@@ -68,7 +69,8 @@ class _NurseFollowUpContentState extends State<NurseFollowUpContent> {
                         },
                       );
                     } else {
-                      return const Center(child: Text('No data available'));
+                      return const Center(
+                          child: Text('ผู้ป่วยยังไม่มีแผลให้ติดตาม'));
                     }
                   },
                 ),
