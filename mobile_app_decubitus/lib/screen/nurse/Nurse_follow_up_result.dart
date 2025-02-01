@@ -40,8 +40,9 @@ class _NurseFollowupResultScreenState extends State<NurseFollowupResultScreen> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      NurseWoundProgress(woundId: widget.woundId),
+                  builder: (context) => NurseWoundProgress(
+                      woundId: widget.woundId,
+                      patientId: data.patientId.toString()),
                 ),
               );
             });

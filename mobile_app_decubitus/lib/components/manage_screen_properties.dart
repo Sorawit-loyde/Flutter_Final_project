@@ -5,7 +5,7 @@ import 'package:mobile_app_decubitus/screen/patient/home_content.dart';
 import 'package:mobile_app_decubitus/screen/patient/followUp_content.dart';
 import 'package:mobile_app_decubitus/screen/patient/profile_content.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_patient_list.dart';
-import 'package:mobile_app_decubitus/screen/nurse/Nurse_followUp_content.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_followUp_list.dart';
 import 'package:mobile_app_decubitus/screen/room_page.dart';
 // import 'package:mobile_app_decubitus/screen/nurse/profile_content.dart';
 import 'package:mobile_app_decubitus/services/user_service.dart';
@@ -50,7 +50,7 @@ class HomePage extends StatelessWidget {
                 pages = [
                   const PatientListPage(),
                   const RoomPage(),
-                  const NurseFollowupContent(),
+                  const NurseFollowupList(),
                   const ProfileContent(),
                 ];
               } else {

@@ -8,7 +8,13 @@ class WoundService {
 
   Future<List<Wound>> fetchWounds(int woundId) async {
     final url = Uri.parse('$baseUrl/wound/followup/$woundId');
+    print('Sending request to: $url'); // Log the URL being sent
+
     final response = await http.get(url);
+
+    print(
+        'Received response: ${response.statusCode}'); // Log the response status code
+    print('Response body: ${response.body}'); // Log the response body
 
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = json.decode(response.body);

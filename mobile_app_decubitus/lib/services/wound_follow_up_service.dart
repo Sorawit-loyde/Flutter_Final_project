@@ -38,4 +38,29 @@ class FollowUpService {
       throw Exception('An error occurred while fetching follow-ups: $e');
     }
   }
+
+  Future<List<FollowUp>> nursefetchFollowUps(String patientId) async {
+    try {
+      final String url = '${Custom_Config.BASE_URL}/wound/wounds/$patientId';
+      print(patientId);
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> responseBody = jsonDecode(response.body);
+        List<FollowUp> followUps = responseBody
+            .map((dynamic item) => FollowUp.fromJson(item))
+            .toList();
+        return followUps;
+      } else {
+        // Handle non-successful response
+        throw Exception('Failed to load follow-ups: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      // Handle exceptions
+      throw Exception('An error occurred while fetching follow-ups: $e');
+    }
+  }
 }

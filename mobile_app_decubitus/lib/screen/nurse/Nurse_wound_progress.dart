@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_app_decubitus/models/wound_list_model.dart';
-import 'package:mobile_app_decubitus/screen/nurse/Nurse_followUp_content.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_follow_up_content.dart';
 import 'package:mobile_app_decubitus/services/wound_list_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_follow_up_result.dart';
-import 'package:mobile_app_decubitus/screen/nurse/Nurse_followUp_content.dart';
 
 class NurseWoundProgress extends StatelessWidget {
   final int woundId;
+  final String patientId; // Add patientId parameter
 
-  const NurseWoundProgress({super.key, required this.woundId});
+  const NurseWoundProgress(
+      {super.key,
+      required this.woundId,
+      required this.patientId}); // Update constructor
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +30,9 @@ class NurseWoundProgress extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const NurseFollowupContent(),
+                builder: (context) => NurseFollowUpContent(
+                  patientId: patientId,
+                ),
               ),
             );
           },

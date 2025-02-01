@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:mobile_app_decubitus/models/patient_model.dart';
 import 'package:mobile_app_decubitus/services/patient_service.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:mobile_app_decubitus/constant.dart';
-import 'package:mobile_app_decubitus/screen/nurse/Nurse_wound_progress.dart';
+import 'package:mobile_app_decubitus/screen/nurse/Nurse_follow_up_content.dart';
 
-class NurseFollowupContent extends StatefulWidget {
-  const NurseFollowupContent({super.key});
+class NurseFollowupList extends StatefulWidget {
+  const NurseFollowupList({super.key});
 
   @override
-  _NurseFollowupContentState createState() => _NurseFollowupContentState();
+  _NurseFollowupListState createState() => _NurseFollowupListState();
 }
 
-class _NurseFollowupContentState extends State<NurseFollowupContent> {
+class _NurseFollowupListState extends State<NurseFollowupList> {
   final ApiService _apiService = ApiService();
   late Future<List<Patient>> _futurePatients;
 
@@ -31,7 +30,7 @@ class _NurseFollowupContentState extends State<NurseFollowupContent> {
         onGenerateRoute: (RouteSettings settings) {
           return MaterialPageRoute(
             builder: (context) => Container(
-              color: backGroundColor1, // Set the background color of the page
+              color: backGroundColor1,
               child: FutureBuilder<List<Patient>>(
                 future: _futurePatients,
                 builder: (context, snapshot) {
@@ -75,7 +74,8 @@ class FollowUpCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NurseWoundProgress(woundId: patient.id),
+            builder: (context) =>
+                NurseFollowUpContent(patientId: patient.id.toString()),
           ),
         );
       },
