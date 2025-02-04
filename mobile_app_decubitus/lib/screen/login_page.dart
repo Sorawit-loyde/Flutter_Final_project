@@ -26,44 +26,45 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: backGroundColor1,
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 30),
-                    _buildTitle(),
-                    const SizedBox(height: 10),
-                    _buildWelcomeMessage(),
-                    const SizedBox(height: 30),
-                    _buildImage(),
-                    const SizedBox(height: 30),
-                    _buildSsidField(),
-                    const SizedBox(height: 20),
-                    _buildPasswordField(),
-                    const SizedBox(height: 10),
-                    _buildForgotPasswordButton(),
-                    const SizedBox(height: 10),
-                    _buildSignInButton(),
-                    const SizedBox(height: 20),
-                    _buildCreateAccountButton(context),
-                    if (_errorMessage != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Text(
-                          _errorMessage!,
-                          style: const TextStyle(color: Colors.red),
+      body: Center(
+        child: SafeArea(
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      _buildTitle(),
+                      const SizedBox(height: 10),
+                      _buildWelcomeMessage(),
+                      const SizedBox(height: 30),
+                      _buildImage(),
+                      const SizedBox(height: 30),
+                      _buildSsidField(),
+                      const SizedBox(height: 20),
+                      _buildPasswordField(),
+                      const SizedBox(height: 10),
+                      _buildForgotPasswordButton(),
+                      const SizedBox(height: 10),
+                      _buildSignInButton(),
+                      const SizedBox(height: 20),
+                      _buildCreateAccountButton(context),
+                      if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Text(
+                            _errorMessage!,
+                            style: const TextStyle(color: Colors.red),
+                          ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

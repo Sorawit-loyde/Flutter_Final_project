@@ -60,7 +60,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 45),
+                  const SizedBox(height: 25),
                   _userProfile(user), // Pass the fetched user data
                 ],
               );

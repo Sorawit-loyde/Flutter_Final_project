@@ -55,9 +55,9 @@ class _NurseWoundSelectFormState extends State<NurseWoundSelectForm> {
 
   Future<void> _fetchOldWounds() async {
     try {
-      if (widget.patinetId != null && selectedLocation != null) {
+      if (selectedLocation != null) {
         oldWoundsList = await widget._woundService
-            .fetchOldWounds(widget.patinetId!, selectedLocation!);
+            .fetchOldWounds(widget.patinetId, selectedLocation!);
         print(widget.patinetId);
         print(selectedLocation!);
         setState(() {});

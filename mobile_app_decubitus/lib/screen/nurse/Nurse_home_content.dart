@@ -93,7 +93,7 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
               onPressed: () async {
                 try {
                   await PerusalService()
-                      .NurseaddPerusal(today, widget.patientId as int);
+                      .NurseaddPerusal(today, widget.patientId);
                   Navigator.pop(context);
                   fetchUpdatedPerusals();
                 } catch (e) {
@@ -174,7 +174,7 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
                   ),
                   Expanded(
                     child: _filteredPerusals.isEmpty
-                        ? Center(
+                        ? const Center(
                             child:
                                 Text('กดปุ่มเพิ่มขวาล่างเพื่อเพิ่มรายการตรวจ'),
                           )

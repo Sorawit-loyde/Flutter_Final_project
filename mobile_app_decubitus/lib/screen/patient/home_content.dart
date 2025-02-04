@@ -135,7 +135,7 @@ class _HomeContentState extends State<HomeContent> {
                 ),
                 Expanded(
                   child: _filteredPerusals.isEmpty
-                      ? Center(
+                      ? const Center(
                           child: Text('กดปุ่มเพิ่มขวาล่างเพื่อเพิ่มรายการตรวจ'),
                         )
                       : ListView.separated(

@@ -43,7 +43,7 @@ class _NurseFollowUpContentState extends State<NurseFollowUpContent> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => NurseFollowupList()),
+                          builder: (context) => const NurseFollowupList()),
                     );
                   },
                 ),

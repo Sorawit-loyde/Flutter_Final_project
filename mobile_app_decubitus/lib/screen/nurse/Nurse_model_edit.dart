@@ -47,7 +47,7 @@ class _NurseModelResultEditScreen extends State<NurseModelResultEditScreen> {
         remark: _remarkController.text,
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Diagnosis updated successfully')),
+        const SnackBar(content: Text('Diagnosis updated successfully')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
