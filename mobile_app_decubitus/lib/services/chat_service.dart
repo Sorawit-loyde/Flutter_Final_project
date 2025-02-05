@@ -8,9 +8,8 @@ import 'auth_service.dart';
 class ChatService {
   final Logger logger = Logger();
 
-  Future<List<Chat>> getChats() async {
+  Future<List<Chat>> getChats(int roomId) async {
     try {
-      const roomId = 1; // Mock room ID
       logger.i('Fetching chats for room ID: $roomId');
 
       final String? accessToken = await AuthService().getAccessToken();

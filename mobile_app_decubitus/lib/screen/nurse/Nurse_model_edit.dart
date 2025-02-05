@@ -19,6 +19,7 @@ class _NurseModelResultEditScreen extends State<NurseModelResultEditScreen> {
   late Future<Diagnosis> diagnosis;
   final TextEditingController _remarkController = TextEditingController();
   int _woundState = 1; // Default wound state
+  int _persualId = 1;
   String _selectedWoundState = 'แผลระดับ: 1'; // Default selected value
 
   @override
@@ -28,6 +29,7 @@ class _NurseModelResultEditScreen extends State<NurseModelResultEditScreen> {
       setState(() {
         _selectedWoundState = 'แผลระดับ: ${data.state}';
         _woundState = data.state;
+        _persualId = data.perusalId;
       });
       return data;
     });
@@ -46,6 +48,8 @@ class _NurseModelResultEditScreen extends State<NurseModelResultEditScreen> {
         woundState: _woundState,
         remark: _remarkController.text,
       );
+
+      await DiagnosisService().joinRoomwithPerusal(_persualId);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Diagnosis updated successfully')),
       );

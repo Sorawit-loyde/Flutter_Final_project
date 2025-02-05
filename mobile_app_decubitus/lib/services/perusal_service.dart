@@ -150,11 +150,9 @@ class PerusalService {
 
   Future<void> createRoom(int perusalId, int ownerId, String roomName) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final patientId = prefs.getString('Uid');
       final url = Uri.parse('${Custom_Config.BASE_URL}/rooms');
       final payload = jsonEncode(
-          {'name': roomName, 'perusalId': patientId, 'ownerId': ownerId});
+          {'name': roomName, 'perusalId': perusalId, 'ownerId': ownerId});
       final response = await http.post(
         url,
         headers: {

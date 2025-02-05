@@ -61,7 +61,7 @@ class _ChatroomState extends State<Chatroom> {
 
   Future<void> loadChatHistory() async {
     try {
-      List<Chat> chatData = await chatService.getChats();
+      List<Chat> chatData = await chatService.getChats(widget.roomId);
 
       List<Message> messageList = chatData.map((chat) {
         MessageType messageType =
@@ -115,10 +115,12 @@ class _ChatroomState extends State<Chatroom> {
   }
 
   void _handleIncomingMessage(Map<String, dynamic> data) {
-    logger.i(data);
+    logger.i("testdata: $data");
     final newMessage = Message(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      message: data['event'] == 'image' ? '${Custom_Config.Image_URL}/${data['image']}' : data['message'],
+      message: data['event'] == 'image'
+          ? '${Custom_Config.Image_URL}/${data['image']}'
+          : data['message'],
       createdAt: DateTime.now(),
       sentBy: data['sendId'].toString(),
       messageType:
@@ -130,7 +132,30 @@ class _ChatroomState extends State<Chatroom> {
 
   void sendMessage(String? messageText,
       {String? imageUrl, MessageType messageType = MessageType.text}) {
-    final messagePayload = <String, dynamic>{
+
+    if ((messageText == null || messageText.isEmpty) &&
+        (imageUrl == null || imageUrl.isEmpty)) {
+      debugPrint("Cannot send empty message.");
+      return;
+    }
+
+    // final newMessage = Message(
+    //   id: DateTime.now().millisecondsSinceEpoch.toString(),
+    //   message: messageType == MessageType.image
+    //       ? '${Custom_Config.Image_URL}/$imageUrl'
+    //       : messageText!,
+    //   createdAt: DateTime.now(),
+    //   sentBy: currentUserId ?? 'me',
+    //   messageType: messageType,
+    // );
+
+    // **Add the message and trigger UI rebuild**
+    // setState(() {
+    //   chatController.addMessage(newMessage);
+    // });
+
+    // Send message over WebSocket
+    final messagePayload = {
       'roomId': widget.roomId,
       'sendId': currentUserId,
       'message': messageType == MessageType.text ? messageText : null,
@@ -138,7 +163,6 @@ class _ChatroomState extends State<Chatroom> {
       'messageType': messageType == MessageType.image ? 'image' : 'text',
     };
 
-    // Debug log to verify the payload
     debugPrint('Sending message payload: ${jsonEncode(messagePayload)}');
 
     channel?.sink.add(jsonEncode({
@@ -177,9 +201,7 @@ class _ChatroomState extends State<Chatroom> {
                   }
                 }
               },
-              chatViewState: chatController.initialMessageList.isNotEmpty
-                  ? ChatViewState.hasMessages
-                  : ChatViewState.noData,
+              chatViewState: ChatViewState.hasMessages,
               sendMessageConfig: const SendMessageConfiguration(
                 enableGalleryImagePicker: true,
                 enableCameraImagePicker: true,
