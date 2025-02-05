@@ -60,7 +60,8 @@ class _NurseWoundSelectPageState extends State<NurseWoundSelectPage> {
               );
             }
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No wounds found.'));
+              return const Center(
+                  child: Text('กดปุ่มเพิ่มขวาล่างเพื่อเพิ่มรายการแผล'));
             }
 
             final woundGroups = snapshot.data!;

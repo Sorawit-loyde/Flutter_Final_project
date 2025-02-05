@@ -203,161 +203,167 @@ class _NurseWoundSelectFormState extends State<NurseWoundSelectForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('ข้อมูลแผล'),
-        backgroundColor: backGroundColor1,
-      ),
-      body: Container(
-        color: backGroundColor1,
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'วันที่สร้างรายการ : ${selectedDate?.toLocal().toString().split(' ')[0] ?? DateTime.now().toLocal().toString().split(' ')[0]}',
-                  style: const TextStyle(fontSize: 18),
-                ),
-                GestureDetector(
-                  onTap: _selectImage,
-                  child: Container(
-                    width: double.infinity,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: primaryColor),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: imageFile != null
-                          ? Image.file(File(imageFile!.path),
-                              fit: BoxFit.contain)
-                          : const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.camera_alt, size: 50),
-                                SizedBox(height: 10),
-                                Text(
-                                    'กดเพื่อถ่ายรูปแผลหรืออัปโหลดรูปจากเครื่อง',
-                                    style: TextStyle(fontSize: 16)),
-                              ],
-                            ),
+    return Container(
+      color: backGroundColor1,
+      child: Scaffold(
+        backgroundColor:
+            Colors.transparent, // Make Scaffold background transparent
+        appBar: AppBar(
+          title: const Text('ข้อมูลแผล'),
+          backgroundColor: backGroundColor1,
+        ),
+        body: Container(
+          color: backGroundColor1,
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'วันที่สร้างรายการ : ${selectedDate?.toLocal().toString().split(' ')[0] ?? DateTime.now().toLocal().toString().split(' ')[0]}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  GestureDetector(
+                    onTap: _selectImage,
+                    child: Container(
+                      width: double.infinity,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: primaryColor),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: imageFile != null
+                            ? Image.file(File(imageFile!.path),
+                                fit: BoxFit.contain)
+                            : const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.camera_alt, size: 50),
+                                  SizedBox(height: 10),
+                                  Text(
+                                      'กดเพื่อถ่ายรูปแผลหรืออัปโหลดรูปจากเครื่อง',
+                                      style: TextStyle(fontSize: 16)),
+                                ],
+                              ),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                const Text('ตำแหน่งของแผลบนร่างกาย',
-                    style: TextStyle(fontSize: 16)),
-                DropdownButtonFormField2<String>(
-                  value: selectedLocation,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: backGroundColor1,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: const BorderSide(color: tertiaryColor)),
-                  ),
-                  hint: Text('เลือกตำแหน่งแผล',
-                      style: TextStyle(color: Colors.grey[600])),
-                  items: locations.map((location) {
-                    return DropdownMenuItem<String>(
-                      value: location,
-                      child:
-                          Text(location, style: const TextStyle(fontSize: 16)),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedLocation = value;
-                      _fetchOldWounds(); // Fetch old wounds when location is selected
-                    });
-                  },
-                  isExpanded: true,
-                ),
-                const SizedBox(height: 20),
-                const Text('กรุณาเลือกประเภทแผล:',
-                    style: TextStyle(fontSize: 18)),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
-                      Checkbox(
-                          value: isNewWound,
-                          activeColor: primaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              isNewWound = value!;
-                            });
-                          }),
-                      const Expanded(child: Text('ใช่, แผลในรูปเป็นแผลใหม่')),
-                    ]),
-                    Row(children: [
-                      Checkbox(
-                          value: !isNewWound,
-                          activeColor: primaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              isNewWound = !value!;
-                            });
-                          }),
-                      const Expanded(
-                          child: Text(
-                              'ไม่ใช่, แผลในรูปเป็นแผลที่เคยมีการบันทึกในแอปแล้ว')),
-                    ]),
-                  ],
-                ),
-                if (!isNewWound) ...[
                   const SizedBox(height: 20),
-                  const Text('หากเป็นแผลเก่า ท่านต้องการจะอัพเดทแผลต่อจากแผลใด',
+                  const Text('ตำแหน่งของแผลบนร่างกาย',
                       style: TextStyle(fontSize: 16)),
                   DropdownButtonFormField2<String>(
-                    value: selectedOldWound,
+                    value: selectedLocation,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: backGroundColor1,
-                      border: const OutlineInputBorder(),
-                      hintText: 'เลือกแผล',
-                      hintStyle: TextStyle(color: Colors.grey[600]),
-                      enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: tertiaryColor)),
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: primaryColor)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: const BorderSide(color: tertiaryColor)),
                     ),
-                    items: oldWoundsList.map((wound) {
+                    hint: Text('เลือกตำแหน่งแผล',
+                        style: TextStyle(color: Colors.grey[600])),
+                    items: locations.map((location) {
                       return DropdownMenuItem<String>(
-                        value: wound.id.toString(),
-                        child: Text('แผล ${wound.count}',
+                        value: location,
+                        child: Text(location,
                             style: const TextStyle(fontSize: 16)),
                       );
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
-                        selectedOldWound = value;
+                        selectedLocation = value;
+                        _fetchOldWounds(); // Fetch old wounds when location is selected
                       });
                     },
                     isExpanded: true,
                   ),
-                ],
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: ElevatedButton(
-                      onPressed: _submit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: tertiaryColor,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 32.0, vertical: 16.0),
-                        textStyle: const TextStyle(
-                            fontSize: 18, color: backGroundColor1),
+                  const SizedBox(height: 20),
+                  const Text('กรุณาเลือกประเภทแผล:',
+                      style: TextStyle(fontSize: 18)),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [
+                        Checkbox(
+                            value: isNewWound,
+                            activeColor: primaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                isNewWound = value!;
+                              });
+                            }),
+                        const Expanded(child: Text('ใช่, แผลในรูปเป็นแผลใหม่')),
+                      ]),
+                      Row(children: [
+                        Checkbox(
+                            value: !isNewWound,
+                            activeColor: primaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                isNewWound = !value!;
+                              });
+                            }),
+                        const Expanded(
+                            child: Text(
+                                'ไม่ใช่, แผลในรูปเป็นแผลที่เคยมีการบันทึกในแอปแล้ว')),
+                      ]),
+                    ],
+                  ),
+                  if (!isNewWound) ...[
+                    const SizedBox(height: 20),
+                    const Text(
+                        'หากเป็นแผลเก่า ท่านต้องการจะอัพเดทแผลต่อจากแผลใด',
+                        style: TextStyle(fontSize: 16)),
+                    DropdownButtonFormField2<String>(
+                      value: selectedOldWound,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: backGroundColor1,
+                        border: const OutlineInputBorder(),
+                        hintText: 'เลือกแผล',
+                        hintStyle: TextStyle(color: Colors.grey[600]),
+                        enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: tertiaryColor)),
+                        focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: primaryColor)),
                       ),
-                      child: const Text('ยืนยันข้อมูลเพื่อส่งประมวลผล'),
+                      items: oldWoundsList.map((wound) {
+                        return DropdownMenuItem<String>(
+                          value: wound.id.toString(),
+                          child: Text('แผล ${wound.count}',
+                              style: const TextStyle(fontSize: 16)),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedOldWound = value;
+                        });
+                      },
+                      isExpanded: true,
+                    ),
+                  ],
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20.0),
+                      child: ElevatedButton(
+                        onPressed: _submit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: tertiaryColor,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 32.0, vertical: 16.0),
+                          textStyle: const TextStyle(
+                              fontSize: 18, color: backGroundColor1),
+                        ),
+                        child: const Text('ยืนยันข้อมูลเพื่อส่งประมวลผล'),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
