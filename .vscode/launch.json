@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "dart",
+            "request": "launch",
+            "name": "Launch mobile_app_decubitus",
+            "program": "${workspaceFolder}/mobile_app_decubitus/lib/main.dart",
+            "cwd": "${workspaceFolder}/mobile_app_decubitus",
+            "preLaunchTask": "flutter clean",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
             "name": "mobile_app_decubitus",
             "cwd": "mobile_app_decubitus",
             "request": "launch",
