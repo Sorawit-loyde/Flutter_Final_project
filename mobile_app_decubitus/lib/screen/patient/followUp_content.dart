@@ -41,6 +41,10 @@ class _FollowupContentState extends State<FollowupContent> {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (snapshot.hasData) {
                     final followUps = snapshot.data!;
+                    if (followUps.isEmpty) {
+                      return const Center(
+                          child: Text('ผู้ป่วยยังไม่มีแผลให้ติดตาม'));
+                    }
                     return ListView.builder(
                       padding: const EdgeInsets.all(16.0),
                       itemCount: followUps.length,

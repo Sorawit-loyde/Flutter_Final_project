@@ -193,11 +193,7 @@ class _NurseWoundSelectFormState extends State<NurseWoundSelectForm> {
         } else {
           throw Exception('Failed to retrieve wound ID.');
         }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error submitting wound: $e')),
-        );
-      }
+      } catch (e) {}
     }
   }
 
