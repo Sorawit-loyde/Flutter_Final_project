@@ -372,7 +372,16 @@ class _NurseModelResultEditScreen extends State<NurseModelResultEditScreen> {
   Widget _buildUpdateButton() {
     return Center(
       child: ElevatedButton(
-        onPressed: _updateDiagnosis,
+        onPressed: () async {
+          await _updateDiagnosis();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  NurseModelResultScreen(woundId: widget.woundId),
+            ),
+          );
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
