@@ -1,4 +1,5 @@
 class Diagnosis {
+  final int diagnosisId; // Add diagnosisId field
   final int id;
   final String createdAt;
   final String updatedAt;
@@ -11,9 +12,10 @@ class Diagnosis {
   final String woundStatus;
   final int count;
   final String? remark;
-  final int patientId; // Add patientId field
+  final int patientId;
 
   Diagnosis({
+    required this.diagnosisId, // Initialize diagnosisId
     required this.id,
     required this.createdAt,
     required this.updatedAt,
@@ -26,7 +28,7 @@ class Diagnosis {
     required this.woundStatus,
     required this.count,
     this.remark,
-    required this.patientId, // Initialize patientId
+    required this.patientId,
   });
 
   factory Diagnosis.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,7 @@ class Diagnosis {
           treatList.map((i) => Treatment.fromJson(i)).toList();
 
       return Diagnosis(
+        diagnosisId: json['diagnosis_id'] as int, // Parse diagnosisId
         id: json['id'] as int,
         createdAt: json['createdAt'] as String,
         updatedAt: json['updatedAt'] as String,
@@ -48,7 +51,7 @@ class Diagnosis {
         woundStatus: json['wound_status'] as String,
         count: json['count'] as int,
         remark: json['remark'] as String?,
-        patientId: json['patient_id'] as int, // Parse patientId
+        patientId: json['patient_id'] as int,
       );
     } catch (e) {
       throw Exception('Failed to parse Diagnosis JSON: $e');

@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:mobile_app_decubitus/services/auth_service.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPreferences
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_app_decubitus/models/diagnosis_model.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
 
 class DiagnosisService {
   var logger = Logger();
+
   // Fetch a diagnosis by wound ID
   Future<Diagnosis> fetchDiagnosis(int woundId) async {
     final url = Uri.parse('${Custom_Config.BASE_URL}/diagnosis/wound/$woundId');
@@ -33,18 +34,21 @@ class DiagnosisService {
   // Update diagnosis with PATCH and retrieve nurse ID from SharedPreferences
   Future<void> updateDiagnosis({
     required int woundId,
+    required int diagnosisId,
     required int woundState,
     String? remark,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final nurseId =
         prefs.getString('Uid'); // Retrieve nurseId from SharedPreferences
-
+    print(woundId);
+    print(diagnosisId);
+    print(woundState);
     if (nurseId == null) {
       throw Exception('Nurse ID not found in SharedPreferences');
     }
 
-    final url = Uri.parse('${Custom_Config.BASE_URL}/diagnosis/$woundId');
+    final url = Uri.parse('${Custom_Config.BASE_URL}/diagnosis/$diagnosisId');
     logger.i('Updating diagnosis data to: $url');
 
     try {

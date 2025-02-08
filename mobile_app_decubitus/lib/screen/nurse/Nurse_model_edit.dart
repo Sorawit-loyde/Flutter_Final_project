@@ -41,10 +41,11 @@ class _NurseModelResultEditScreen extends State<NurseModelResultEditScreen> {
     super.dispose();
   }
 
-  Future<void> _updateDiagnosis() async {
+  Future<void> _updateDiagnosis(int diagnosisId) async {
     try {
       await DiagnosisService().updateDiagnosis(
         woundId: widget.woundId,
+        diagnosisId: diagnosisId,
         woundState: _woundState,
         remark: _remarkController.text,
       );
@@ -112,7 +113,7 @@ class _NurseModelResultEditScreen extends State<NurseModelResultEditScreen> {
                   const SizedBox(height: 10),
                   _buildCommentBox(),
                   const SizedBox(height: 10),
-                  _buildUpdateButton(),
+                  _buildUpdateButton(data.diagnosisId), // Pass diagnosisId here
                 ],
               ),
             );
@@ -369,11 +370,11 @@ class _NurseModelResultEditScreen extends State<NurseModelResultEditScreen> {
     );
   }
 
-  Widget _buildUpdateButton() {
+  Widget _buildUpdateButton(int diagnosisId) {
     return Center(
       child: ElevatedButton(
         onPressed: () async {
-          await _updateDiagnosis();
+          await _updateDiagnosis(diagnosisId);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
