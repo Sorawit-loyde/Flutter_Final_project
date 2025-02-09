@@ -2,12 +2,24 @@ class Perusal {
   final int id;
   final DateTime createdAt;
   final DateTime perusalDate;
+  int originalIndex; // Add this property
 
-  const Perusal({
+  Perusal({
     required this.id,
     required this.createdAt,
     required this.perusalDate,
+    this.originalIndex = 0, // Initialize with a default value
   });
+
+  // Add a method to copy the Perusal with an updated originalIndex
+  Perusal copyWith({int? originalIndex}) {
+    return Perusal(
+      id: id,
+      createdAt: createdAt,
+      perusalDate: perusalDate,
+      originalIndex: originalIndex ?? this.originalIndex,
+    );
+  }
 
   factory Perusal.fromJson(Map<String, dynamic> json) {
     return Perusal(

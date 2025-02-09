@@ -46,7 +46,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       ),
       toolbarHeight: 160,
       flexibleSpace: Padding(
-        padding: const EdgeInsets.only(left: 20, top: 40),
+        padding: const EdgeInsets.only(left: 20, top: 52),
         child: FutureBuilder<User>(
           future: futureUser,
           builder: (context, snapshot) {

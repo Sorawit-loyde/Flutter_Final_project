@@ -23,8 +23,12 @@ class _HomeContentState extends State<HomeContent> {
     super.initState();
     fetchPerusals().then((perusals) {
       setState(() {
-        _allPerusals = perusals;
-        _filteredPerusals = perusals;
+        _allPerusals = perusals
+            .asMap()
+            .entries
+            .map((entry) => entry.value.copyWith(originalIndex: entry.key))
+            .toList();
+        _filteredPerusals = _allPerusals;
       });
     });
   }
@@ -41,14 +45,23 @@ class _HomeContentState extends State<HomeContent> {
   void _filterPerusals(String query) {
     setState(() {
       _searchQuery = query.toLowerCase();
-      _filteredPerusals = _searchQuery.isEmpty
-          ? _allPerusals
-          : _allPerusals
+      if (_searchQuery.isEmpty) {
+        _filteredPerusals = _allPerusals;
+      } else {
+        int? searchIndex = int.tryParse(_searchQuery);
+        if (searchIndex != null) {
+          _filteredPerusals = _allPerusals
+              .where((perusal) => perusal.originalIndex + 1 == searchIndex)
+              .toList();
+        } else {
+          _filteredPerusals = _allPerusals
               .where((perusal) => formatPerusalDate(
-                      perusal.perusalDate, _allPerusals.indexOf(perusal) + 1)
+                      perusal.perusalDate, perusal.originalIndex + 1)
                   .toLowerCase()
                   .contains(_searchQuery))
               .toList();
+        }
+      }
     });
   }
 
@@ -175,8 +188,8 @@ class _HomeContentState extends State<HomeContent> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          formatPerusalDate(
-                                              perusal.perusalDate, index + 1),
+                                          formatPerusalDate(perusal.perusalDate,
+                                              perusal.originalIndex + 1),
                                           style: const TextStyle(
                                               fontSize: 16,
                                               color: Colors.black),
