@@ -322,7 +322,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               phone: int.parse(_phoneController.text.trim()),
               dateOfBirth: _dobController.text.trim(),
               profileImage: '',
-              roleId: 1,
+              roleId: 2,
             );
             _showSnackBar(context, 'Account Created!');
             Navigator.pushNamed(context, '/login');
