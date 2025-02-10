@@ -6,6 +6,7 @@ import 'package:mobile_app_decubitus/config/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
+import 'package:mobile_app_decubitus/constant.dart'; // Import the constants
 
 class ProfileContent extends StatefulWidget {
   const ProfileContent({super.key});
@@ -102,6 +103,23 @@ class _ProfileContentState extends State<ProfileContent> {
       initialDate: DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: primaryColor, // Header background color
+              onPrimary: Colors.white, // Header text color
+              onSurface: darkColor, // Body text color
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: primaryColor, // Button text color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -112,124 +130,159 @@ class _ProfileContentState extends State<ProfileContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Profile'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(isEditing ? Icons.save : Icons.edit),
-            onPressed: () {
-              if (isEditing) {
-                updateUserProfile();
-              } else {
-                setState(() {
-                  isEditing = true;
-                });
-              }
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : errorMessage.isNotEmpty
-                ? Center(
-                    child: Text(
-                      errorMessage,
-                      style: const TextStyle(color: Colors.red),
-                      textAlign: TextAlign.center,
-                    ),
-                  )
-                : ListView(
-                    children: [
-                      if (profileImageUrl.isNotEmpty)
-                        Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              if (isEditing) {
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) => Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      ListTile(
-                                        leading: Icon(Icons.camera),
-                                        title: Text('Camera'),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          _pickImage(ImageSource.camera);
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: Icon(Icons.photo_library),
-                                        title: Text('Gallery'),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          _pickImage(ImageSource.gallery);
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }
-                            },
-                            child: CircleAvatar(
-                              radius: 50,
-                              backgroundImage: _image != null
-                                  ? FileImage(_image!)
-                                  : NetworkImage(
-                                      profileImageUrl.isNotEmpty
-                                          ? '${Custom_Config.Image_URL}/$profileImageUrl'
-                                          : '${Custom_Config.Image_URL}/static/profile.jpg',
-                                    ) as ImageProvider,
-                            ),
-                          ),
-                        ),
-                      const SizedBox(height: 16),
-                      ...userInfo.entries.map((entry) {
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 5.0),
-                          child: ListTile(
-                            title: Padding(
-                              padding: const EdgeInsets.only(bottom: 5.0),
-                              child: Text(
-                                entry.key,
-                                style: const TextStyle(
-                                  fontSize: 19.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
+    return WillPopScope(
+      onWillPop: () async {
+        if (isEditing) {
+          setState(() {
+            isEditing = false;
+          });
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: backGroundColor1,
+          toolbarHeight: 40,
+          automaticallyImplyLeading:
+              isEditing, // Show back arrow icon when editing
+          leading: isEditing
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    setState(() {
+                      isEditing = false;
+                    });
+                  },
+                )
+              : null,
+          actions: [
+            IconButton(
+              icon: Icon(isEditing ? Icons.save : Icons.edit),
+              onPressed: () {
+                if (isEditing) {
+                  updateUserProfile();
+                } else {
+                  setState(() {
+                    isEditing = true;
+                  });
+                }
+              },
+            ),
+          ],
+        ),
+        body: Container(
+          color: backGroundColor1,
+          padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+          child: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : errorMessage.isNotEmpty
+                  ? Center(
+                      child: Text(
+                        errorMessage,
+                        style: const TextStyle(color: errorColor),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  : ListView(
+                      children: [
+                        if (profileImageUrl.isNotEmpty)
+                          Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                if (isEditing) {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) => Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        ListTile(
+                                          leading: Icon(Icons.camera),
+                                          title: Text('Camera'),
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                            _pickImage(ImageSource.camera);
+                                          },
+                                        ),
+                                        ListTile(
+                                          leading: Icon(Icons.photo_library),
+                                          title: Text('Gallery'),
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                            _pickImage(ImageSource.gallery);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              },
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundImage: _image != null
+                                    ? FileImage(_image!)
+                                    : NetworkImage(
+                                        profileImageUrl.isNotEmpty
+                                            ? '${Custom_Config.Image_URL}/$profileImageUrl'
+                                            : '${Custom_Config.Image_URL}/static/profile.jpg',
+                                      ) as ImageProvider,
                               ),
                             ),
-                            subtitle: isEditing
-                                ? entry.key == 'วัน/เดือน/ปีเกิด'
-                                    ? GestureDetector(
-                                        onTap: () => _selectDate(context),
-                                        child: AbsorbPointer(
-                                          child: TextFormField(
-                                            initialValue: entry.value,
-                                            decoration: InputDecoration(
-                                              hintText: 'Select Date',
+                          ),
+                        const SizedBox(height: 16),
+                        ...userInfo.entries.map((entry) {
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 5.0),
+                            color: tertiaryColor,
+                            child: ListTile(
+                              title: Padding(
+                                padding: const EdgeInsets.only(bottom: 5.0),
+                                child: Text(
+                                  entry.key,
+                                  style: const TextStyle(
+                                    fontSize: 19.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: darkColor,
+                                  ),
+                                ),
+                              ),
+                              subtitle: isEditing
+                                  ? entry.key == 'วัน/เดือน/ปีเกิด'
+                                      ? GestureDetector(
+                                          onTap: () => _selectDate(context),
+                                          child: AbsorbPointer(
+                                            child: TextFormField(
+                                              initialValue: entry.value,
+                                              decoration: InputDecoration(
+                                                hintText: 'Select Date',
+                                                hintStyle: TextStyle(
+                                                    color: greyColor3),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      )
-                                    : TextFormField(
-                                        initialValue: entry.value,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            userInfo[entry.key] = value;
-                                          });
-                                        },
-                                      )
-                                : Text(entry.value),
-                          ),
-                        );
-                      }).toList(),
-                    ],
-                  ),
+                                        )
+                                      : TextFormField(
+                                          initialValue: entry.value,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              userInfo[entry.key] = value;
+                                            });
+                                          },
+                                          decoration: InputDecoration(
+                                            hintStyle:
+                                                TextStyle(color: greyColor3),
+                                          ),
+                                        )
+                                  : Text(
+                                      entry.value,
+                                      style: TextStyle(color: darkColor),
+                                    ),
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+        ),
       ),
     );
   }
