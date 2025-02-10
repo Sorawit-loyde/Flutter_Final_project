@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mobile_app_decubitus/services/user_profile_service.dart';
 import 'package:mobile_app_decubitus/models/user_profile_model.dart';
+import 'package:mobile_app_decubitus/config/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
+import 'package:intl/intl.dart';
 
 class ProfileContent extends StatefulWidget {
   const ProfileContent({super.key});
@@ -13,6 +18,11 @@ class _ProfileContentState extends State<ProfileContent> {
   Map<String, String> userInfo = {}; // To store the fetched user data
   bool isLoading = true; // To show a loading spinner
   String errorMessage = ''; // To show error messages
+  String profileImageUrl = ''; // To store the profile image URL
+  bool isEditing = false; // To track if the user is in edit mode
+  int roleId = 0; // To store the role ID
+  String password = ''; // To store the password
+  File? _image; // To store the selected image
 
   @override
   void initState() {
@@ -25,13 +35,18 @@ class _ProfileContentState extends State<ProfileContent> {
       userpf user = await UserProfileService().getUserProfile();
       setState(() {
         userInfo = {
-          'ชื่อ': user.firstName ?? 'N/A',
-          'นามสกุล': user.lastName ?? 'N/A',
-          'เพศ': user.gender ?? 'N/A',
-          'วัน/เดือน/ปีเกิด': user.birthDate ?? 'N/A',
+          'ชื่อ': user.first_name ?? 'N/A',
+          'นามสกุล': user.last_name ?? 'N/A',
+          'เพศ': user.sex ?? 'N/A',
+          'วัน/เดือน/ปีเกิด': user.birthdate != null
+              ? DateFormat('dd/MM/yyyy').format(DateTime.parse(user.birthdate!))
+              : 'N/A',
           'เลขรหัสประชาชน': user.ssid ?? 'N/A',
           'เบอโทรศัทพ์ติดต่อ': user.phone ?? 'N/A',
         };
+        profileImageUrl = user.profile_image ?? '';
+        roleId = user.roles.isNotEmpty ? user.roles[0].id : 0;
+        password = user.password ?? '';
         isLoading = false;
       });
     } catch (e) {
@@ -42,12 +57,79 @@ class _ProfileContentState extends State<ProfileContent> {
     }
   }
 
+  Future<void> updateUserProfile() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final id = prefs.getString('Uid');
+      final updatedData = {
+        'ssid': userInfo['เลขรหัสประชาชน'],
+        'sex': userInfo['เพศ'],
+        'phone': userInfo['เบอโทรศัทพ์ติดต่อ'],
+        'first_name': userInfo['ชื่อ'],
+        'last_name': userInfo['นามสกุล'],
+        'birthdate': DateFormat('yyyy-MM-dd').format(
+            DateFormat('dd/MM/yyyy').parse(userInfo['วัน/เดือน/ปีเกิด']!)),
+        'password': password,
+        'profile_image': profileImageUrl,
+        'roleId': roleId,
+      };
+      await UserProfileService().updateUserProfile(id!, updatedData);
+      setState(() {
+        isEditing = false;
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+      });
+    }
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+        profileImageUrl = pickedFile.path; // Update the profile image URL
+      });
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        userInfo['วัน/เดือน/ปีเกิด'] = DateFormat('dd/MM/yyyy').format(picked);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Profile'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(isEditing ? Icons.save : Icons.edit),
+            onPressed: () {
+              if (isEditing) {
+                updateUserProfile();
+              } else {
+                setState(() {
+                  isEditing = true;
+                });
+              }
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
@@ -62,24 +144,91 @@ class _ProfileContentState extends State<ProfileContent> {
                     ),
                   )
                 : ListView(
-                    children: userInfo.entries.map((entry) {
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 5.0),
-                        child: ListTile(
-                          title: Padding(
-                            padding: const EdgeInsets.only(bottom: 5.0),
-                            child: Text(
-                              entry.key,
-                              style: const TextStyle(
-                                fontSize: 19.0,
-                                fontWeight: FontWeight.bold,
-                              ),
+                    children: [
+                      if (profileImageUrl.isNotEmpty)
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              if (isEditing) {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ListTile(
+                                        leading: Icon(Icons.camera),
+                                        title: Text('Camera'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          _pickImage(ImageSource.camera);
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.photo_library),
+                                        title: Text('Gallery'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          _pickImage(ImageSource.gallery);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage: _image != null
+                                  ? FileImage(_image!)
+                                  : NetworkImage(
+                                      profileImageUrl.isNotEmpty
+                                          ? '${Custom_Config.Image_URL}/$profileImageUrl'
+                                          : '${Custom_Config.Image_URL}/static/profile.jpg',
+                                    ) as ImageProvider,
                             ),
                           ),
-                          subtitle: Text(entry.value),
                         ),
-                      );
-                    }).toList(),
+                      const SizedBox(height: 16),
+                      ...userInfo.entries.map((entry) {
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 5.0),
+                          child: ListTile(
+                            title: Padding(
+                              padding: const EdgeInsets.only(bottom: 5.0),
+                              child: Text(
+                                entry.key,
+                                style: const TextStyle(
+                                  fontSize: 19.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            subtitle: isEditing
+                                ? entry.key == 'วัน/เดือน/ปีเกิด'
+                                    ? GestureDetector(
+                                        onTap: () => _selectDate(context),
+                                        child: AbsorbPointer(
+                                          child: TextFormField(
+                                            initialValue: entry.value,
+                                            decoration: InputDecoration(
+                                              hintText: 'Select Date',
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : TextFormField(
+                                        initialValue: entry.value,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            userInfo[entry.key] = value;
+                                          });
+                                        },
+                                      )
+                                : Text(entry.value),
+                          ),
+                        );
+                      }).toList(),
+                    ],
                   ),
       ),
     );

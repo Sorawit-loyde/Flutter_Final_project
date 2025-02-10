@@ -34,4 +34,29 @@ class UserProfileService {
       throw Exception('Error fetching user profile: $e');
     }
   }
+
+  Future<void> updateUserProfile(
+      String id, Map<String, dynamic> updatedData) async {
+    try {
+      final response = await http.patch(
+        Uri.parse('${Custom_Config.BASE_URL}/users/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer ${await AuthService().getAccessToken()}"
+        },
+        body: json.encode(updatedData),
+      );
+      logger.t('Request body: ${json.encode(updatedData)}');
+      logger.t('Response body: ${response.body}');
+      logger.t('Response status code: ${response.statusCode}');
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        logger.e('Status code error: ${response.statusCode}');
+        throw Exception(
+            'Failed to update user profile: ${response.statusCode}');
+      }
+    } catch (e) {
+      logger.e(e.toString());
+      throw Exception('Error updating user profile: $e');
+    }
+  }
 }

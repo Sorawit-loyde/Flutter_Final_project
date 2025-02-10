@@ -1,23 +1,25 @@
 class userpf {
   final int id;
   final String? ssid;
-  final String? firstName;
-  final String? lastName;
-  final String? profileImage;
-  final String? gender;
-  final String? birthDate;
+  final String? first_name;
+  final String? last_name;
+  final String? profile_image;
+  final String? sex;
+  final String? birthdate;
   final String? phone;
+  final String? password; // Add password field
   final List<Role> roles;
 
   const userpf({
     required this.id,
     required this.ssid,
-    required this.firstName,
-    required this.lastName,
-    required this.profileImage,
-    required this.gender,
-    required this.birthDate,
+    required this.first_name,
+    required this.last_name,
+    required this.profile_image,
+    required this.sex,
+    required this.birthdate,
     required this.phone,
+    required this.password, // Add password field
     required this.roles,
   });
 
@@ -25,12 +27,13 @@ class userpf {
     return userpf(
       id: json['id'] as int,
       ssid: json['ssid'] ?? 'N/A',
-      firstName: json['first_name'] ?? 'N/A',
-      lastName: json['last_name'] ?? 'N/A',
-      profileImage: json['profile_image'] ?? 'N/A',
-      gender: json['sex'] ?? 'N/A',
-      birthDate: json['birthdate'] ?? 'N/A',
+      first_name: json['first_name'] ?? 'N/A',
+      last_name: json['last_name'] ?? 'N/A',
+      profile_image: json['profile_image'] ?? 'N/A',
+      sex: json['sex'] ?? 'N/A',
+      birthdate: json['birthdate'] ?? 'N/A',
       phone: json['phone'] ?? 'N/A',
+      password: json['password'] ?? 'N/A', // Add password field
       roles: (json['role'] as List<dynamic>)
           .map((roleJson) => Role.fromJson(roleJson))
           .toList(),
