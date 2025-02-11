@@ -128,6 +128,14 @@ class _ProfileContentState extends State<ProfileContent> {
     }
   }
 
+  Future<void> _logout() async {
+    // Implement your logout logic here
+    // For example, clear the shared preferences and navigate to the login screen
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -280,6 +288,29 @@ class _ProfileContentState extends State<ProfileContent> {
                             ),
                           );
                         }).toList(),
+                        if (!isEditing)
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: _logout,
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor:
+                                    primaryColor, // Button text color
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 50, vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              child: Text(
+                                'Logout',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
         ),
