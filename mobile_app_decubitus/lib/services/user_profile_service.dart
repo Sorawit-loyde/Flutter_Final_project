@@ -39,7 +39,7 @@ class UserProfileService {
       String id, Map<String, dynamic> updatedData) async {
     try {
       final response = await http.patch(
-        Uri.parse('${Custom_Config.BASE_URL}/users/$id'),
+        Uri.parse('${Custom_Config.BASE_URL}/users/profile/$id'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': "Bearer ${await AuthService().getAccessToken()}"

@@ -33,6 +33,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
     }
   }
 
+  void refreshUserProfile() {
+    setState(() {
+      futureUser = _fetchData(); // Refresh user profile data
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppBar(

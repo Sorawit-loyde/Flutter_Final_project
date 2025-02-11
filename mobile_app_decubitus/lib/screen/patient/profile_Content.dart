@@ -70,9 +70,7 @@ class _ProfileContentState extends State<ProfileContent> {
         'last_name': userInfo['นามสกุล'],
         'birthdate': DateFormat('yyyy-MM-dd').format(
             DateFormat('dd/MM/yyyy').parse(userInfo['วัน/เดือน/ปีเกิด']!)),
-        'password': password,
         'profile_image': profileImageUrl,
-        'roleId': roleId,
       };
       await UserProfileService().updateUserProfile(id!, updatedData);
       setState(() {
