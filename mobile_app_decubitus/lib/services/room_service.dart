@@ -16,7 +16,7 @@ class RoomService {
       final id = prefs.getString('Uid');
 
       final response = await http.get(
-        Uri.parse('${Custom_Config.BASE_URL}/rooms/$id'),
+        Uri.parse('${Custom_Config.BASE_URL}/rooms/user/$id'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': "Bearer ${await AuthService().getAccessToken()}",

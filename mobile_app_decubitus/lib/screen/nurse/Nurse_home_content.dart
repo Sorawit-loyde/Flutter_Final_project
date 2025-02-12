@@ -108,6 +108,8 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
                   await PerusalService()
                       .NurseaddPerusal(today, widget.patientId);
                   Navigator.pop(context);
+
+                  
                   fetchUpdatedPerusals();
                 } catch (e) {
                   print(e);

@@ -111,6 +111,8 @@ class PerusalService {
 
   Future<void> NurseaddPerusal(DateTime perusalDate, id) async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final nurseId = prefs.getString('Uid');
       final url = Uri.parse('${Custom_Config.BASE_URL}/perusal');
 
       final payload = jsonEncode({
@@ -138,10 +140,10 @@ class PerusalService {
       final responseData = jsonDecode(response.body);
 
       final int perusalId = responseData['id'];
-      final int ownerId = int.parse(responseData['user']['id']);
+      // final int ownerId = int.parse(responseData['user']['id']);
       final String perusaldate = responseData['perusal_date'];
 
-      await createRoom(perusalId, ownerId, perusaldate);
+      await createRoomNurse(perusalId, int.parse(nurseId!), id, perusaldate);
     } catch (e) {
       logger.e('Error occurred while saving perusal: $e');
       throw Exception('Error occurred while saving perusal');
@@ -153,6 +155,33 @@ class PerusalService {
       final url = Uri.parse('${Custom_Config.BASE_URL}/rooms');
       final payload = jsonEncode(
           {'name': roomName, 'perusalId': perusalId, 'ownerId': ownerId});
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer ${await AuthService().getAccessToken()}"
+        },
+        body: payload,
+      );
+
+      logger.t('Response status: ${response.statusCode}');
+      logger.t('Response body: ${response.body}');
+    } catch (e) {
+      logger.e('Error create room: $e');
+      throw Exception('Error at create room');
+    }
+  }
+
+  Future<void> createRoomNurse(
+      int perusalId, int ownerId, int patientId, String roomName) async {
+    try {
+      final url = Uri.parse('${Custom_Config.BASE_URL}/rooms/nurse');
+      final payload = jsonEncode({
+        'name': roomName,
+        'perusalId': perusalId,
+        'patientId': patientId,
+        'ownerId': ownerId
+      });
       final response = await http.post(
         url,
         headers: {
