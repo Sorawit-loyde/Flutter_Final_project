@@ -189,7 +189,7 @@ class _ChatroomState extends State<Chatroom> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Area: ${woundArea['area']}'),
+                        Text('อวัยวะ : ${woundArea['area']}'),
                         ...woundArea['wounds'].map<Widget>((wound) {
                           return ListTile(
                             leading: Image.network(
@@ -198,8 +198,8 @@ class _ChatroomState extends State<Chatroom> {
                               height: 50,
                               fit: BoxFit.cover,
                             ),
-                            title: Text('Wound ID: ${wound['id']}'),
-                            subtitle: Text('Status: ${wound['status']}'),
+                            title: Text('แผล ${wound['count']}'),
+                            subtitle: Text('สถานะ : ${wound['status']}'),
                           );
                         }).toList(),
                       ],
@@ -256,7 +256,7 @@ class _ChatroomState extends State<Chatroom> {
           ? const Center(child: CircularProgressIndicator())
           : ChatView(
               appBar: ChatViewAppBar(
-                chatTitle: "Chatroom",
+                chatTitle: "ห้องแชท",
                 actions: [
                   IconButton(
                     icon: const Icon(Icons.more_vert),

@@ -69,7 +69,7 @@ class _RoomPageState extends State<RoomPage> {
                   child: TextField(
                     onChanged: _filterRooms,
                     decoration: InputDecoration(
-                      hintText: 'Search...',
+                      hintText: 'ค้นหาการตรวจ...',
                       enabledBorder: OutlineInputBorder(
                         borderSide: const BorderSide(color: greyColor1),
                         borderRadius: BorderRadius.circular(20.0),
