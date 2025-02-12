@@ -27,12 +27,8 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
     fetchPatientName();
     fetchPerusals().then((perusals) {
       setState(() {
-        _allPerusals = perusals
-            .asMap()
-            .entries
-            .map((entry) => entry.value.copyWith(originalIndex: entry.key))
-            .toList();
-        _filteredPerusals = _allPerusals;
+        _allPerusals = perusals;
+        _filteredPerusals = perusals;
       });
     });
   }
@@ -69,12 +65,13 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
         int? searchIndex = int.tryParse(_searchQuery);
         if (searchIndex != null) {
           _filteredPerusals = _allPerusals
-              .where((perusal) => perusal.originalIndex + 1 == searchIndex)
+              .where(
+                  (perusal) => _allPerusals.indexOf(perusal) + 1 == searchIndex)
               .toList();
         } else {
           _filteredPerusals = _allPerusals
               .where((perusal) => formatPerusalDate(
-                      perusal.perusalDate, perusal.originalIndex + 1)
+                      perusal.perusalDate, _allPerusals.indexOf(perusal) + 1)
                   .toLowerCase()
                   .contains(_searchQuery))
               .toList();
@@ -108,8 +105,6 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
                   await PerusalService()
                       .NurseaddPerusal(today, widget.patientId);
                   Navigator.pop(context);
-
-                  
                   fetchUpdatedPerusals();
                 } catch (e) {
                   print(e);
@@ -233,8 +228,7 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
                                         Expanded(
                                           child: Text(
                                             formatPerusalDate(
-                                                perusal.perusalDate,
-                                                perusal.originalIndex + 1),
+                                                perusal.perusalDate, index + 1),
                                             style: const TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.black),
