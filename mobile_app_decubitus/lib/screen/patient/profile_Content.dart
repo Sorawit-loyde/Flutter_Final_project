@@ -285,7 +285,7 @@ class _ProfileContentState extends State<ProfileContent> {
                                     ),
                             ),
                           );
-                        }).toList(),
+                        }),
                         if (!isEditing)
                           Center(
                             child: ElevatedButton(
