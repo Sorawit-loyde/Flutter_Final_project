@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
-
-import '../services/auth_service.dart';
+import 'package:mobile_app_decubitus/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,7 +9,6 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-//Controller and Key for auth
 class _LoginPageState extends State<LoginPage> {
   final AuthService _authService = AuthService();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -20,7 +18,35 @@ class _LoginPageState extends State<LoginPage> {
   String? _errorMessage;
   bool _obscureText = true;
 
-  //Manage Content
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginInfo();
+  }
+
+  Future<void> _checkLoginInfo() async {
+    final loginInfo = await _authService.getLoginInfo();
+    if (loginInfo != null) {
+      _ssidController.text = loginInfo['ssid']!;
+      _passwordController.text = loginInfo['password']!;
+      _signIn();
+    }
+  }
+
+  Future<void> _signIn() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        await _authService.signIn(
+            _ssidController.text, _passwordController.text);
+        Navigator.pushReplacementNamed(context, '/home');
+      } catch (e) {
+        setState(() {
+          _errorMessage = "Login failed. Please try again.";
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +100,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  //Title
   Widget _buildTitle() {
     return const Text(
       'Login here',
@@ -87,7 +112,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  //Sub Title
   Widget _buildWelcomeMessage() {
     return const Text(
       'Welcome back! Please sign in to continue.',
@@ -100,19 +124,18 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  //Logo img
   Widget _buildImage() {
     return Image.asset(
-      logoImage, //img path
+      logoImage,
       width: 200,
       height: 200,
       fit: BoxFit.cover,
     );
   }
 
-  //SSID Field
   Widget _buildSsidField() {
     return TextField(
+      controller: _ssidController,
       decoration: InputDecoration(
         labelText: 'SSID',
         filled: true,
@@ -129,17 +152,13 @@ class _LoginPageState extends State<LoginPage> {
             borderSide: const BorderSide(color: primaryColor)),
         contentPadding: const EdgeInsets.all(15),
       ),
-      controller: _ssidController, // Updated controller
-      onChanged: (value) {
-// Updated variable
-      },
     );
   }
 
-  //Password Field
   Widget _buildPasswordField() {
     return TextField(
-      obscureText: _obscureText, //Hide Password
+      controller: _passwordController,
+      obscureText: _obscureText,
       decoration: InputDecoration(
         labelText: 'Password',
         filled: true,
@@ -167,20 +186,15 @@ class _LoginPageState extends State<LoginPage> {
         ),
         contentPadding: const EdgeInsets.all(15),
       ),
-      controller: _passwordController, // Same controller for password
-      onChanged: (value) {
-// Same variable for password
-      },
     );
   }
 
-  //Forgot password button
   Widget _buildForgotPasswordButton() {
     return Align(
       alignment: Alignment.centerRight,
       child: TextButton(
         onPressed: () {
-          //Navigate to page for forgot password functionality
+          // Navigate to page for forgot password functionality
         },
         child: const Text(
           'Forgot your password?',
@@ -190,28 +204,21 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-//Sign in Button checking SSID and Password Field
   Widget _buildSignInButton() {
     return ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          // Validate inputs
           if (_ssidController.text.isEmpty ||
               _passwordController.text.isEmpty) {
             setState(() {
               _errorMessage = "SSID and Password cannot be empty.";
             });
-            return; // Prevent further execution if fields are empty
+            return;
           }
 
-          // Debug output
-          print('SSID: ${_ssidController.text}');
-          print('Password: ${_passwordController.text}');
-
           try {
-            await _authService.signIn(_ssidController.text,
-                _passwordController.text); // Use SSID from controller
-
+            await _authService.signIn(
+                _ssidController.text, _passwordController.text);
             Navigator.pushReplacementNamed(context, '/home');
           } catch (e) {
             setState(() {
@@ -221,14 +228,16 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          padding: const EdgeInsets.symmetric(horizontal: 137, vertical: 15),
-          textStyle: const TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-          ),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0))),
+        backgroundColor: primaryColor,
+        padding: const EdgeInsets.symmetric(horizontal: 137, vertical: 15),
+        textStyle: const TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      ),
       child: const Text(
         'Sign in',
         style: TextStyle(color: backGroundColor1),
@@ -236,24 +245,26 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-//Create Account Button
   Widget _buildCreateAccountButton(BuildContext context) {
     return ElevatedButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/create-account');
-        },
-        style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
-            padding: const EdgeInsets.symmetric(horizontal: 65, vertical: 15),
-            textStyle: const TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-            ),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0))),
-        child: const Text(
-          'Create new account',
-          style: TextStyle(color: backGroundColor1),
-        ));
+      onPressed: () {
+        Navigator.pushNamed(context, '/create-account');
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primaryColor,
+        padding: const EdgeInsets.symmetric(horizontal: 65, vertical: 15),
+        textStyle: const TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      ),
+      child: const Text(
+        'Create new account',
+        style: TextStyle(color: backGroundColor1),
+      ),
+    );
   }
 }

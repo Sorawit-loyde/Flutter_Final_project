@@ -1,8 +1,8 @@
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:flutter/material.dart';
 
-class FirstScreen extends StatelessWidget {
-  const FirstScreen({super.key});
+class StartupPage extends StatelessWidget {
+  const StartupPage({super.key});
 
   //Manage content
   @override
@@ -74,7 +74,8 @@ class FirstScreen extends StatelessWidget {
   Widget _buildGetStartedButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        Navigator.pushNamed(context, '/login'); //Navigate to Login page
+        Navigator.pushReplacementNamed(
+            context, '/login'); //Navigate to Login page
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,

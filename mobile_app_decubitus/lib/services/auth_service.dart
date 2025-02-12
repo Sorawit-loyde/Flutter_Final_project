@@ -29,6 +29,7 @@ class AuthService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
         await _saveTokens(data['accessToken'], data['refreshToken']);
+        await _saveLoginInfo(ssid, password); // Save login info
       } else {
         throw Exception('Failed to sign in');
       }
@@ -101,5 +102,21 @@ class AuthService {
 
     await storage.write(key: 'accessToken', value: accessToken);
     await storage.write(key: 'refreshToken', value: refreshToken);
+  }
+
+  Future<void> _saveLoginInfo(String ssid, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('ssid', ssid);
+    await prefs.setString('password', password);
+  }
+
+  Future<Map<String, String>?> getLoginInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    final ssid = prefs.getString('ssid');
+    final password = prefs.getString('password');
+    if (ssid != null && password != null) {
+      return {'ssid': ssid, 'password': password};
+    }
+    return null;
   }
 }
