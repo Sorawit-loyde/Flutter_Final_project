@@ -41,27 +41,60 @@ class ChatService {
   }
 
   Future<String?> uploadImageFromPath(String filePath) async {
-  try {
-    final url = Uri.parse('${Custom_Config.BASE_URL}/upload/file'); // Replace with your backend endpoint
-    final request = http.MultipartRequest('POST', url);
-    request.files.add(
-      await http.MultipartFile.fromPath('file', filePath),
-    );
+    try {
+      final url = Uri.parse(
+          '${Custom_Config.BASE_URL}/upload/file'); // Replace with your backend endpoint
+      final request = http.MultipartRequest('POST', url);
+      request.files.add(
+        await http.MultipartFile.fromPath('file', filePath),
+      );
 
-    final response = await request.send();
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final resBody = await response.stream.bytesToString();
-      final data = jsonDecode(resBody);
-      // logger.i(data['path']);
-      return data['path']; // Assuming the backend returns the file path in 'path'
-    } else {
-      logger.e("Failed to upload image: ${response.statusCode}");
+      final response = await request.send();
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final resBody = await response.stream.bytesToString();
+        final data = jsonDecode(resBody);
+        // logger.i(data['path']);
+        return data[
+            'path']; // Assuming the backend returns the file path in 'path'
+      } else {
+        logger.e("Failed to upload image: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      logger.e("Error uploading image: $e");
       return null;
     }
-  } catch (e) {
-    logger.e("Error uploading image: $e");
-    return null;
   }
-}
 
+  Future<List<dynamic>> getWoundsFromPerusal(int roomId) async {
+    try {
+      // Fetch perusal_id
+      final Uri perusalUri =
+          Uri.parse('${Custom_Config.BASE_URL}/rooms/perusal/$roomId');
+      final perusalResponse = await http.get(perusalUri);
+
+      if (perusalResponse.statusCode != 200) {
+        throw Exception('Failed to fetch perusal ID');
+      }
+
+      final perusalData = jsonDecode(perusalResponse.body);
+      final int perusalId = perusalData['perusal_id'];
+
+      // Fetch wounds data using perusalId
+      final Uri woundsUri = Uri.parse(
+          '${Custom_Config.BASE_URL}/wound/wounds/grouped/$perusalId');
+      final woundsResponse = await http.get(woundsUri);
+
+      if (woundsResponse.statusCode != 200) {
+        throw Exception('Failed to fetch wounds data');
+      }
+
+      final woundsData = jsonDecode(woundsResponse.body) as List<dynamic>;
+      return woundsData;
+    } catch (e, stackTrace) {
+      logger.e('Error fetching wounds data: $e',
+          error: e, stackTrace: stackTrace);
+      throw Exception('Failed to fetch wounds data. Please try again later.');
+    }
+  }
 }

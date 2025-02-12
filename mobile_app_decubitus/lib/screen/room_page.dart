@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Add this import
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/models/room_model.dart';
 import 'package:mobile_app_decubitus/screen/chat_page.dart';
@@ -29,7 +30,9 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   String formatRoomName(String name, int index) {
-    return "ห้องที่ $index - $name";
+    DateTime dateTime = DateTime.parse(name);
+    String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
+    return "ห้องที่ $index - $formattedDate";
   }
 
   void _filterRooms(String query) {

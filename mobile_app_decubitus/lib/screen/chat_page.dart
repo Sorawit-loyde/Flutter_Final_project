@@ -132,7 +132,6 @@ class _ChatroomState extends State<Chatroom> {
 
   void sendMessage(String? messageText,
       {String? imageUrl, MessageType messageType = MessageType.text}) {
-
     if ((messageText == null || messageText.isEmpty) &&
         (imageUrl == null || imageUrl.isEmpty)) {
       debugPrint("Cannot send empty message.");
@@ -184,8 +183,33 @@ class _ChatroomState extends State<Chatroom> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : ChatView(
-              appBar: const ChatViewAppBar(
+              appBar: ChatViewAppBar(
                 chatTitle: "Chatroom",
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.more_vert),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Options'),
+                            content:
+                                const Text('Here you can add your options.'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('Close'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
               ),
               chatController: chatController,
               onSendTap: (messageText, replyMessage, messageType) async {
