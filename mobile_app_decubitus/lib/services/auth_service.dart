@@ -21,7 +21,8 @@ class AuthService {
       final response = await http.post(
         Uri.parse('${Custom_Config.BASE_URL}/auth/login'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'ssid': ssid, 'password': encryptedPassword}), // Adjusted key
+        body: json.encode(
+            {'ssid': ssid, 'password': encryptedPassword}), // Adjusted key
       );
       logger.i('Response status: ${response.statusCode}');
       logger.i('Response body: ${response.body}');
@@ -62,7 +63,7 @@ class AuthService {
           'sex': sex,
           'phone': phone,
           'birthdate': dateOfBirth,
-          'profile_image': profileImage,
+          'profile_image': "static/profile.jpg",
           'roleId': roleId,
         }),
       );

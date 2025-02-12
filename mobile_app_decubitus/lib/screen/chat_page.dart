@@ -170,6 +170,78 @@ class _ChatroomState extends State<Chatroom> {
     }));
   }
 
+  Future<void> _showWoundsDialog() async {
+    try {
+      final woundsData = await chatService.getWoundsFromPerusal(widget.roomId);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Wounds Information'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: woundsData.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final woundArea = woundsData[index];
+                  return Card(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Area: ${woundArea['area']}'),
+                        ...woundArea['wounds'].map<Widget>((wound) {
+                          return ListTile(
+                            leading: Image.network(
+                              '${Custom_Config.Image_URL}/${wound['wound_image']}',
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            ),
+                            title: Text('Wound ID: ${wound['id']}'),
+                            subtitle: Text('Status: ${wound['status']}'),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      logger.e('Error fetching wounds data: $e');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: const Text(
+                'Failed to fetch wounds data. Please try again later.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   void dispose() {
     channel?.sink.close();
@@ -189,24 +261,7 @@ class _ChatroomState extends State<Chatroom> {
                   IconButton(
                     icon: const Icon(Icons.more_vert),
                     onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Options'),
-                            content:
-                                const Text('Here you can add your options.'),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text('Close'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
+                      _showWoundsDialog();
                     },
                   ),
                 ],
