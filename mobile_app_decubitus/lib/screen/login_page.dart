@@ -194,7 +194,30 @@ class _LoginPageState extends State<LoginPage> {
       alignment: Alignment.centerRight,
       child: TextButton(
         onPressed: () {
-          // Navigate to page for forgot password functionality
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: backGroundColor1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                content: Container(
+                  width: 160,
+                  height: 55,
+                  alignment: Alignment.center,
+                  child: const Text(
+                    'Contact your admin : 1234@gmail.com',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: primaryColor,
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
+            },
+          );
         },
         child: const Text(
           'Forgot your password?',
