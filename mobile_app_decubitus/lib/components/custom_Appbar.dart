@@ -5,18 +5,16 @@ import 'package:mobile_app_decubitus/models/user_model.dart'; // Import your Use
 import 'package:mobile_app_decubitus/services/user_service.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
-  final VoidCallback onProfileUpdated; // Add a callback function
-
-  const CustomAppBar({super.key, required this.onProfileUpdated});
+  const CustomAppBar({super.key});
 
   @override
-  _CustomAppBarState createState() => _CustomAppBarState();
+  CustomAppBarState createState() => CustomAppBarState();
 
   @override
   Size get preferredSize => const Size.fromHeight(160);
 }
 
-class _CustomAppBarState extends State<CustomAppBar> {
+class CustomAppBarState extends State<CustomAppBar> {
   final UserService _userService = UserService();
 
   @override
@@ -30,6 +28,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
     } catch (e) {
       throw Exception('Failed to load user profile');
     }
+  }
+
+  void refreshAppBar() {
+    setState(() {});
   }
 
   @override

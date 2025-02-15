@@ -17,15 +17,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final GlobalKey<CustomAppBarState> _appBarKey =
+      GlobalKey<CustomAppBarState>();
+
   Future<int> fetchRoleId() async {
     final userService = UserService();
     return await userService.getRoleId();
-  }
-
-  void _onProfileUpdated() {
-    setState(() {
-      // Refresh the custom app bar or any other widget
-    });
   }
 
   @override
@@ -35,7 +32,7 @@ class _HomePageState extends State<HomePage> {
         return false; // Prevents back action
       },
       child: Scaffold(
-        appBar: CustomAppBar(onProfileUpdated: _onProfileUpdated),
+        appBar: CustomAppBar(key: _appBarKey),
         body: FutureBuilder<int>(
           future: fetchRoleId(),
           builder: (context, snapshot) {
@@ -54,14 +51,14 @@ class _HomePageState extends State<HomePage> {
                   const HomeContent(),
                   const RoomPage(),
                   const FollowupContent(),
-                  ProfileContent(onProfileUpdated: _onProfileUpdated),
+                  ProfileContent(appBarKey: _appBarKey),
                 ];
               } else if (roleId == 3) {
                 pages = [
                   const PatientListPage(),
                   const RoomPage(),
                   const NurseFollowupList(),
-                  ProfileContent(onProfileUpdated: _onProfileUpdated),
+                  ProfileContent(appBarKey: _appBarKey),
                 ];
               } else {
                 // Default or other role screens

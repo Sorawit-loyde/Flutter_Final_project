@@ -7,11 +7,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:mobile_app_decubitus/constant.dart'; // Import the constants
+import 'package:mobile_app_decubitus/components/custom_Appbar.dart';
 
 class ProfileContent extends StatefulWidget {
-  final VoidCallback onProfileUpdated; // Add a callback function
+  final GlobalKey<CustomAppBarState> appBarKey;
 
-  const ProfileContent({super.key, required this.onProfileUpdated});
+  const ProfileContent({super.key, required this.appBarKey});
 
   @override
   State<ProfileContent> createState() => _ProfileContentState();
@@ -78,7 +79,7 @@ class _ProfileContentState extends State<ProfileContent> {
       setState(() {
         isEditing = false;
       });
-      widget.onProfileUpdated(); // Call the callback function
+      widget.appBarKey.currentState?.refreshAppBar(); // Refresh the app bar
     } catch (e) {
       setState(() {
         errorMessage = e.toString();
