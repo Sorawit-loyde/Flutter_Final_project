@@ -5,7 +5,9 @@ import 'package:mobile_app_decubitus/models/user_model.dart'; // Import your Use
 import 'package:mobile_app_decubitus/services/user_service.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key});
+  final VoidCallback onProfileUpdated; // Add a callback function
+
+  const CustomAppBar({super.key, required this.onProfileUpdated});
 
   @override
   _CustomAppBarState createState() => _CustomAppBarState();
@@ -17,12 +19,9 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _CustomAppBarState extends State<CustomAppBar> {
   final UserService _userService = UserService();
 
-  late Future<User> futureUser; // Declare a Future for the user data
-
   @override
   void initState() {
     super.initState();
-    futureUser = _fetchData(); // Fetch user data on initialization
   }
 
   Future<User> _fetchData() async {
@@ -31,12 +30,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
     } catch (e) {
       throw Exception('Failed to load user profile');
     }
-  }
-
-  void refreshUserProfile() {
-    setState(() {
-      futureUser = _fetchData(); // Refresh user profile data
-    });
   }
 
   @override
@@ -54,7 +47,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       flexibleSpace: Padding(
         padding: const EdgeInsets.only(left: 20, top: 52),
         child: FutureBuilder<User>(
-          future: futureUser,
+          future: _fetchData(), // Fetch user data
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(

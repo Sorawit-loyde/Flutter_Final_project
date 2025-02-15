@@ -9,7 +9,9 @@ import 'package:intl/intl.dart';
 import 'package:mobile_app_decubitus/constant.dart'; // Import the constants
 
 class ProfileContent extends StatefulWidget {
-  const ProfileContent({super.key});
+  final VoidCallback onProfileUpdated; // Add a callback function
+
+  const ProfileContent({super.key, required this.onProfileUpdated});
 
   @override
   State<ProfileContent> createState() => _ProfileContentState();
@@ -73,6 +75,20 @@ class _ProfileContentState extends State<ProfileContent> {
         'profile_image': profileImageUrl,
       };
       await UserProfileService().updateUserProfile(id!, updatedData);
+      setState(() {
+        isEditing = false;
+      });
+      widget.onProfileUpdated(); // Call the callback function
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+      });
+    }
+  }
+
+  Future<void> refrech() async {
+    try {
+      await fetchUserProfile();
       setState(() {
         isEditing = false;
       });
@@ -168,6 +184,7 @@ class _ProfileContentState extends State<ProfileContent> {
               onPressed: () {
                 if (isEditing) {
                   updateUserProfile();
+                  refrech();
                 } else {
                   setState(() {
                     isEditing = true;

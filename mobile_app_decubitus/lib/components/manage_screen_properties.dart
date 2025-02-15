@@ -7,15 +7,25 @@ import 'package:mobile_app_decubitus/screen/patient/profile_content.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_patient_list.dart';
 import 'package:mobile_app_decubitus/screen/nurse/Nurse_followUp_list.dart';
 import 'package:mobile_app_decubitus/screen/room_page.dart';
-// import 'package:mobile_app_decubitus/screen/nurse/profile_content.dart';
 import 'package:mobile_app_decubitus/services/user_service.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   Future<int> fetchRoleId() async {
     final userService = UserService();
     return await userService.getRoleId();
+  }
+
+  void _onProfileUpdated() {
+    setState(() {
+      // Refresh the custom app bar or any other widget
+    });
   }
 
   @override
@@ -25,7 +35,7 @@ class HomePage extends StatelessWidget {
         return false; // Prevents back action
       },
       child: Scaffold(
-        appBar: const CustomAppBar(),
+        appBar: CustomAppBar(onProfileUpdated: _onProfileUpdated),
         body: FutureBuilder<int>(
           future: fetchRoleId(),
           builder: (context, snapshot) {
@@ -44,14 +54,14 @@ class HomePage extends StatelessWidget {
                   const HomeContent(),
                   const RoomPage(),
                   const FollowupContent(),
-                  const ProfileContent(),
+                  ProfileContent(onProfileUpdated: _onProfileUpdated),
                 ];
               } else if (roleId == 3) {
                 pages = [
                   const PatientListPage(),
                   const RoomPage(),
                   const NurseFollowupList(),
-                  const ProfileContent(),
+                  ProfileContent(onProfileUpdated: _onProfileUpdated),
                 ];
               } else {
                 // Default or other role screens
