@@ -80,6 +80,7 @@ class _ProfileContentState extends State<ProfileContent> {
         isEditing = false;
       });
       widget.appBarKey.currentState?.refreshAppBar(); // Refresh the app bar
+      await fetchUserProfile(); // Fetch the updated user profile
     } catch (e) {
       setState(() {
         errorMessage = e.toString();
@@ -185,7 +186,6 @@ class _ProfileContentState extends State<ProfileContent> {
               onPressed: () {
                 if (isEditing) {
                   updateUserProfile();
-                  refrech();
                 } else {
                   setState(() {
                     isEditing = true;
