@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:chatview/chatview.dart';
 import 'package:logger/logger.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
-import 'package:mobile_app_decubitus/models/chat_model.dart';
-import 'package:mobile_app_decubitus/services/chat_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:mobile_app_decubitus/models/chat_model.dart';
+import 'package:mobile_app_decubitus/services/chat_service.dart';
 
 class Chatroom extends StatefulWidget {
   final int roomId; // Room ID to join
@@ -191,15 +191,39 @@ class _ChatroomState extends State<Chatroom> {
                       children: [
                         Text('อวัยวะ : ${woundArea['area']}'),
                         ...woundArea['wounds'].map<Widget>((wound) {
-                          return ListTile(
-                            leading: Image.network(
-                              '${Custom_Config.Image_URL}/${wound['wound_image']}',
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
+                          return InkWell(
+                            onTap: () async {
+                              // Send wound image
+                              sendMessage(
+                                null,
+                                imageUrl: '${wound['wound_image']}',
+                                messageType: MessageType.image,
+                              );
+
+                              // Fetch wound follow-up data
+                              final followupData = await chatService
+                                  .getWoundFollowup(wound['id']);
+                              if (followupData.isNotEmpty) {
+                                final followup = followupData.first;
+                                // Send wound information as text
+                                final woundInfo =
+                                    'อวัยวะ: ${followup['area']}\nสถานะ: ${followup['status']}\nระดับแผล: ${followup['wound_state']['state']}';
+                                sendMessage(woundInfo,
+                                    messageType: MessageType.text);
+                              }
+
+                              Navigator.of(context).pop();
+                            },
+                            child: ListTile(
+                              leading: Image.network(
+                                '${Custom_Config.Image_URL}/${wound['wound_image']}',
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              ),
+                              title: Text('แผล ${wound['count']}'),
+                              subtitle: Text('สถานะ : ${wound['status']}'),
                             ),
-                            title: Text('แผล ${wound['count']}'),
-                            subtitle: Text('สถานะ : ${wound['status']}'),
                           );
                         }).toList(),
                       ],

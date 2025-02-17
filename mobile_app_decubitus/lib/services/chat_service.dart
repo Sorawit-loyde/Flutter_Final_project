@@ -97,4 +97,24 @@ class ChatService {
       throw Exception('Failed to fetch wounds data. Please try again later.');
     }
   }
+
+  Future<List<dynamic>> getWoundFollowup(int woundId) async {
+    try {
+      final Uri followupUri =
+          Uri.parse('${Custom_Config.BASE_URL}/wound/followup/$woundId');
+      final followupResponse = await http.get(followupUri);
+
+      if (followupResponse.statusCode != 200) {
+        throw Exception('Failed to fetch wound follow-up data');
+      }
+
+      final followupData = jsonDecode(followupResponse.body) as List<dynamic>;
+      return followupData;
+    } catch (e, stackTrace) {
+      logger.e('Error fetching wound follow-up data: $e',
+          error: e, stackTrace: stackTrace);
+      throw Exception(
+          'Failed to fetch wound follow-up data. Please try again later.');
+    }
+  }
 }

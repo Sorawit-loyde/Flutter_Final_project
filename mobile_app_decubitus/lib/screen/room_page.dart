@@ -13,7 +13,6 @@ class RoomPage extends StatefulWidget {
 }
 
 class _RoomPageState extends State<RoomPage> {
-  String _searchQuery = '';
   List<Room> _allRooms = [];
   List<Room> _filteredRooms = [];
   bool _showFab = true;
@@ -35,17 +34,6 @@ class _RoomPageState extends State<RoomPage> {
     return "ห้องที่ $index - $formattedDate";
   }
 
-  void _filterRooms(String query) {
-    setState(() {
-      _searchQuery = query;
-      _filteredRooms = _searchQuery.isEmpty
-          ? _allRooms
-          : _allRooms
-              .where((room) => room.name.contains(_searchQuery))
-              .toList();
-    });
-  }
-
   Future<void> fetchUpdatedRooms() async {
     final fetchedRooms = await fetchRooms();
     setState(() {
@@ -63,27 +51,8 @@ class _RoomPageState extends State<RoomPage> {
           return MaterialPageRoute(
             builder: (context) => Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
-                  child: TextField(
-                    onChanged: _filterRooms,
-                    decoration: InputDecoration(
-                      hintText: 'ค้นหาการตรวจ...',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: greyColor1),
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      fillColor: greyColor1,
-                      filled: true,
-                      suffixIcon: const Icon(Icons.search),
-                    ),
-                  ),
-                ),
+                const SizedBox(
+                    height: 10), // Add this line for 10px space from top
                 Expanded(
                   child: FutureBuilder<List<Room>>(
                     future: fetchRooms(),
