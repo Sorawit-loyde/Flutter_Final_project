@@ -116,17 +116,25 @@ class _ChatroomState extends State<Chatroom> {
 
   void _handleIncomingMessage(Map<String, dynamic> data) {
     logger.i("testdata: $data");
+    final senderId = data['sendId'].toString();
+    final fullname = data['fullname'].toString();
     final newMessage = Message(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       message: data['event'] == 'image'
           ? '${Custom_Config.Image_URL}/${data['image']}'
           : data['message'],
       createdAt: DateTime.now(),
-      sentBy: data['sendId'].toString(),
+      sentBy: senderId,
       messageType:
           data['event'] == 'image' ? MessageType.image : MessageType.text,
     );
 
+  if (!chatController.otherUsers.any((user) => user.id == senderId)) {
+    chatController.otherUsers.add(ChatUser(
+      id: senderId,
+      name: fullname ,
+    ));
+  }
     chatController.addMessage(newMessage);
   }
 
