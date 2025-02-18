@@ -252,7 +252,7 @@ class _LoginPageState extends State<LoginPage> {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
-        padding: const EdgeInsets.symmetric(horizontal: 137, vertical: 15),
+        padding: const EdgeInsets.symmetric(vertical: 15),
         textStyle: const TextStyle(
           fontSize: 25,
           fontWeight: FontWeight.bold,
@@ -261,9 +261,13 @@ class _LoginPageState extends State<LoginPage> {
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),
-      child: const Text(
-        'Sign in',
-        style: TextStyle(color: backGroundColor1),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
+        alignment: Alignment.center,
+        child: const Text(
+          'Sign in',
+          style: TextStyle(color: backGroundColor1),
+        ),
       ),
     );
   }
@@ -275,7 +279,7 @@ class _LoginPageState extends State<LoginPage> {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
-        padding: const EdgeInsets.symmetric(horizontal: 65, vertical: 15),
+        padding: const EdgeInsets.symmetric(vertical: 15),
         textStyle: const TextStyle(
           fontSize: 25,
           fontWeight: FontWeight.bold,
@@ -284,9 +288,13 @@ class _LoginPageState extends State<LoginPage> {
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),
-      child: const Text(
-        'Create new account',
-        style: TextStyle(color: backGroundColor1),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
+        alignment: Alignment.center,
+        child: const Text(
+          'Create new account',
+          style: TextStyle(color: backGroundColor1),
+        ),
       ),
     );
   }
