@@ -27,6 +27,7 @@ class _ProfileContentState extends State<ProfileContent> {
   int roleId = 0; // To store the role ID
   String password = ''; // To store the password
   File? _image; // To store the selected image
+  TextEditingController? _birthdateController; // Controller for birthdate field
 
   @override
   void initState() {
@@ -52,6 +53,8 @@ class _ProfileContentState extends State<ProfileContent> {
         roleId = user.roles.isNotEmpty ? user.roles[0].id : 0;
         password = user.password ?? '';
         isLoading = false;
+        _birthdateController =
+            TextEditingController(text: userInfo['วัน/เดือน/ปีเกิด']);
       });
     } catch (e) {
       setState(() {
@@ -71,8 +74,9 @@ class _ProfileContentState extends State<ProfileContent> {
         'phone': userInfo['เบอโทรศัทพ์ติดต่อ'],
         'first_name': userInfo['ชื่อ'],
         'last_name': userInfo['นามสกุล'],
-        'birthdate': DateFormat('yyyy-MM-dd').format(
-            DateFormat('dd/MM/yyyy').parse(userInfo['วัน/เดือน/ปีเกิด']!)),
+        'birthdate': DateFormat('yyyy-MM-dd').format(DateFormat('dd/MM/yyyy')
+            .parse(userInfo['วัน/เดือน/ปีเกิด']!)
+            .add(Duration(days: 1))),
         'profile_image': profileImageUrl,
       };
       await UserProfileService().updateUserProfile(id!, updatedData);
@@ -138,8 +142,13 @@ class _ProfileContentState extends State<ProfileContent> {
       },
     );
     if (picked != null) {
+      // Use local time to avoid time zone issues
+      final DateTime selectedDate =
+          DateTime(picked.year, picked.month, picked.day);
       setState(() {
-        userInfo['วัน/เดือน/ปีเกิด'] = DateFormat('dd/MM/yyyy').format(picked);
+        userInfo['วัน/เดือน/ปีเกิด'] =
+            DateFormat('dd/MM/yyyy').format(selectedDate);
+        _birthdateController?.text = userInfo['วัน/เดือน/ปีเกิด']!;
       });
     }
   }
@@ -272,18 +281,17 @@ class _ProfileContentState extends State<ProfileContent> {
                               ),
                               subtitle: isEditing
                                   ? entry.key == 'วัน/เดือน/ปีเกิด'
-                                      ? GestureDetector(
-                                          onTap: () => _selectDate(context),
-                                          child: AbsorbPointer(
-                                            child: TextFormField(
-                                              initialValue: entry.value,
-                                              decoration: InputDecoration(
-                                                hintText: 'Select Date',
-                                                hintStyle: TextStyle(
-                                                    color: greyColor3),
-                                              ),
-                                            ),
+                                      ? TextFormField(
+                                          controller: _birthdateController,
+                                          decoration: InputDecoration(
+                                            hintText: 'Select Date',
+                                            hintStyle:
+                                                TextStyle(color: greyColor3),
                                           ),
+                                          readOnly:
+                                              true, // Make the field read-only to prevent manual input
+                                          onTap: () => _selectDate(
+                                              context), // Show date picker on tap
                                         )
                                       : TextFormField(
                                           initialValue: entry.value,

@@ -206,8 +206,9 @@ class _ChatroomState extends State<Chatroom> {
                               if (followupData.isNotEmpty) {
                                 final followup = followupData.first;
                                 // Send wound information as text
-                                final woundInfo =
-                                    'อวัยวะ: ${followup['area']}\nสถานะ: ${followup['status']}\nระดับแผล: ${followup['wound_state']['state']}';
+                                final woundInfo = followup['remark'] == null
+                                    ? 'อวัยวะ: ${followup['area']}\nสถานะ: ${followup['status']}\nระดับแผล: ${followup['wound_state']['state']}'
+                                    : 'อวัยวะ: ${followup['area']}\nสถานะ: ${followup['status']}\nระดับแผล: ${followup['wound_state']['state']}\nระดับแผลความเห็น: ${followup['remark']}';
                                 sendMessage(woundInfo,
                                     messageType: MessageType.text);
                               }
