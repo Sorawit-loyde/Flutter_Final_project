@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/services/auth_service.dart';
+import 'package:mobile_app_decubitus/screen/otp_send_page.dart';
+import 'otp_send_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -194,29 +196,9 @@ class _LoginPageState extends State<LoginPage> {
       alignment: Alignment.centerRight,
       child: TextButton(
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                backgroundColor: backGroundColor1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                content: Container(
-                  width: 160,
-                  height: 55,
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Contact your admin : 1234@gmail.com',
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: primaryColor,
-                        fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              );
-            },
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => OtpSendPage()),
           );
         },
         child: const Text(
