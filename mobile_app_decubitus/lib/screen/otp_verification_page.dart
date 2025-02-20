@@ -7,8 +7,11 @@ import 'change_password_page.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   final String phoneNumber;
+  final int uid; // Add uid parameter
+  final String token; // Add token parameter
 
-  OtpVerificationPage({required this.phoneNumber});
+  OtpVerificationPage(
+      {required this.phoneNumber, required this.uid, required this.token});
 
   @override
   _OtpVerificationPageState createState() => _OtpVerificationPageState();
@@ -19,13 +22,14 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   String? _errorMessage;
   int _countdown = 30;
   Timer? _timer;
-  String? _token;
+  late String _token; // Use late keyword to initialize the token later
 
   @override
   void initState() {
     super.initState();
+    _token = widget
+        .token; // Initialize the token with the value passed from the previous page
     _startCountdown();
-    _sendOtp();
   }
 
   void _startCountdown() {
@@ -40,27 +44,12 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     });
   }
 
-  Future<void> _sendOtp() async {
-    try {
-      final response = await _otpService.sendOtp(widget.phoneNumber);
-      setState(() {
-        _token = response.result.token;
-        _errorMessage = "OTP sent successfully.";
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = "Failed to send OTP. Please try again.";
-      });
-    }
-  }
-
   Future<void> _resendOtp() async {
     if (_countdown == 0) {
       try {
         final response = await _otpService.sendOtp(widget.phoneNumber);
         setState(() {
-          _token = response.result.token;
-          _errorMessage = "OTP resent successfully.";
+          _token = response.result.token; // Update the token with the new value
           _countdown = 30;
           _startCountdown();
         });
@@ -73,24 +62,18 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   }
 
   Future<void> _submitOtp(String otp) async {
-    if (_token == null) {
-      setState(() {
-        _errorMessage = "Token is missing. Please request a new OTP.";
-      });
-      return;
-    }
-
     try {
-      final isSuccess = await _otpService.verifyOtp(_token!, otp);
+      final isSuccess =
+          await _otpService.verifyOtp(_token, otp); // Use the latest token
       if (isSuccess) {
         setState(() {
           _errorMessage = "OTP verified successfully.";
         });
-        // Navigate to the change password page
+        // Navigate to the change password page with uid
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChangePasswordPage(),
+            builder: (context) => ChangePasswordPage(uid: widget.uid),
           ),
         );
       } else {

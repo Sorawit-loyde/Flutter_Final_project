@@ -15,16 +15,16 @@ class _OtpSendPageState extends State<OtpSendPage> {
 
   Future<void> _sendOtp() async {
     try {
-      await _otpService.sendOtp(_phoneNumberController.text);
-      setState(() {
-        _errorMessage = "OTP sent successfully.";
-      });
-      // Navigate to OTP verification page
+      final response = await _otpService.sendOtp(_phoneNumberController.text);
+      setState(() {});
+      // Navigate to OTP verification page with token and uid
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => OtpVerificationPage(
             phoneNumber: _phoneNumberController.text,
+            uid: response.uid, // Pass the uid
+            token: response.result.token, // Pass the token
           ),
         ),
       );
