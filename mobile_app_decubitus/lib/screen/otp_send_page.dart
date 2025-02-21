@@ -78,7 +78,7 @@ class _OtpSendPageState extends State<OtpSendPage> {
                 filled: true,
                 fillColor: secondaryColor,
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(50.0),
                   borderSide: const BorderSide(color: secondaryColor),
                 ),
                 border: OutlineInputBorder(

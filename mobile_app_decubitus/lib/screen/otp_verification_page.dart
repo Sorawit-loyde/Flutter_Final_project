@@ -23,6 +23,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   int _countdown = 30;
   Timer? _timer;
   late String _token; // Use late keyword to initialize the token later
+  bool _isOtpVerified = false; // Track OTP verification status
 
   @override
   void initState() {
@@ -67,15 +68,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           await _otpService.verifyOtp(_token, otp); // Use the latest token
       if (isSuccess) {
         setState(() {
-          _errorMessage = "OTP verified successfully.";
+          _isOtpVerified = true;
         });
-        // Navigate to the change password page with uid
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChangePasswordPage(uid: widget.uid),
-          ),
-        );
       } else {
         setState(() {
           _errorMessage = "Invalid OTP. Please try again.";
@@ -140,9 +134,17 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             const SizedBox(height: 25),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Trigger OTP submission
-                },
+                onPressed: _isOtpVerified
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ChangePasswordPage(uid: widget.uid),
+                          ),
+                        );
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   padding:

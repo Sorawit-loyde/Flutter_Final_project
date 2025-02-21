@@ -52,30 +52,12 @@ class UserService {
   static const String baseUrl = '${Custom_Config.BASE_URL}/users';
   final RSAService rsaService = RSAService(Custom_Config.PUBLIC_KEY);
 
-  Future<User> getUserDetails(int id) async {
-    final response = await http.get(Uri.parse('$baseUrl/$id'));
-
-    if (response.statusCode == 200) {
-      return User.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to load user details');
-    }
-  }
-
-  Future<void> updateUserDetails(
-      int id, Map<String, dynamic> userDetails) async {
+  Future<void> updateUserDetails(int id, String password) async {
     print('Updating user details for user ID: $id');
-    print('Original request body: ${jsonEncode(userDetails)}');
 
     // Encrypt the password before sending it
-    if (userDetails.containsKey('password')) {
-      final encryptedPassword =
-          await rsaService.encryptPassword(userDetails['password']);
-      userDetails['password'] = encryptedPassword;
-      print('Encrypted password: $encryptedPassword');
-    }
-
-    final requestBody = jsonEncode(userDetails);
+    final encryptedPassword = await rsaService.encryptPassword(password);
+    final requestBody = jsonEncode({'password': encryptedPassword});
     print('Final request body: $requestBody');
 
     final response = await http.patch(
