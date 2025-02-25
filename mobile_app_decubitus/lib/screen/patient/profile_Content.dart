@@ -21,7 +21,6 @@ class ProfileContent extends StatefulWidget {
 class _ProfileContentState extends State<ProfileContent> {
   Map<String, String> userInfo = {}; // To store the fetched user data
   bool isLoading = true; // To show a loading spinner
-  String errorMessage = ''; // To show error messages
   String profileImageUrl = ''; // To store the profile image URL
   bool isEditing = false; // To track if the user is in edit mode
   int roleId = 0; // To store the role ID
@@ -60,9 +59,13 @@ class _ProfileContentState extends State<ProfileContent> {
       });
     } catch (e) {
       setState(() {
-        errorMessage = e.toString();
         isLoading = false;
       });
+      _showSnackBar(
+          context,
+          e
+              .toString()
+              .replaceAll('Exception: ', '')); // Show error message in SnackBar
     }
   }
 
@@ -88,10 +91,11 @@ class _ProfileContentState extends State<ProfileContent> {
       widget.appBarKey.currentState?.refreshAppBar(); // Refresh the app bar
       await fetchUserProfile(); // Fetch the updated user profile
     } catch (e) {
-      setState(() {
-        errorMessage = e.toString().replaceAll('Exception: ', '');
-      });
-      _showSnackBar(context, errorMessage); // Show error message in SnackBar
+      _showSnackBar(
+          context,
+          e
+              .toString()
+              .replaceAll('Exception: ', '')); // Show error message in SnackBar
     }
   }
 
@@ -102,9 +106,11 @@ class _ProfileContentState extends State<ProfileContent> {
         isEditing = false;
       });
     } catch (e) {
-      setState(() {
-        errorMessage = e.toString();
-      });
+      _showSnackBar(
+          context,
+          e
+              .toString()
+              .replaceAll('Exception: ', '')); // Show error message in SnackBar
     }
   }
 
@@ -217,228 +223,205 @@ class _ProfileContentState extends State<ProfileContent> {
           padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
           child: isLoading
               ? const Center(child: CircularProgressIndicator())
-              : errorMessage.isNotEmpty
-                  ? Center(
-                      child: Text(
-                        errorMessage,
-                        style: const TextStyle(color: errorColor),
-                        textAlign: TextAlign.center,
-                      ),
-                    )
-                  : ListView(
-                      children: [
-                        if (profileImageUrl.isNotEmpty)
-                          Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                if (isEditing) {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        ListTile(
-                                          leading: Icon(Icons.camera),
-                                          title: Text('Camera'),
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            _pickImage(ImageSource.camera);
-                                          },
-                                        ),
-                                        ListTile(
-                                          leading: Icon(Icons.photo_library),
-                                          title: Text('Gallery'),
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            _pickImage(ImageSource.gallery);
-                                          },
-                                        ),
-                                      ],
+              : ListView(
+                  children: [
+                    if (profileImageUrl.isNotEmpty)
+                      Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (isEditing) {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) => Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ListTile(
+                                      leading: Icon(Icons.camera),
+                                      title: Text('Camera'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        _pickImage(ImageSource.camera);
+                                      },
                                     ),
-                                  );
-                                }
-                              },
-                              child: CircleAvatar(
-                                radius: 50,
-                                backgroundImage: _image != null
-                                    ? FileImage(_image!)
-                                    : NetworkImage(
-                                        profileImageUrl.isNotEmpty
-                                            ? '${Custom_Config.Image_URL}/$profileImageUrl'
-                                            : '${Custom_Config.Image_URL}/static/profile.jpg',
-                                      ) as ImageProvider,
+                                    ListTile(
+                                      leading: Icon(Icons.photo_library),
+                                      title: Text('Gallery'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        _pickImage(ImageSource.gallery);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          },
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundImage: _image != null
+                                ? FileImage(_image!)
+                                : NetworkImage(
+                                    profileImageUrl.isNotEmpty
+                                        ? '${Custom_Config.Image_URL}/$profileImageUrl'
+                                        : '${Custom_Config.Image_URL}/static/profile.jpg',
+                                  ) as ImageProvider,
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    ...userInfo.entries.map((entry) {
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 5.0),
+                        color: tertiaryColor,
+                        child: ListTile(
+                          title: Padding(
+                            padding: const EdgeInsets.only(bottom: 5.0),
+                            child: Text(
+                              entry.key,
+                              style: const TextStyle(
+                                fontSize: 19.0,
+                                fontWeight: FontWeight.bold,
+                                color: darkColor,
                               ),
                             ),
                           ),
-                        const SizedBox(height: 16),
-                        ...userInfo.entries.map((entry) {
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 5.0),
-                            color: tertiaryColor,
-                            child: ListTile(
-                              title: Padding(
-                                padding: const EdgeInsets.only(bottom: 5.0),
-                                child: Text(
-                                  entry.key,
-                                  style: const TextStyle(
-                                    fontSize: 19.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: darkColor,
-                                  ),
-                                ),
-                              ),
-                              subtitle: isEditing
-                                  ? entry.key == 'วัน/เดือน/ปีเกิด'
-                                      ? TextFormField(
-                                          controller: _birthdateController,
+                          subtitle: isEditing
+                              ? entry.key == 'วัน/เดือน/ปีเกิด'
+                                  ? TextFormField(
+                                      controller: _birthdateController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Select Date',
+                                        hintStyle: TextStyle(color: greyColor3),
+                                      ),
+                                      readOnly:
+                                          true, // Make the field read-only to prevent manual input
+                                      onTap: () => _selectDate(
+                                          context), // Show date picker on tap
+                                    )
+                                  : entry.key == 'เพศ'
+                                      ? Row(
+                                          children: [
+                                            Expanded(
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    selectedGender = 'Male';
+                                                    userInfo['เพศ'] = 'Male';
+                                                  });
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      selectedGender == 'Male'
+                                                          ? primaryColor
+                                                          : secondaryColor,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                  ),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.male,
+                                                      color: Colors.black,
+                                                    ),
+                                                    SizedBox(width: 5),
+                                                    Text(
+                                                      'Male',
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    selectedGender = 'Female';
+                                                    userInfo['เพศ'] = 'Female';
+                                                  });
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      selectedGender == 'Female'
+                                                          ? primaryColor
+                                                          : secondaryColor,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                  ),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.female,
+                                                      color: Colors.black,
+                                                    ),
+                                                    SizedBox(width: 5),
+                                                    Text(
+                                                      'Female',
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : TextFormField(
+                                          initialValue: entry.value,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              userInfo[entry.key] = value;
+                                            });
+                                          },
                                           decoration: InputDecoration(
-                                            hintText: 'Select Date',
                                             hintStyle:
                                                 TextStyle(color: greyColor3),
                                           ),
-                                          readOnly:
-                                              true, // Make the field read-only to prevent manual input
-                                          onTap: () => _selectDate(
-                                              context), // Show date picker on tap
                                         )
-                                      : entry.key == 'เพศ'
-                                          ? Row(
-                                              children: [
-                                                Expanded(
-                                                  child: ElevatedButton(
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        selectedGender = 'Male';
-                                                        userInfo['เพศ'] =
-                                                            'Male';
-                                                      });
-                                                    },
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      backgroundColor:
-                                                          selectedGender ==
-                                                                  'Male'
-                                                              ? primaryColor
-                                                              : secondaryColor,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                      ),
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(
-                                                          Icons.male,
-                                                          color: Colors.black,
-                                                        ),
-                                                        SizedBox(width: 5),
-                                                        Text(
-                                                          'Male',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 10),
-                                                Expanded(
-                                                  child: ElevatedButton(
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        selectedGender =
-                                                            'Female';
-                                                        userInfo['เพศ'] =
-                                                            'Female';
-                                                      });
-                                                    },
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      backgroundColor:
-                                                          selectedGender ==
-                                                                  'Female'
-                                                              ? primaryColor
-                                                              : secondaryColor,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                      ),
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(
-                                                          Icons.female,
-                                                          color: Colors.black,
-                                                        ),
-                                                        SizedBox(width: 5),
-                                                        Text(
-                                                          'Female',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          : TextFormField(
-                                              initialValue: entry.value,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  userInfo[entry.key] = value;
-                                                });
-                                              },
-                                              decoration: InputDecoration(
-                                                hintStyle: TextStyle(
-                                                    color: greyColor3),
-                                              ),
-                                            )
-                                  : Text(
-                                      entry.value,
-                                      style: TextStyle(color: darkColor),
-                                    ),
-                            ),
-                          );
-                        }),
-                        const SizedBox(height: 5),
-                        if (!isEditing)
-                          Center(
-                            child: ElevatedButton(
-                              onPressed: _logout,
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor:
-                                    primaryColor, // Button text color
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 50, vertical: 15),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
+                              : Text(
+                                  entry.value,
+                                  style: TextStyle(color: darkColor),
                                 ),
-                              ),
-                              child: Text(
-                                'ออกจากระบบ',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 5),
+                    if (!isEditing)
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: _logout,
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: primaryColor, // Button text color
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 50, vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                      ],
-                    ),
+                          child: Text(
+                            'ออกจากระบบ',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
         ),
       ),
     );

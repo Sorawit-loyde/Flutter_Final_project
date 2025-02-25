@@ -38,6 +38,7 @@ class UserProfileService {
   Future<void> updateUserProfile(
       String id, Map<String, dynamic> updatedData) async {
     try {
+      logger.i('Sending data: $updatedData'); // Log the data being sent
       final response = await http.patch(
         Uri.parse('${Custom_Config.BASE_URL}/users/profile/$id'),
         headers: {
@@ -61,7 +62,7 @@ class UserProfileService {
       }
     } catch (e) {
       logger.e(e.toString());
-      throw Exception('Error updating user profile: $e');
+      throw Exception('$e');
     }
   }
 }
