@@ -22,14 +22,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   Future<void> _changePassword() async {
     if (_passwordController.text.length < 6) {
       setState(() {
-        _errorMessage = "Password must be at least 6 characters.";
+        _errorMessage = "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร";
       });
       return;
     }
 
     if (_passwordController.text != _confirmPasswordController.text) {
       setState(() {
-        _errorMessage = "Passwords do not match.";
+        _errorMessage = "รหัสผ่านไม่ตรงกัน";
       });
       return;
     }
@@ -45,7 +45,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       );
     } catch (e) {
       setState(() {
-        _errorMessage = "Failed to change password. Please try again.";
+        _errorMessage = "ไม่สามารถเปลี่ยนรหัสผ่านได้ กรุณาลองใหม่อีกครั้ง";
       });
     }
   }
@@ -55,7 +55,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     return Scaffold(
       backgroundColor: backGroundColor1,
       appBar: AppBar(
-        title: const Text('Reset Password'),
+        title: const Text('รีเซ็ตรหัสผ่าน'),
         backgroundColor: backGroundColor1,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
@@ -68,12 +68,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'At least 6 characters for password',
+              'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร',
               style: TextStyle(fontSize: 16, color: greyColor3),
             ),
             const SizedBox(height: 15),
             const Text(
-              'Sign up your Account',
+              'สมัครบัญชีของคุณ',
               style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -81,14 +81,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             ),
             const SizedBox(height: 15),
             const Text(
-              'New Password',
+              'รหัสผ่านใหม่',
               style: TextStyle(fontSize: 16, color: greyColor3),
             ),
             const SizedBox(height: 15),
             TextField(
               controller: _passwordController,
               decoration: InputDecoration(
-                labelText: 'New Password',
+                labelText: 'รหัสผ่านใหม่',
                 labelStyle: const TextStyle(color: greyColor3),
                 filled: true,
                 fillColor: secondaryColor,
@@ -108,14 +108,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             ),
             const SizedBox(height: 25),
             const Text(
-              'Confirm Password',
+              'ยืนยันรหัสผ่าน',
               style: TextStyle(fontSize: 16, color: greyColor3),
             ),
             const SizedBox(height: 15),
             TextField(
               controller: _confirmPasswordController,
               decoration: InputDecoration(
-                labelText: 'Confirm Password',
+                labelText: 'ยืนยันรหัสผ่าน',
                 labelStyle: const TextStyle(color: greyColor3),
                 filled: true,
                 fillColor: secondaryColor,
@@ -150,7 +150,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   ),
                 ),
                 child: const Text(
-                  'Reset Password',
+                  'รีเซ็ตรหัสผ่าน',
                   style: TextStyle(color: backGroundColor1, fontSize: 22),
                 ),
               ),

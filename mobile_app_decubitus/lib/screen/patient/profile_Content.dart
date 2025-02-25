@@ -89,8 +89,9 @@ class _ProfileContentState extends State<ProfileContent> {
       await fetchUserProfile(); // Fetch the updated user profile
     } catch (e) {
       setState(() {
-        errorMessage = e.toString();
+        errorMessage = e.toString().replaceAll('Exception: ', '');
       });
+      _showSnackBar(context, errorMessage); // Show error message in SnackBar
     }
   }
 
@@ -161,6 +162,11 @@ class _ProfileContentState extends State<ProfileContent> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     Navigator.pushReplacementNamed(context, '/login');
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -407,6 +413,7 @@ class _ProfileContentState extends State<ProfileContent> {
                             ),
                           );
                         }),
+                        const SizedBox(height: 5),
                         if (!isEditing)
                           Center(
                             child: ElevatedButton(

@@ -29,7 +29,9 @@ class _OtpSendPageState extends State<OtpSendPage> {
         ),
       );
     } catch (e) {
-      setState(() {});
+      setState(() {
+        _errorMessage = 'เกิดข้อผิดพลาดในการส่ง OTP';
+      });
     }
   }
 
@@ -38,7 +40,7 @@ class _OtpSendPageState extends State<OtpSendPage> {
     return Scaffold(
       backgroundColor: backGroundColor1,
       appBar: AppBar(
-        title: const Text('Verification'),
+        title: const Text('ยืนยันตัวตน'),
         backgroundColor: backGroundColor1,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
@@ -51,12 +53,12 @@ class _OtpSendPageState extends State<OtpSendPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Enter your mobile number to enable 2-step verification',
+              'กรุณากรอกหมายเลขโทรศัพท์เพื่อเปิดใช้งานการยืนยันตัวตนแบบสองขั้นตอน',
               style: TextStyle(fontSize: 16, color: greyColor3),
             ),
             const SizedBox(height: 15),
             const Text(
-              'Enter your mobile number',
+              'กรอกหมายเลขโทรศัพท์ของคุณ',
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -64,14 +66,14 @@ class _OtpSendPageState extends State<OtpSendPage> {
             ),
             const SizedBox(height: 15),
             const Text(
-              'Mobile No',
+              'หมายเลขโทรศัพท์',
               style: TextStyle(fontSize: 16, color: greyColor3),
             ),
             const SizedBox(height: 15),
             TextField(
               controller: _phoneNumberController,
               decoration: InputDecoration(
-                labelText: 'Enter your mobile number',
+                labelText: 'กรอกหมายเลขโทรศัพท์ของคุณ',
                 labelStyle: const TextStyle(color: greyColor3),
                 filled: true,
                 fillColor: secondaryColor,
@@ -95,7 +97,7 @@ class _OtpSendPageState extends State<OtpSendPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   padding:
-                      const EdgeInsets.symmetric(vertical: 18, horizontal: 140),
+                      const EdgeInsets.symmetric(vertical: 18, horizontal: 100),
                   textStyle: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -105,7 +107,7 @@ class _OtpSendPageState extends State<OtpSendPage> {
                   ),
                 ),
                 child: const Text(
-                  'Continue',
+                  'ดำเนินการต่อ',
                   style: TextStyle(color: backGroundColor1),
                 ),
               ),

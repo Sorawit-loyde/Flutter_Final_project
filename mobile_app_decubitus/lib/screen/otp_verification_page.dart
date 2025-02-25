@@ -56,7 +56,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         });
       } catch (e) {
         setState(() {
-          _errorMessage = "Failed to resend OTP. Please try again.";
+          _errorMessage = "ไม่สามารถส่ง OTP ใหม่ได้ กรุณาลองใหม่อีกครั้ง";
         });
       }
     }
@@ -72,12 +72,12 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         });
       } else {
         setState(() {
-          _errorMessage = "Invalid OTP. Please try again.";
+          _errorMessage = "OTP ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง";
         });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = "Failed to verify OTP. Please try again.";
+        _errorMessage = "ไม่สามารถยืนยัน OTP ได้ กรุณาลองใหม่อีกครั้ง";
       });
     }
   }
@@ -93,7 +93,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     return Scaffold(
       backgroundColor: backGroundColor1,
       appBar: AppBar(
-        title: const Text('Verification'),
+        title: const Text('ยืนยัน OTP'),
         backgroundColor: backGroundColor1,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
@@ -106,12 +106,12 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'We sent you a code to verify your mobile number',
+              'เราได้ส่งรหัส OTP ไปยังหมายเลขโทรศัพท์ของคุณ',
               style: TextStyle(fontSize: 16, color: greyColor3),
             ),
             const SizedBox(height: 15),
             const Text(
-              'Enter your OTP code here',
+              'กรอกรหัส OTP ของคุณที่นี่',
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -148,7 +148,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   padding:
-                      const EdgeInsets.symmetric(vertical: 15, horizontal: 140),
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 120),
                   textStyle: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -158,7 +158,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   ),
                 ),
                 child: const Text(
-                  'Continue',
+                  'ดำเนินการต่อ',
                   style: TextStyle(color: backGroundColor1),
                 ),
               ),
@@ -166,7 +166,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             const SizedBox(height: 25),
             Center(
               child: const Text(
-                "I don't receive a code",
+                "ฉันไม่ได้รับรหัส",
                 style: TextStyle(fontSize: 16, color: greyColor3),
               ),
             ),
@@ -175,7 +175,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
               child: GestureDetector(
                 onTap: _resendOtp,
                 child: Text(
-                  'RESEND',
+                  'ส่งใหม่',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -187,7 +187,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             const SizedBox(height: 5),
             Center(
               child: Text(
-                '$_countdown sec',
+                '$_countdown วินาที',
                 style: const TextStyle(fontSize: 16, color: greyColor3),
               ),
             ),

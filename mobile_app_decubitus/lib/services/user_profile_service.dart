@@ -49,7 +49,12 @@ class UserProfileService {
       logger.t('Request body: ${json.encode(updatedData)}');
       logger.t('Response body: ${response.body}');
       logger.t('Response status code: ${response.statusCode}');
-      if (response.statusCode != 200 && response.statusCode != 204) {
+      if (response.statusCode == 400) {
+        final errorResponse = json.decode(response.body);
+        final errorMessage = errorResponse['message'] ?? 'Unknown error';
+        logger.e('Error: $errorMessage');
+        throw Exception(errorMessage);
+      } else if (response.statusCode != 200 && response.statusCode != 204) {
         logger.e('Status code error: ${response.statusCode}');
         throw Exception(
             'Failed to update user profile: ${response.statusCode}');
