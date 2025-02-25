@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app_decubitus/constant.dart';
 import 'package:mobile_app_decubitus/services/auth_service.dart';
 import 'package:mobile_app_decubitus/screen/otp_send_page.dart';
-import 'otp_send_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -104,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildTitle() {
     return const Text(
-      'Login here',
+      'เข้าสู่ระบบ',
       style: TextStyle(
         fontSize: 35,
         fontWeight: FontWeight.w900,
@@ -116,13 +115,14 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildWelcomeMessage() {
     return const Text(
-      'Welcome back! Please sign in to continue.',
+      'เข้าสู่ระบบด้วยหมายเลขบัตรประชาชน',
       style: TextStyle(
-        fontSize: 22,
+        fontSize: 20,
         fontWeight: FontWeight.bold,
         color: Colors.black,
       ),
       textAlign: TextAlign.center,
+      softWrap: false,
     );
   }
 
@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
     return TextField(
       controller: _ssidController,
       decoration: InputDecoration(
-        labelText: 'SSID',
+        labelText: 'เลขบัตรประชาชน',
         filled: true,
         fillColor: secondaryColor,
         enabledBorder: OutlineInputBorder(
@@ -162,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
       controller: _passwordController,
       obscureText: _obscureText,
       decoration: InputDecoration(
-        labelText: 'Password',
+        labelText: 'รหัสผ่าน',
         filled: true,
         fillColor: secondaryColor,
         enabledBorder: OutlineInputBorder(
@@ -202,7 +202,7 @@ class _LoginPageState extends State<LoginPage> {
           );
         },
         child: const Text(
-          'Forgot your password?',
+          'ลืมรหัสผ่าน?',
           style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
         ),
       ),
@@ -247,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
         width: MediaQuery.of(context).size.width * 0.8,
         alignment: Alignment.center,
         child: const Text(
-          'Sign in',
+          'เข้าสู่ระบบ',
           style: TextStyle(color: backGroundColor1),
         ),
       ),
@@ -274,7 +274,7 @@ class _LoginPageState extends State<LoginPage> {
         width: MediaQuery.of(context).size.width * 0.8,
         alignment: Alignment.center,
         child: const Text(
-          'Create new account',
+          'สร้างบัญชีผู้ใช้',
           style: TextStyle(color: backGroundColor1),
         ),
       ),

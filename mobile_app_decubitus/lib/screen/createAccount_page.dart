@@ -49,28 +49,28 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     _buildSubtitle(),
                     const SizedBox(height: 25),
                     _buildTextField(
-                        label: 'SSN ID', controller: _ssidController),
+                        label: 'เลขบัตรประชาชน', controller: _ssidController),
                     const SizedBox(height: 16),
                     _buildTextField(
-                        label: 'First Name', controller: _firstNameController),
+                        label: 'ชื้อต้น', controller: _firstNameController),
                     const SizedBox(height: 16),
                     _buildTextField(
-                        label: 'Last Name', controller: _lastNameController),
+                        label: 'นามสกุล', controller: _lastNameController),
                     const SizedBox(height: 16),
                     _buildGenderSelection(), // Add gender selection here
                     const SizedBox(height: 16),
                     _buildTextField(
-                        label: 'Phone', controller: _phoneController),
+                        label: 'เบอร์โทรศัพท์', controller: _phoneController),
                     const SizedBox(height: 16),
                     _buildDateOfBirthField(context),
                     const SizedBox(height: 16),
                     _buildTextField(
-                        label: 'Password',
+                        label: 'รหัสผ่าน',
                         controller: _passwordController,
                         obscureText: true),
                     const SizedBox(height: 16),
                     _buildTextField(
-                        label: 'Confirm Password',
+                        label: 'ยืนยันรหัสผ่าน',
                         controller: _confirmPasswordController,
                         obscureText: true),
                     const SizedBox(height: 20),
@@ -89,9 +89,9 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   // Method to build the title
   Widget _buildTitle() {
     return const Text(
-      'Create Account',
+      'สร้างบัญชีผู้ใช้งาน',
       style: TextStyle(
-        fontSize: 40,
+        fontSize: 32,
         fontWeight: FontWeight.w900,
         color: primaryColor,
       ),
@@ -149,7 +149,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           child: GestureDetector(
             onTap: () {
               setState(() {
-                selectedGender = "Male"; // Set selected gender
+                selectedGender = "ชาย"; // Set selected gender
                 _sexController.text = selectedGender!; // Update controller
               });
             },
@@ -158,17 +158,17 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   vertical: 15.0), // Add padding for better touch area
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8.0),
-                  color: selectedGender == "Male"
+                  color: selectedGender == "ชาย"
                       ? tertiaryColor
                       : secondaryColor, // Change to red if selected
                   border: Border.all(
-                      color: selectedGender == "Male"
+                      color: selectedGender == "ชาย"
                           ? primaryColor
                           : secondaryColor)),
               child: Center(
-                  child: Text('Male',
+                  child: Text('ชาย',
                       style: TextStyle(
-                          color: selectedGender == "Male"
+                          color: selectedGender == "ชาย"
                               ? Colors.black
                               : Colors.black))),
             ),
@@ -179,7 +179,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           child: GestureDetector(
             onTap: () {
               setState(() {
-                selectedGender = "Female"; // Set selected gender
+                selectedGender = "หญิง"; // Set selected gender
                 _sexController.text = selectedGender!; // Update controller
               });
             },
@@ -188,17 +188,17 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   vertical: 15.0), // Add padding for better touch area
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8.0),
-                  color: selectedGender == "Female"
+                  color: selectedGender == "หญิง"
                       ? tertiaryColor
                       : secondaryColor, // Change to red if selected
                   border: Border.all(
-                      color: selectedGender == "Female"
+                      color: selectedGender == "หญิง"
                           ? primaryColor
                           : secondaryColor)),
               child: Center(
-                  child: Text('Female',
+                  child: Text('หญิง',
                       style: TextStyle(
-                          color: selectedGender == "Female"
+                          color: selectedGender == "หญิง"
                               ? Colors.black
                               : Colors.black))),
             ),
@@ -217,7 +217,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         child: TextField(
           controller: _dobController,
           decoration: InputDecoration(
-            labelText: 'Date of Birth (YYYY-MM-DD)',
+            labelText: 'วันเกิด (ปปปป-ดด-วว)',
             filled: true,
             fillColor: secondaryColor,
             enabledBorder: OutlineInputBorder(
@@ -262,38 +262,38 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     final String phone = _phoneController.text.trim();
 
     if (ssid.isEmpty) {
-      _showSnackBar(context, 'SSID cannot be empty');
+      _showSnackBar(context, 'เลขบัตรประชาชนไม่ว่างได้');
       return false;
     }
 
     if (firstName.isEmpty) {
-      _showSnackBar(context, 'First Name cannot be empty');
+      _showSnackBar(context, 'ชื่อต้นไม่สามารถว่างได้');
       return false;
     }
 
     if (lastName.isEmpty) {
-      _showSnackBar(context, 'Last Name cannot be empty');
+      _showSnackBar(context, 'นามสกุลไม่สามารถว่างได้');
       return false;
     }
 
     if (phone.isEmpty || phone.length < 5) {
       // Assuming phone should be at least10 digits
-      _showSnackBar(context, 'Phone number must be at least10 digits');
+      _showSnackBar(context, 'เบอร์โทรควรมีอย่างน้อย 10 ตัว');
       return false;
     }
 
     if (_dobController.text.isEmpty) {
-      _showSnackBar(context, 'Date of Birth cannot be empty');
+      _showSnackBar(context, 'วันเกิดไม่สามารถว่างได้');
       return false;
     }
 
     if (password.isEmpty || password.length < 6) {
-      _showSnackBar(context, 'Password must be at least6 characters');
+      _showSnackBar(context, 'รหัสผ่านควรมีอย่างน้อย 6 ตัวอักษร');
       return false;
     }
 
     if (password != confirmPassword) {
-      _showSnackBar(context, 'Passwords do not match');
+      _showSnackBar(context, 'รหัสผ่านไม่ตรงกัน');
       return false;
     }
 
@@ -319,30 +319,32 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               password: _passwordController.text.trim(),
               ssnId: int.parse(_ssidController.text.trim()),
               sex: _sexController.text.trim(),
-              phone: int.parse(_phoneController.text.trim()),
+              phone: _phoneController.text.trim(), // Change phone to string
               dateOfBirth: _dobController.text.trim(),
               profileImage: '',
               roleId: 2,
             );
-            _showSnackBar(context, 'Account Created!');
+            _showSnackBar(context, 'สร้างบัญชีผู้ใช้สำเร็จ');
             Navigator.pushNamed(context, '/login');
           } catch (e) {
-            _showSnackBar(context, e.toString());
+            String errorMessage = e.toString().replaceAll('Exception: ', '');
+            _showSnackBar(context, errorMessage);
           }
         }
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
-        padding: const EdgeInsets.symmetric(horizontal: 140, vertical: 15),
+        padding: const EdgeInsets.symmetric(
+            horizontal: 100, vertical: 15), // Adjusted padding
         textStyle: const TextStyle(
-          fontSize: 25,
+          fontSize: 20, // Adjusted font size
           fontWeight: FontWeight.bold,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),
-      child: const Text('Sign up', style: TextStyle(color: backGroundColor1)),
+      child: const Text('ลงทะเบียน', style: TextStyle(color: backGroundColor1)),
     );
   }
 }

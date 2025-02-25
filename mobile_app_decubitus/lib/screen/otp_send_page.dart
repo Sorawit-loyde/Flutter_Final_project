@@ -29,9 +29,7 @@ class _OtpSendPageState extends State<OtpSendPage> {
         ),
       );
     } catch (e) {
-      setState(() {
-        _errorMessage = "Failed to send OTP. Please try again.";
-      });
+      setState(() {});
     }
   }
 

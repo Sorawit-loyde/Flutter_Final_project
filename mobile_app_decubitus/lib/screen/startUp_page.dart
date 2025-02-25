@@ -50,7 +50,7 @@ class StartupPage extends StatelessWidget {
   Widget _buildTitle() {
     return const Center(
       child: Text(
-        'Welcome to Decubitus App',
+        'ยินดีต้อนรับสู่ DECUBITUS',
         style: TextStyle(
           fontSize: 30,
           fontWeight: FontWeight.bold,
@@ -64,7 +64,7 @@ class StartupPage extends StatelessWidget {
     return const SizedBox(
       width: 300,
       child: Text(
-        'This app helps you manage and prevent decubitus ulcers.',
+        'แอปพลิเคชันที่เป็นตัวช่วยการทำนายความรุนแรงของแผลกดทับพร้อมกับวิธีการดูแลเบื้องต้น',
         textAlign: TextAlign.center,
       ),
     );
@@ -83,7 +83,7 @@ class StartupPage extends StatelessWidget {
         textStyle: const TextStyle(fontSize: 25),
       ),
       child: const Text(
-        'Get Started',
+        'เริ่มต้นใช้งาน',
         style: TextStyle(color: backGroundColor1),
       ),
     );

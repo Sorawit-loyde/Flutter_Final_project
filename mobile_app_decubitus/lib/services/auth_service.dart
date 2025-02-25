@@ -45,7 +45,7 @@ class AuthService {
     required String password,
     required int ssnId,
     required String sex,
-    required int phone,
+    required String phone,
     required String dateOfBirth,
     required String profileImage,
     required int roleId,
@@ -70,12 +70,21 @@ class AuthService {
       );
 
       logger.i('Response status: ${response.statusCode}');
-      if (response.statusCode != 200 && response.statusCode != 201) {
+      if (response.statusCode == 400) {
+        final errorResponse = json.decode(response.body);
+        final errorMessage = errorResponse['message'] ?? 'Unknown error';
+        logger.e('Error: $errorMessage');
+        throw Exception(errorMessage);
+      } else if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception('Failed to create account');
       }
     } catch (e) {
       logger.e(e);
-      throw Exception('Failed to create account');
+      if (e is Exception) {
+        throw e; // Re-throw the specific exception
+      } else {
+        throw Exception('Failed to create account123');
+      }
     }
   }
 

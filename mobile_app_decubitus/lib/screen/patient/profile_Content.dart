@@ -28,6 +28,7 @@ class _ProfileContentState extends State<ProfileContent> {
   String password = ''; // To store the password
   File? _image; // To store the selected image
   TextEditingController? _birthdateController; // Controller for birthdate field
+  String selectedGender = ''; // Add this line
 
   @override
   void initState() {
@@ -55,6 +56,7 @@ class _ProfileContentState extends State<ProfileContent> {
         isLoading = false;
         _birthdateController =
             TextEditingController(text: userInfo['วัน/เดือน/ปีเกิด']);
+        selectedGender = userInfo['เพศ'] ?? ''; // Add this line
       });
     } catch (e) {
       setState(() {
@@ -293,18 +295,111 @@ class _ProfileContentState extends State<ProfileContent> {
                                           onTap: () => _selectDate(
                                               context), // Show date picker on tap
                                         )
-                                      : TextFormField(
-                                          initialValue: entry.value,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              userInfo[entry.key] = value;
-                                            });
-                                          },
-                                          decoration: InputDecoration(
-                                            hintStyle:
-                                                TextStyle(color: greyColor3),
-                                          ),
-                                        )
+                                      : entry.key == 'เพศ'
+                                          ? Row(
+                                              children: [
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        selectedGender = 'Male';
+                                                        userInfo['เพศ'] =
+                                                            'Male';
+                                                      });
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          selectedGender ==
+                                                                  'Male'
+                                                              ? primaryColor
+                                                              : secondaryColor,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(
+                                                          Icons.male,
+                                                          color: Colors.black,
+                                                        ),
+                                                        SizedBox(width: 5),
+                                                        Text(
+                                                          'Male',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 10),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        selectedGender =
+                                                            'Female';
+                                                        userInfo['เพศ'] =
+                                                            'Female';
+                                                      });
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          selectedGender ==
+                                                                  'Female'
+                                                              ? primaryColor
+                                                              : secondaryColor,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(
+                                                          Icons.female,
+                                                          color: Colors.black,
+                                                        ),
+                                                        SizedBox(width: 5),
+                                                        Text(
+                                                          'Female',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : TextFormField(
+                                              initialValue: entry.value,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  userInfo[entry.key] = value;
+                                                });
+                                              },
+                                              decoration: InputDecoration(
+                                                hintStyle: TextStyle(
+                                                    color: greyColor3),
+                                              ),
+                                            )
                                   : Text(
                                       entry.value,
                                       style: TextStyle(color: darkColor),
@@ -327,7 +422,7 @@ class _ProfileContentState extends State<ProfileContent> {
                                 ),
                               ),
                               child: Text(
-                                'Logout',
+                                'ออกจากระบบ',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
