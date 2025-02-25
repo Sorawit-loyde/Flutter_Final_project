@@ -52,19 +52,19 @@ class _BottomNavBarState extends State<BottomNavBar> {
           tabs: const [
             GButton(
               icon: Icons.home,
-              text: "Home",
+              text: "หน้าหลัก",
             ),
             GButton(
               icon: Icons.chat,
-              text: "Chat",
+              text: "ห้องแชท",
             ),
             GButton(
               icon: Icons.history,
-              text: "Follow Up",
+              text: "การติดตาม",
             ),
             GButton(
               icon: Icons.person,
-              text: "Profile",
+              text: "โปรไฟล์",
             ),
           ],
         ),

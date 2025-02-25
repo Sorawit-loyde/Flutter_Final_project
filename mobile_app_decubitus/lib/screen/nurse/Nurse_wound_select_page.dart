@@ -91,7 +91,7 @@ class _NurseWoundSelectPageState extends State<NurseWoundSelectPage> {
                       return ListTile(
                         title: Text('แผล ${wound.count}'),
                         subtitle: Text(
-                          'Status: ${wound.status}', // Added date formatting
+                          'สถานะ: ${wound.status}', // Added date formatting
                           style: TextStyle(
                             color: wound.status == 'ตรวจแล้ว'
                                 ? primaryColor

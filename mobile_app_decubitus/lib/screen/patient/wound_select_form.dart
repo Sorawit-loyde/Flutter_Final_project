@@ -192,7 +192,11 @@ class _WoundSelectFormState extends State<WoundSelectForm> {
         } else {
           throw Exception('Failed to retrieve wound ID.');
         }
-      } catch (e) {}
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('เกิดข้อผิดพลาดโปรดลองอีกครั้ง')),
+        );
+      }
     }
   }
 

@@ -52,7 +52,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                         label: 'เลขบัตรประชาชน', controller: _ssidController),
                     const SizedBox(height: 16),
                     _buildTextField(
-                        label: 'ชื้อต้น', controller: _firstNameController),
+                        label: 'ชื่อต้น', controller: _firstNameController),
                     const SizedBox(height: 16),
                     _buildTextField(
                         label: 'นามสกุล', controller: _lastNameController),
@@ -102,7 +102,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   // Method to build the subtitle
   Widget _buildSubtitle() {
     return const Text(
-      'Please fill in the details below to create your account.',
+      'กรุณากรอกข้อมูลผู้ใช้',
       style: TextStyle(
         fontSize: 20,
         color: Colors.black,
@@ -166,11 +166,21 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           ? primaryColor
                           : secondaryColor)),
               child: Center(
-                  child: Text('ชาย',
+                  child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.male,
+                      color: selectedGender == "ชาย"
+                          ? Colors.black
+                          : Colors.black),
+                  const SizedBox(width: 8),
+                  Text('ชาย',
                       style: TextStyle(
                           color: selectedGender == "ชาย"
                               ? Colors.black
-                              : Colors.black))),
+                              : Colors.black)),
+                ],
+              )),
             ),
           ),
         ),
@@ -196,11 +206,21 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           ? primaryColor
                           : secondaryColor)),
               child: Center(
-                  child: Text('หญิง',
+                  child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.female,
+                      color: selectedGender == "หญิง"
+                          ? Colors.black
+                          : Colors.black),
+                  const SizedBox(width: 8),
+                  Text('หญิง',
                       style: TextStyle(
                           color: selectedGender == "หญิง"
                               ? Colors.black
-                              : Colors.black))),
+                              : Colors.black)),
+                ],
+              )),
             ),
           ),
         ),

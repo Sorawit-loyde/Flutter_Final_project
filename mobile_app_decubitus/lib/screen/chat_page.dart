@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:chatview/chatview.dart';
 import 'package:logger/logger.dart';
 import 'package:mobile_app_decubitus/config/config.dart';
+import 'package:mobile_app_decubitus/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:mobile_app_decubitus/models/chat_model.dart';
@@ -129,12 +130,12 @@ class _ChatroomState extends State<Chatroom> {
           data['event'] == 'image' ? MessageType.image : MessageType.text,
     );
 
-  if (!chatController.otherUsers.any((user) => user.id == senderId)) {
-    chatController.otherUsers.add(ChatUser(
-      id: senderId,
-      name: fullname ,
-    ));
-  }
+    if (!chatController.otherUsers.any((user) => user.id == senderId)) {
+      chatController.otherUsers.add(ChatUser(
+        id: senderId,
+        name: fullname,
+      ));
+    }
     chatController.addMessage(newMessage);
   }
 
@@ -185,7 +186,7 @@ class _ChatroomState extends State<Chatroom> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Wounds Information'),
+            title: const Text('ประวัติการรักษาแผล'),
             content: SizedBox(
               width: double.maxFinite,
               child: ListView.builder(
@@ -243,7 +244,10 @@ class _ChatroomState extends State<Chatroom> {
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('Close'),
+                child: const Text(
+                  'ปิด',
+                  style: TextStyle(color: primaryColor, fontSize: 16),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -320,6 +324,7 @@ class _ChatroomState extends State<Chatroom> {
                 allowRecordingVoice: false,
                 textFieldConfig: TextFieldConfiguration(
                   textStyle: TextStyle(color: Colors.black),
+                  hintText: 'ข้อความ', // Changed hint text
                 ),
               ),
             ),

@@ -109,7 +109,7 @@ class FollowUpCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4.0),
                     Text(
-                      'Patient Status: ${patient.patientStatus}',
+                      'สถานะของคนไข้: ${patient.patientStatus}',
                       style: const TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),

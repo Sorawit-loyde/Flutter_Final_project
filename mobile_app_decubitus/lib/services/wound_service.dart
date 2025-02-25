@@ -29,10 +29,13 @@ class WoundService {
       headers: {'Content-Type': 'application/json'},
       body: json.encode(wound.toJson()),
     );
+    print('Creating wound: ${wound.toJson()}'); // Log the wound being created
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       return jsonResponse['wound']?['id']; // Return the wound ID
+    } else if (response.statusCode == 400) {
+      throw Exception('เกิดข้อผิดพลาดโปรดลองอีกครั้ง');
     } else {
       throw Exception('Failed to create wound: ${response.body}');
     }

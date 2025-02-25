@@ -305,13 +305,13 @@ class _ProfileContentState extends State<ProfileContent> {
                                               child: ElevatedButton(
                                                 onPressed: () {
                                                   setState(() {
-                                                    selectedGender = 'Male';
-                                                    userInfo['เพศ'] = 'Male';
+                                                    selectedGender = 'ชาย';
+                                                    userInfo['เพศ'] = 'ชาย';
                                                   });
                                                 },
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor:
-                                                      selectedGender == 'Male'
+                                                      selectedGender == 'ชาย'
                                                           ? primaryColor
                                                           : secondaryColor,
                                                   shape: RoundedRectangleBorder(
@@ -330,7 +330,7 @@ class _ProfileContentState extends State<ProfileContent> {
                                                     ),
                                                     SizedBox(width: 5),
                                                     Text(
-                                                      'Male',
+                                                      'ชาย',
                                                       style: TextStyle(
                                                           color: Colors.black),
                                                     ),
@@ -343,13 +343,13 @@ class _ProfileContentState extends State<ProfileContent> {
                                               child: ElevatedButton(
                                                 onPressed: () {
                                                   setState(() {
-                                                    selectedGender = 'Female';
-                                                    userInfo['เพศ'] = 'Female';
+                                                    selectedGender = 'หญิง';
+                                                    userInfo['เพศ'] = 'หญิง';
                                                   });
                                                 },
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor:
-                                                      selectedGender == 'Female'
+                                                      selectedGender == 'หญิง'
                                                           ? primaryColor
                                                           : secondaryColor,
                                                   shape: RoundedRectangleBorder(
@@ -368,7 +368,7 @@ class _ProfileContentState extends State<ProfileContent> {
                                                     ),
                                                     SizedBox(width: 5),
                                                     Text(
-                                                      'Female',
+                                                      'หญิง',
                                                       style: TextStyle(
                                                           color: Colors.black),
                                                     ),

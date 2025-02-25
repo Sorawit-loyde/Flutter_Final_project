@@ -291,7 +291,7 @@ class _PatientListPageState extends State<PatientListPage> {
                                   title: Text(
                                       '${patient.firstName} ${patient.lastName}'),
                                   subtitle: Text(
-                                    'Status: $status',
+                                    'สถานะ: $status',
                                     style: TextStyle(color: statusColor),
                                   ),
                                   trailing: IconButton(
