@@ -216,7 +216,7 @@ class _LoginPageState extends State<LoginPage> {
           if (_ssidController.text.isEmpty ||
               _passwordController.text.isEmpty) {
             setState(() {
-              _errorMessage = "SSID and Password cannot be empty.";
+              _errorMessage = "เลขบัตรประชาชนหรือรหัสผ่านต้องเว้นว่าง";
             });
             return;
           }
@@ -227,7 +227,8 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pushReplacementNamed(context, '/home');
           } catch (e) {
             setState(() {
-              _errorMessage = "Login failed. Please try again.";
+              _errorMessage =
+                  "เลขบัตรประชาชนหรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่";
             });
           }
         }

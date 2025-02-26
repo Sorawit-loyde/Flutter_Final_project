@@ -64,7 +64,7 @@ class _RoomPageState extends State<RoomPage> {
                             child:
                                 Text('Error fetching data: ${snapshot.error}'));
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(child: Text('No rooms available.'));
+                        return const Center(child: Text('ไม่มีห้องแชท กรุณาสร้างการตรวจ'));
                       } else {
                         _allRooms = snapshot.data!;
                         _filteredRooms = _allRooms;
