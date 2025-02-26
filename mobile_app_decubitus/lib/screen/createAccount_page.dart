@@ -28,6 +28,15 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: backGroundColor1,
+        elevation: 0,
+        toolbarHeight: 40,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: primaryColor),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
       backgroundColor: backGroundColor1,
       resizeToAvoidBottomInset: true,
       body: GestureDetector(
@@ -43,7 +52,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 40),
                     _buildTitle(),
                     const SizedBox(height: 8),
                     _buildSubtitle(),
