@@ -49,11 +49,16 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
 
   Future<List<Perusal>> fetchPerusals() async {
     final perusalService = PerusalService();
-    return await perusalService.getPerusalsNurse(widget.patientId);
+    final perusals = await perusalService.getPerusalsNurse(widget.patientId);
+    for (int i = 0; i < perusals.length; i++) {
+      perusals[i] =
+          perusals[i].copyWith(originalIndex: i + 1); // Set the original index
+    }
+    return perusals;
   }
 
-  String formatPerusalDate(DateTime date, int index) {
-    return "การตรวจครั้งที่ $index - ${DateFormat('dd/MM/yyyy').format(date)}";
+  String formatPerusalDate(DateTime date, int originalIndex) {
+    return "การตรวจครั้งที่ $originalIndex - ${DateFormat('dd/MM/yyyy').format(date)}";
   }
 
   void _filterPerusals(String query) {
@@ -65,15 +70,14 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
         int? searchIndex = int.tryParse(_searchQuery);
         if (searchIndex != null) {
           _filteredPerusals = _allPerusals
-              .where(
-                  (perusal) => _allPerusals.indexOf(perusal) + 1 == searchIndex)
+              .where((perusal) => perusal.originalIndex == searchIndex)
               .toList();
         } else {
           _filteredPerusals = _allPerusals
-              .where((perusal) => formatPerusalDate(
-                      perusal.perusalDate, _allPerusals.indexOf(perusal) + 1)
-                  .toLowerCase()
-                  .contains(_searchQuery))
+              .where((perusal) =>
+                  formatPerusalDate(perusal.perusalDate, perusal.originalIndex)
+                      .toLowerCase()
+                      .contains(_searchQuery))
               .toList();
         }
       }
@@ -228,7 +232,8 @@ class _NurseHomeContentState extends State<NurseHomeContent> {
                                         Expanded(
                                           child: Text(
                                             formatPerusalDate(
-                                                perusal.perusalDate, index + 1),
+                                                perusal.perusalDate,
+                                                perusal.originalIndex),
                                             style: const TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.black),
