@@ -121,8 +121,18 @@ class _ProfileContentState extends State<ProfileContent> {
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
-        profileImageUrl = pickedFile.path; // Update the profile image URL
       });
+
+      // Upload the image and get the URL
+      final imageUrl =
+          await UserProfileService().uploadImageFromPath(pickedFile.path);
+      if (imageUrl != null) {
+        setState(() {
+          profileImageUrl = imageUrl; // Update the profile image URL
+        });
+      } else {
+        _showSnackBar(context, 'Failed to upload image');
+      }
     }
   }
 
