@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "flutter clean",
+			"command": "flutter",
+			"args": [
+				"clean"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/mobile_app_decubitus"
+			},
+			"presentation": {
+				"reveal": "silent"
+			}
+		}
+	]
+}

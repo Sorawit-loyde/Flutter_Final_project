@@ -1,77 +1,333 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:chatview/chatview.dart';
+import 'package:logger/logger.dart';
+import 'package:mobile_app_decubitus/config/config.dart';
+import 'package:mobile_app_decubitus/constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:mobile_app_decubitus/models/chat_model.dart';
+import 'package:mobile_app_decubitus/services/chat_service.dart';
 
 class Chatroom extends StatefulWidget {
-  const Chatroom({super.key});
+  final int roomId; // Room ID to join
+  const Chatroom({required this.roomId, super.key});
+
   @override
-  State<Chatroom> createState() => _ChatState();
+  State<Chatroom> createState() => _ChatroomState();
 }
 
-class _ChatState extends State<Chatroom> {
-  var chatController;
-  List<Message> messageList = [];
-  String? threadid;
-  void onSendTap(String message, ReplyMessage replyMessage,
-      MessageType messageType) async {
-    var messages = Message(
-      id: '3',
-      message: message,
-      createdAt: DateTime.now(),
-      sentBy: "me",
-      replyMessage: replyMessage,
-      messageType: messageType,
-    );
-    chatController.addMessage(messages);
-    _showHideTypingIndicator();
-// var response =
-// await Chatgpt().gettodoslist(message: message, threadId: threadid);
-    messages = Message(
-      id: '4',
-      message: "hello",
-      createdAt: DateTime.now(),
-      sentBy: "bot",
-      replyMessage: replyMessage,
-      messageType: messageType,
-    );
-    _showHideTypingIndicator();
-    chatController.addMessage(messages);
-  }
+class _ChatroomState extends State<Chatroom> {
+  late ChatController chatController;
+  WebSocketChannel? channel;
+  final ChatService chatService = ChatService();
+  bool isLoading = true;
+  String? currentUserId;
+  var logger = Logger();
 
   @override
   void initState() {
-    chatController = ChatController(
-      initialMessageList: messageList,
-      scrollController: ScrollController(),
-      currentUser: ChatUser(id: 'me', name: 'me'),
-      otherUsers: [ChatUser(id: 'bot', name: 'bot')],
-    );
     super.initState();
+    _initializeChat();
   }
 
-  void _showHideTypingIndicator() {
-    chatController.setTypingIndicator = !chatController.showTypingIndicator;
+  Future<void> _initializeChat() async {
+    await _getCurrentUserId();
+    await _connectToWebSocket();
+    await loadChatHistory();
+    _joinRoom();
+  }
+
+  Future<void> _getCurrentUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      currentUserId = prefs.getString('Uid');
+    });
+  }
+
+  Future<void> _connectToWebSocket() async {
+    const websocketUrl =
+        Custom_Config.WebSocket_URL; // Replace with your WebSocket server URL
+    channel = WebSocketChannel.connect(Uri.parse(websocketUrl));
+
+    // Listen for incoming messages
+    channel?.stream.listen((event) {
+      final Map<String, dynamic> data = jsonDecode(event);
+      final String eventType = data['event'];
+      if (eventType == 'text' || eventType == 'image') {
+        _handleIncomingMessage(data);
+      }
+    });
+  }
+
+  Future<void> loadChatHistory() async {
+    try {
+      List<Chat> chatData = await chatService.getChats(widget.roomId);
+
+      List<Message> messageList = chatData.map((chat) {
+        MessageType messageType =
+            chat.messageType == "image" ? MessageType.image : MessageType.text;
+
+        return Message(
+          id: chat.id.toString(),
+          message: messageType == MessageType.image
+              ? '${Custom_Config.Image_URL}/${chat.imageUrl}'
+              : chat.message ?? "",
+          createdAt: chat.createdAt,
+          sentBy: chat.sender.id.toString(),
+          messageType: messageType,
+        );
+      }).toList();
+
+      chatController = ChatController(
+        initialMessageList: messageList,
+        scrollController: ScrollController(),
+        currentUser: ChatUser(id: currentUserId ?? 'me', name: 'You'),
+        otherUsers: chatData
+            .map((chat) => ChatUser(
+                  id: chat.sender.id.toString(),
+                  name: chat.sender.fullname,
+                ))
+            .toSet()
+            .toList(),
+      );
+
+      setState(() {
+        isLoading = false;
+      });
+    } catch (error) {
+      debugPrint("Error loading chat history: $error");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void _joinRoom() {
+    final joinRoomData = {
+      'roomId': widget.roomId,
+      'userId': currentUserId,
+    };
+    logger.i(joinRoomData);
+    channel?.sink.add(jsonEncode({
+      'event': 'joinRoom',
+      'data': joinRoomData,
+    }));
+  }
+
+  void _handleIncomingMessage(Map<String, dynamic> data) {
+    logger.i("testdata: $data");
+    final senderId = data['sendId'].toString();
+    final fullname = data['fullname'].toString();
+    final newMessage = Message(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      message: data['event'] == 'image'
+          ? '${Custom_Config.Image_URL}/${data['image']}'
+          : data['message'],
+      createdAt: DateTime.now(),
+      sentBy: senderId,
+      messageType:
+          data['event'] == 'image' ? MessageType.image : MessageType.text,
+    );
+
+    if (!chatController.otherUsers.any((user) => user.id == senderId)) {
+      chatController.otherUsers.add(ChatUser(
+        id: senderId,
+        name: fullname,
+      ));
+    }
+    chatController.addMessage(newMessage);
+  }
+
+  void sendMessage(String? messageText,
+      {String? imageUrl, MessageType messageType = MessageType.text}) {
+    if ((messageText == null || messageText.isEmpty) &&
+        (imageUrl == null || imageUrl.isEmpty)) {
+      debugPrint("Cannot send empty message.");
+      return;
+    }
+
+    // final newMessage = Message(
+    //   id: DateTime.now().millisecondsSinceEpoch.toString(),
+    //   message: messageType == MessageType.image
+    //       ? '${Custom_Config.Image_URL}/$imageUrl'
+    //       : messageText!,
+    //   createdAt: DateTime.now(),
+    //   sentBy: currentUserId ?? 'me',
+    //   messageType: messageType,
+    // );
+
+    // **Add the message and trigger UI rebuild**
+    // setState(() {
+    //   chatController.addMessage(newMessage);
+    // });
+
+    // Send message over WebSocket
+    final messagePayload = {
+      'roomId': widget.roomId,
+      'sendId': currentUserId,
+      'message': messageType == MessageType.text ? messageText : null,
+      'imageUrl': messageType == MessageType.image ? imageUrl : null,
+      'messageType': messageType == MessageType.image ? 'image' : 'text',
+    };
+
+    debugPrint('Sending message payload: ${jsonEncode(messagePayload)}');
+
+    channel?.sink.add(jsonEncode({
+      'event': 'sendMessage',
+      'data': messagePayload,
+    }));
+  }
+
+  Future<void> _showWoundsDialog() async {
+    try {
+      final woundsData = await chatService.getWoundsFromPerusal(widget.roomId);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('ประวัติการรักษาแผล'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: woundsData.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final woundArea = woundsData[index];
+                  return Card(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('อวัยวะ : ${woundArea['area']}'),
+                        ...woundArea['wounds'].map<Widget>((wound) {
+                          return InkWell(
+                            onTap: () async {
+                              // Send wound image
+                              sendMessage(
+                                null,
+                                imageUrl: '${wound['wound_image']}',
+                                messageType: MessageType.image,
+                              );
+
+                              // Fetch wound follow-up data
+                              final followupData = await chatService
+                                  .getWoundFollowup(wound['id']);
+                              if (followupData.isNotEmpty) {
+                                final followup = followupData.first;
+                                // Send wound information as text
+                                final woundInfo = followup['remark'] == null
+                                    ? 'อวัยวะ: ${followup['area']}\nสถานะ: ${followup['status']}\nระดับแผล: ${followup['wound_state']['state']}'
+                                    : 'อวัยวะ: ${followup['area']}\nสถานะ: ${followup['status']}\nระดับแผล: ${followup['wound_state']['state']}\nระดับแผลความเห็น: ${followup['remark']}';
+                                sendMessage(woundInfo,
+                                    messageType: MessageType.text);
+                              }
+
+                              Navigator.of(context).pop();
+                            },
+                            child: ListTile(
+                              leading: Image.network(
+                                '${Custom_Config.Image_URL}/${wound['wound_image']}',
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              ),
+                              title: Text('แผล ${wound['count']}'),
+                              subtitle: Text('สถานะ : ${wound['status']}'),
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text(
+                  'ปิด',
+                  style: TextStyle(color: primaryColor, fontSize: 16),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      logger.e('Error fetching wounds data: $e');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: const Text(
+                'Failed to fetch wounds data. Please try again later.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    channel?.sink.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ChatView(
-        appBar: const ChatViewAppBar(
-          chatTitle: "Chat",
-        ),
-        chatController: chatController,
-        onSendTap: onSendTap,
-        chatViewState: ChatViewState.hasMessages,
-        sendMessageConfig: const SendMessageConfiguration(
-          enableGalleryImagePicker: false,
-          enableCameraImagePicker: false,
-          allowRecordingVoice: false,
-          textFieldConfig: TextFieldConfiguration(
-            compositionThresholdTime: const Duration(seconds: 1),
-            textStyle: TextStyle(color: Colors.black),
-          ),
-        ),
-      ),
+      // appBar: AppBar(title: const Text("Chatroom")),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ChatView(
+              appBar: ChatViewAppBar(
+                chatTitle: "ห้องแชท",
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.more_vert),
+                    onPressed: () {
+                      _showWoundsDialog();
+                    },
+                  ),
+                ],
+              ),
+              chatController: chatController,
+              onSendTap: (messageText, replyMessage, messageType) async {
+                if (messageType == MessageType.text) {
+                  sendMessage(messageText);
+                } else if (messageType == MessageType.image) {
+                  // The messageText contains the file path for the selected image
+                  String? imageUrl =
+                      await chatService.uploadImageFromPath(messageText);
+                  if (imageUrl != null) {
+                    sendMessage(null,
+                        imageUrl: imageUrl, messageType: MessageType.image);
+                  }
+                }
+              },
+              chatViewState: ChatViewState.hasMessages,
+              sendMessageConfig: const SendMessageConfiguration(
+                enableGalleryImagePicker: true,
+                enableCameraImagePicker: true,
+                allowRecordingVoice: false,
+                textFieldConfig: TextFieldConfiguration(
+                  textStyle: TextStyle(color: Colors.black),
+                  hintText: 'ข้อความ', // Changed hint text
+                ),
+              ),
+            ),
     );
   }
 }
