@@ -100,13 +100,6 @@ class CustomAppBarState extends State<CustomAppBar> {
                     fontSize: 17,
                     fontWeight: FontWeight.bold),
               ),
-              Text(
-                user.ssid, // Display fetched SSID
-                style: const TextStyle(
-                    color: backGroundColor2,
-                    fontSize: 17,
-                    fontWeight: FontWeight.normal),
-              ),
               const SizedBox(height: 3),
               // Display the role name
               if (user.roles.isNotEmpty) // Check if there are roles available
